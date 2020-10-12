@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin.php
+Disallow: *?article
+Disallow: *?title
+Sitemap: http://tiv.site.loc/sitemap.xml

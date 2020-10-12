@@ -1,0 +1,28 @@
+== A propos ==
+
+L'application de TIV a pour but de répertorier les blocs (ainsi que quelques petits matériels annexes comme les stabs ou les détendeurs) d'un club de plongée et de proposer d'aider le responsable du matériel dans le suivi de son matériel (date de TIV/préparation des TIVs mais également date des prochaines réépreuves etc.).
+
+L'application a été développé sur un serveur Apache PHP avec une base MySQL.
+
+La création de la base se fait à l'aide du fichier schema.sql et la déclaration de la connexion se fait en modifiant le fichier connect_db.inc.php (un fichier template connect_db.inc.php.template d'exemple est présent dans l'application).
+
+Il faut également renseigner le fichier configuration.inc.php afin de rajouter les informations concernant votre club de plongée.
+
+Il vous faudra également la version 1.7 de FPDF (elle est téléchargeable à l'adresse suivante : http://www.fpdf.org/). Il faudra ensuite la décompresser dans le sous-répertoire fpdf17 à la racine du répertoire de l'application.
+
+Enfin, il faut placer le logo de votre club dans le fichier logo_club.png.
+
+A noter que si jamais un de ces fichiers devait manquer, l'application vous donnera une notification sur le fichier manquant.
+
+Cette application est soumise à la licence GPL. Enfin, à souligner, le logiciel est fourni "en l'état" sans garantie d'aucune sorte, expresse ou implicite. En dehors de ça bon TIV !
+
+== Crédits ==
+
+Les images sont extraites des icônes oxygen de KDE4. Vous pouvez les récupérer à l'adresse suivante : http://www.oxygen-icons.org/
+
+A noter également que l'application s'appuie sur les librairies suivantes pour fonctionner :
+- jQuery      http://jquery.com/
+- DataTables  http://datatables.net/ (s'appuie sur jQuery pour fonctionner)
+- FPDF        http://www.fpdf.org/
+
+Elle a été développé sur une Kubuntu 12.04 (version AMD64) avec PHP en version 5.3.10, apache 2.2.22 et MySQL 5.5.24 mais devrait pouvoir fonctionner sans problème sur une plateforme PHP 5 (y compris un Windows même si je ne l'ai jamais testé personnellement).

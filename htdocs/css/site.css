@@ -1,0 +1,143 @@
+/* General */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.2em;
+    color: #333;
+    background: #FFFFFF;
+}
+h1 { /* Uses Color 1 */
+    font-size: 1.6em;
+    line-height: 1.5em;
+    color: #000;
+    margin-bottom: .5em;
+}
+h2 { /* Uses Color 2 */
+    font-size: 1.5em;
+    line-height: 1.5em;
+    color: #333;
+    margin-bottom: .5em;
+}
+h3 { /* Uses Color 2 */
+    font-size: 1.2em;
+    line-height: 1.5em;
+    color: #2C8AEF;
+    margin-bottom: .5em;
+}
+h4 { /* Uses Color 2 */
+    font-size: 1em;
+    font-weight: bold;
+    line-height: 1.5em;
+    color: #333333;
+    margin-bottom: .5em;
+}
+h5 { /* Uses Color 2 */
+    font-size: 1em;
+    line-height: 1.5em;
+    color: #333333;
+    margin-bottom: .5em;
+}
+h6 { /* Uses Color 2 */
+    font-size: 1em;
+    line-height: 1.5em;
+    color: #333333;
+    margin-bottom: .5em;
+}
+p { /* Uses Color 2 */
+    font-size: .8em;
+    line-height: 1.5em;
+    color: #333;
+    margin-bottom: .5em;
+}
+a { /* Uses Color 3 */
+    cursor: pointer;
+    text-decoration: underline;
+    color: #2C8AEF;
+}
+a:hover { /* Uses Color 4 */
+    color: #1D5CBB;
+}
+a:active { /* Uses Color 2 */
+    color: #7FCCFF;
+}
+ul, ol {
+    margin-bottom: .5em;
+    font-size: .8em;
+}
+ul {
+    margin-left: 1.5em;
+    list-style-type: disc;
+}
+ol {
+    margin-left: 1.85em;
+    list-style-type: decimal;
+}
+table {
+    font-size: .7em;
+    border-collapse: collapse;
+    color: #333;
+}
+tbody tr td p {
+    font-size: 1em !important;
+}
+thead tr td {
+    background: #F2F2F2;
+    font-weight: bold;
+    border: 1px solid #999;
+}
+tbody tr td {
+    border: 1px solid #999;
+}
+tfoot tr td {
+    background: #F2F2F2;
+    font-weight: bold;
+    border: 1px solid #999;
+}
+input:text, select, textarea {
+    border: 1px solid #AAA;
+    font-size: .8em;
+    padding: 3px 3px;
+}
+b, strong {
+    font-weight: bold;
+}
+
+label.error {
+    width: auto;
+    display: inline;
+    color: #F11;
+    border-left: 1px dotted #F33;
+    padding-left: 5px;
+}
+
+div.ok {
+    color: #272;
+}
+
+div.error {
+    font-weight: bold;
+    color: #F11;
+}
+
+div.critical {
+    font-weight: bold;
+    color: #F11;
+}
+
+div.warning {
+    width: auto;
+    font-weight: bold;
+    color: #F73;
+}
+
+/*label {
+    border-left: 1px dotted #2C8AEF;
+    clear: right;
+    color: #2C8AEF;
+    display: block;
+    font-size: .8em;
+    float: right;
+    margin: 0 0 8px;
+    padding-right: 5px;
+    text-align: left;
+    width: 400px;
+}*/
