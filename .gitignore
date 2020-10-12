@@ -1,3 +1,4 @@
 ./
 branches/
-
+connect_db.inc.php
+configuration.inc.php
