@@ -9,15 +9,18 @@
       @import "css/site.css";
       @import "css/smoothness/jquery-ui.css";
       @import "css/magicsuggest-1.3.0-min.css";
-      @import "css/bootstrap-min.css";
+      @import "css/bootstrap-grid.min.css";
+      @import "css/bootstrap-reboot.min.css";
+      @import "css/bootstrap.min.css";
     </style>
     <script type="text/javascript" charset="utf-8" src="DataTables-1.9.4/media/js/jquery.js"></script>
     <script type="text/javascript" charset="utf-8" src="DataTables-1.9.4/media/js/jquery.dataTables.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/jquery-ui-1.10.3.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/jquery.validate.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/magicsuggest-1.3.0-min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/popper.js"></script>
-    <script type="text/javascript" charset="utf-8" src="js/bootstrap.bundle-min.js"></script>
   </head>
   <body>
 <?php
