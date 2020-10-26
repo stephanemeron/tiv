@@ -31,6 +31,7 @@ CREATE TABLE `bloc` (
   `marque` varchar(128) NULL,
   `numero` varchar(128) NULL,
   `capacite` varchar(32) NULL,
+  `id_robinet` int(15) NULL,
   `date_premiere_epreuve` date NULL,
   `date_derniere_epreuve` date NULL,
   `date_dernier_tiv` date NULL,
@@ -210,6 +211,24 @@ CREATE TABLE `stab` (
   `observation` varchar(255) NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Liste des stabs du club';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `robinet`
+--
+
+DROP TABLE IF EXISTS `robinet`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `robinet` (
+  `id` int(15) NOT NULL,
+  `marque` varchar(128) NULL,
+  `serial_number` varchar(32) NULL,
+  `filetage` varchar(32) NULL,
+  `nb_sortie` int(1) NULL,
+  `observation` varchar(255) NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Liste des robinets du club';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
