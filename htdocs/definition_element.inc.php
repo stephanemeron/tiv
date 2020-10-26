@@ -212,7 +212,7 @@ class TIVElement {
     $table = $this->getJSOptions($id, $label);
     if($show_additional_control)
       $table .= $this->getAdditionalControl($id);
-    $table .= "<table cellpadding='0' cellspacing='0' border='0' class='display' id='$id'>\n";
+    $table .= "<table class='table table-striped table-bordered' style='width:100%' id='$id'>\n";
     $table .= "  <thead>".$this->getHTMLHeaderTable()."</thead>\n";
     $table .= "  <tbody>\n";
     if(!$db_query) $db_query = $this->getDBQuery();
@@ -235,26 +235,7 @@ class TIVElement {
   function getJSOptions($id, $label, $display = 25) {
     return "<script type='text/javascript' charset='utf-8'>
   $(document).ready(function() {
-    $('#$id').dataTable( {
-      'oLanguage': {
-        'sZeroRecords': 'Pas de ".$label."s correspondants',
-        'sInfo': 'Affichage des ".$label."s _START_ à _END_ sur _TOTAL_ ".$label."s',
-        'sInfoEmpty': 'Aucun $label trouvé(e)',
-        'sInfoFiltered': '(Suite à l&#145;application du filtre de recherche sur les _MAX_ ".$label."s)',
-        'sSearch': 'Recherche d&#145;un $label :',
-        'bLengthChange': true,
-        'sLengthMenu': 'Afficher _MENU_ ".$label."s par page',
-        'oPaginate': {
-          'sFirst': 'Début',
-          'sPrevious': 'Précédent',
-          'sNext': 'Suivant',
-          'sLast': 'Dernier',
-        }
-      },
-      'iDisplayLength': $display,
-      'sPaginationType': 'full_numbers',
-      'bJQueryUI': true,
-    } );
+    $('#$id').dataTable();
   } );
 </script>\n";
   }
@@ -402,6 +383,7 @@ class TIVElement {
 }
 
 include_once("definition_element_bloc.inc.php");
+include_once("definition_element_robinet.inc.php");
 include_once("definition_element_detendeur.inc.php");
 include_once("definition_element_stab.inc.php");
 include_once("definition_element_inspecteur_tiv.inc.php");
