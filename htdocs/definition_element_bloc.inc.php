@@ -16,10 +16,12 @@ class blocElement extends TIVElement {
     $this->_current_time = time();
     $this->_elements = array(
       "id" => "Réf.", "id_club" => "n° club", "nom_proprietaire" => "Nom propriétaire", "constructeur" => "Constructeur",
-      "marque" => "Marque", "numero" => "Numéro constructeur", "capacite" => "Capacité",
+      "marque" => "Marque", "numero" => "Numéro constructeur", "capacite" => "Capacité", "id_robinet" => "Robinet",
       "date_derniere_epreuve" => "Date dernière épreuve", "date_dernier_tiv" => "Date dernière inspection TIV",
       "pression_service" => "Pression de service", "gaz" => "Gaz", "etat" => "État",
     );
+    $this->_field_to_retrieve = array(
+      "robinet" => "CONCAT('Réf: ', id, ' - ', marque, '-', nb_sortie,' sortie(s)')");
     $bloc_capacite = array("", "6", "10", "12 long", "12 court", "15");
     // Création d'une dépendance entre pression de service et d'épreuve
     $pression_definition = array("" => "", "200" => "300", "230" => "345", "232" => "348", "300" => "450");
@@ -37,6 +39,7 @@ class blocElement extends TIVElement {
       "marque"                => array("required", false,    "Marque du bloc (ex : Aqualung)"),
       "numero"                => array("required", false,    "Numéro de constructeur du bloc"),
       "capacite"              => array("required", $bloc_capacite,    "Capacité du bloc"),
+      "id_robinet"            => array(false, "text", "Référence du robinet"),
       "date_premiere_epreuve" => array("required", "date",   "Date de la première épreuve du bloc"),
       "date_derniere_epreuve" => array("required", "date",   "Date de la dernière épreuve du bloc (tous les 5 ans)"),
       "date_dernier_tiv"      => array("required", "date",   "Date de la dernière inspection visuelle (tous les ans)"),
@@ -69,6 +72,9 @@ class blocElement extends TIVElement {
     },
     capacite: {
         required: true,
+    },
+    id_robinet: {
+        required: false,
     },
     date_premiere_epreuve: {
         required: true,
