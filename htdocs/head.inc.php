@@ -12,7 +12,8 @@
       /*@import "css/bootstrap-grid.min.css";*/
       @import "css/bootstrap-reboot.min.css";
       @import "css/bootstrap.min.css";
-      @import "css/datatable.min.css";
+      /*@import "css/datatable.min.css";*/
+      @import "DataTables-1.10.22/css/dataTables.bootstrap4.min.css"
       @import "js/jQueryUI-1.12.1/themes/base/jquery-ui.css"
       @import "css/magicsuggest.css";
       @import "font-awesome-4.7.0/css/font-awesome.css";
@@ -25,6 +26,7 @@
     <script type="text/javascript" charset="utf-8" src="js/jQueryUI-1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" charset="utf-8" src="DataTables-1.10.22/js/jquery.dataTables.js"></script>
     <script type="text/javascript" charset="utf-8" src="DataTables-1.10.22/js/dataTables.jqueryui.js"></script>
+    <script type="text/javascript" charset="utf-8" src="DataTables-1.10.22/js/dataTables.bootstrap4.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/jquery.validate.js"></script>
     <!--<script type="text/javascript" charset="utf-8" src="js/magicsuggest-1.3.0-min.js"></script>-->
     <script type="text/javascript" charset="utf-8" src="js/bootstrap.bundle.min.js"></script>
