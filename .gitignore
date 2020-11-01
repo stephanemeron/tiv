@@ -1,5 +1,5 @@
 ./
 branches/
-htdocs/connect_db.inc.php
-htdocs/configuration.inc.php
-conf/
+/htdocs/connect_db.inc.php
+/htdocs/configuration.inc.php
+/conf/
