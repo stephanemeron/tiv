@@ -23,16 +23,14 @@
     <!--<script type="text/javascript" charset="utf-8" src="DataTables-1.9.4/media/js/jquery.dataTables.js"></script>-->
     <!--<script type="text/javascript" charset="utf-8" src="js/jquery-ui-1.10.3.js"></script>-->
     <script type="text/javascript" charset="utf-8" src="js/jQuery-3.3.1/jquery-3.3.1.js"></script>
-    <script type="text/javascript" charset="utf-8" src="js/jQueryUI-1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" charset="utf-8" src="DataTables-1.10.22/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" charset="utf-8" src="DataTables-1.10.22/js/dataTables.jqueryui.js"></script>
-    <script type="text/javascript" charset="utf-8" src="DataTables-1.10.22/js/dataTables.bootstrap4.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/jQueryUI-1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/jquery.validate.js"></script>
     <!--<script type="text/javascript" charset="utf-8" src="js/magicsuggest-1.3.0-min.js"></script>-->
+    <script type="text/javascript" charset="utf-8" src="js/magicsuggest.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/popper.js"></script>
-    <script type="text/javascript" charset="utf-8" src="js/magicsuggest.js">
   </head>
   <body>
 <?php
