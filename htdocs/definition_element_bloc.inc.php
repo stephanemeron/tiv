@@ -202,9 +202,10 @@ $(function() {
     changeMonth: true,
     changeYear: true,
     dateFormat: 'yy-mm-dd',
-    appendText: '(yyyy-mm-dd)',
+    appendText: '(dd-mm-yyyy)',
+    language: 'fr',
+    altFormat: 'dd-mm-yyyy'
   });
-  $( '#admin-date-tiv-selector' ).datepicker({ altFormat: 'yyyy-mm-dd' });
 });
 </script>
 <p>Date de l'inspection TIV :<input type='text' name='date_tiv' id='admin-date-tiv-selector' size='10' value=''/>
@@ -278,22 +279,22 @@ $(function() {
     $next_epreuve_minus_one = strtotime("+".$this->_epreuve_month_count_warn." months", $derniere_epreuve);
     $next_tiv = strtotime("+".$this->_tiv_month_count." months", $dernier_tiv);
     $next_tiv_minus_one = strtotime("+".$this->_tiv_month_count_warn." months", $dernier_tiv);
-    $message_expiration  = "<div><img src='images/security-high.png' style='vertical-align:bottom;' />".
+    $message_expiration  = "<div><i class='fa fa-calendar-check-o fa-2x text-success mx-3' aria-hidden='true'/></i> ".
                            "Date prochaine réépreuve : <strong>".date("d/m/Y", $next_epreuve)."</strong> - ".
                            "Date prochain TIV : <strong>".date("d/m/Y", $next_tiv)."</strong></div>\n";
     if($next_epreuve < $this->_current_time) {
-      $message_expiration = "<div class='error'><img src='images/security-low.png' style='vertical-align:bottom;' />".
+      $message_expiration = "<div class='error'><i class='fa fa-calendar-times-o fa-2x text-danger mx-3' aria-hidden='true'/></i> ".
                             "ATTENTION !!! CE BLOC A DÉPASSÉ SA DATE DE RÉÉPREUVE (le ".date("d/m/Y", $next_epreuve).") !!!</div>\n";
     } else if($next_epreuve_minus_one < $this->_current_time) {
-      $message_expiration = "<div class='warning'><img src='images/security-medium.png' style='vertical-align:bottom;' />".
+      $message_expiration = "<div class='warning'><i class='fa fa-calendar fa-2x text-warning mx-3' aria-hidden='true'/></i> ".
                             "Attention, ce bloc va bientôt dépasser sa date de réépreuve ".
                             "(dans moins de ".$this->getEpreuveWarnMonthCount()." mois, le ".date("d/m/Y", $next_epreuve).")</div>\n";
     }
     if($next_tiv < $this->_current_time) {
-      $message_expiration = "<div class='error'><img src='images/security-low.png' style='vertical-align:bottom;' />".
+      $message_expiration = "<div class='error'><i class='fa fa-calendar-times-o fa-2x text-danger mx-3' aria-hidden='true'/></i> ".
                             "Attention !!! ce bloc a dépassé sa date de TIV (le ".date("d/m/Y", $next_tiv).")</div>\n";
     } else if($next_tiv_minus_one < $this->_current_time) {
-      $message_expiration = "<div class='warning'><img src='images/security-medium.png' style='vertical-align:bottom;' />".
+      $message_expiration = "<div class='warning'><i class='fa fa-calendar fa-2x text-warning mx-3' aria-hidden='true'/></i> ".
                             "Attention, ce bloc va bientôt dépasser sa date de TIV ".
                             "(dans moins de ".$this->getTIVWarnMonthCount()." mois, le ".date("d/m/Y", $next_tiv).")</div>\n";
     }
