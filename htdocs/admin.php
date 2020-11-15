@@ -92,9 +92,10 @@
         changeMonth: true,
         changeYear: true,
         dateFormat: 'yy-mm-dd',
-        appendText: '(yyyy-mm-dd)',
+        appendText: '(dd-mm-yyyy)',
+        language: 'fr',
+        altFormat: 'dd-mm-yyyy'
       });
-      $( "#admin-date-tiv-selector" ).datepicker({ altFormat: 'yyyy-mm-dd' });
     });
     </script>
     <p>Date de préparation du TIV :<input type="text" name="date_tiv" id="admin-date-tiv-selector" size="10" value=""/>
