@@ -16,10 +16,10 @@ $edit_class = get_element_handler($element, $db_con);
 print $edit_class->getNavigationUrl();
 
 if($show_additional_information && $extra_info = $edit_class->getExtraInformation($id)) {
-  print "<h2>Informations supplémentaires</h2>\n";
+  print "<h1 class='title'>Informations supplémentaires</h1>\n";
   print $extra_info;
 }
-print "<h2>".$edit_class->getEditLabel()."</h2>
+print "<h2 class='title'>".$edit_class->getEditLabel()."</h2>
 <script type='text/javascript'>
   var retour;
   $.validator.messages.required = 'Champ obligatoire';
