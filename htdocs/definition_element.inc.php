@@ -99,12 +99,11 @@ class TIVElement {
   function getForms() { return $this->_forms; }
   function getFormsKey() { return array_keys($this->_forms); }
   function constructTextInput($label, $size, $value, $class = false) {
-    $form_input = "<input type=\"text\" name=\"$label\" id=\"$label\" size=\"$size\" value=\"$value\"".
-                  ($class ? "class=\"$class\"": "")." />\n";
+    $form_input = "<input type=\"text\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\" />\n";
     return $form_input;
   }
   function constructSelectInputLabels($label, $labels, $value) {
-    $form_input = "<select id=\"$label\" name=\"$label\">\n";
+    $form_input = "<select id=\"$label\" name=\"$label\" class=\"form-control\">\n";
     foreach(array_keys($labels) as $option) {
       $selected = ($option == $value ? " selected='selected'" : "");
       $form_input .= "<option value='$option'$selected>".$labels[$option]."</option>\n";
@@ -212,7 +211,7 @@ class TIVElement {
     $table = $this->getJSOptions($id, $label);
     if($show_additional_control)
       $table .= $this->getAdditionalControl($id);
-    $table .= "<table class='table table-striped table-bordered' style='width:100%' id='$id'>\n";
+    $table .= "<table class='table table-striped table-bordered dt-responsive nowrap' style='width:100%' id='$id'>\n";
     $table .= "  <thead>".$this->getHTMLHeaderTable()."</thead>\n";
     $table .= "  <tbody>\n";
     if(!$db_query) $db_query = $this->getDBQuery();
@@ -333,7 +332,7 @@ class TIVElement {
             });
          });
      </script>".
-     "<input id=\"$label\" style=\"width:350px;\" type=\"text\" name='$label' value='$value' />\n";
+     "<input id=\"$label\" class=\"form-control\" type=\"text\" name='$label' value='$value' />\n";
     } else {
       $form_input = $this->constructTextInput($label, 30, $value);
     }
@@ -353,20 +352,23 @@ class TIVElement {
     $form  = "<form name='$form_name' id='$form_name' action='$action' method='POST'>\n";
     $form .= "<input type='hidden' name='id' value='$id' />\n";
     $form .= "<input type='hidden' name='element' value='".$this->_name."' />\n";
-    $form .= "<table>\n";
-    $form .= "  <tbody>\n";
-    $i = 0;
-    $columns = array();
-    foreach($this->getFormsKey() as $elt) {
-      $value = $this->_values[$elt];
-      if(!isset($columns[$i])) $columns[$i] = "";
-      $columns[$i++] .= "<td>".$this->getElementLabel($elt, $value)."</td>".
-                        "<td>".$this->getFormInput($elt, stripcslashes($value))."</td>";
-      if($this->_form_split_count && $i > $this->_form_split_count) $i = 0;
-    }
-    $form .= "<tr>".join("</tr>\n<tr>", $columns)."</tr>";
-    $form .= "  </tbody>\n";
-    $form .= "</table>\n";
+    $form .= "<div class='form-row'>\n";
+      //$form .= "  <div class='form-group col-md-6'>\n";
+      $i = 0;
+      $columns = array();
+      foreach($this->getFormsKey() as $elt) {
+        $value = $this->_values[$elt];
+        if(!isset($columns[$i])) $columns[$i] = "";
+        echo $elt;
+        $columns[$i++] .= "<label for=\"".$elt."\">".$this->getElementLabel($elt, $value)."</label>".
+                          $this->getFormInput($elt, stripcslashes($value));
+        // if($this->_form_split_count && $i > $this->_form_split_count) $i = 0;
+      }
+      $form .= "<div class='form-group col-md-6'>".join("</div>\n<div class='form-group col-md-6'>", $columns)."</div>";
+      //$form .= "<div class='form-group col-md-6'>".join("</div>\n<div class='form-group col-md-6'>", $columns)."</div>";
+      // $form .= '<pre>'.print_r($columns).'</pre>';
+      //$form .= "  </div>\n";
+    $form .= "</div>\n";
     $form .= "<span style='height:0; width:0; overflow: hidden;'>\n";
     $form .= "  <button type='submit' value='default action' />\n";
     $form .= "</span>\n";
@@ -380,6 +382,43 @@ class TIVElement {
     $form .= "</form>\n";
     return $form;
   }
+
+  // function constructEditForm($id, $form_name, $action = "") {
+  //   $this->_values = $this->retrieveValues($id);
+  //   if(!$this->_values) return false;
+  //   $form  = "<form name='$form_name' id='$form_name' action='$action' method='POST'>\n";
+  //   $form .= "<input type='hidden' name='id' value='$id' />\n";
+  //   $form .= "<input type='hidden' name='element' value='".$this->_name."' />\n";
+  //   $form .= "<div class='form-row'>\n";
+  //   $form .= "  <div class='form-group col-md-6'>\n";
+  //   $i = 0;
+  //   $columns = array();
+  //   foreach($this->getFormsKey() as $elt) {
+  //     $value = $this->_values[$elt];
+  //     if(!isset($columns[$i])) $columns[$i] = "";
+  //     $columns[$i++] .= "<label for='inputEmail4'>".$this->getElementLabel($elt, $value)."</label>".
+  //                       $this->getFormInput($elt, stripcslashes($value));
+  //     if($this->_form_split_count && $i > $this->_form_split_count) $i = 0;
+  //   }
+  //   // $form .= "<tr>".join("</tr>\n<tr>", $columns)."</tr>";
+  //   // $form .= "  </tbody>\n";
+  //   // $form .= "</table>\n";
+  //   $form .= "</div></div>";
+  //   $form .= "<span style='height:0; width:0; overflow: hidden;'>\n";
+  //   $form .= "  <button type='submit' value='default action' />\n";
+  //   $form .= "</span>\n";
+
+  //   if($this->_show_delete_form) {
+  //     $form .= "<input type='hidden' name='embedded' value='1' />\n"; // Utilisé pour détecter une suppression depuis le formulaire
+  //     $form .= "<input type='submit' style='background: red;' name='delete' ".
+  //              "value='".$this->_delete_label."' />\n";
+  //   }
+  //   $form .= "<input type='submit' name='lancer' value='".$this->getUpdateLabel()."' />\n";
+  //   $form .= "</form>\n";
+  //   return $form;
+  // }
+
+
 }
 
 include_once("definition_element_bloc.inc.php");
