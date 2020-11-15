@@ -168,11 +168,11 @@ document.getElementById('$div_label_to_update').className='$error_class';
       return "critical-etat";
     }
     foreach(array("date_derniere_epreuve", "date_dernier_tiv") as $field) {
-      if($tmp = $this->getDateDivClass($field, $record[$field], $comment, $next_date)) {
-        $record[$field] = "<div class='$tmp'>".$record[$field]."</label>";
-        if($tmp != "ok")
-          return $tmp."-epreuve";
-      }
+        if($tmp = $this->getDateDivClass($field, $record[$field], $comment, $next_date)) {
+          $record[$field] = "<div class='$tmp'>".$record[$field]."</label>";
+          if($tmp != "ok")
+            return $tmp."-epreuve";
+        }
     }
   }
   function getTIVForm($id) {
@@ -225,31 +225,33 @@ $(function() {
     $time_value = strtotime($value);
     $comment = false;
     $next_date = false;
-    if($label == "date_derniere_epreuve") {
-      $status = "ok";
-      $comment = "Prochaine ré-épreuve : ";
-      $next_epreuve      = strtotime("+".$this->_epreuve_month_count." months",      $time_value);
-      $next_epreuve_warn = strtotime("+".$this->_epreuve_month_count_warn." months", $time_value);
-      $next_date = date("Y-m-d", $next_epreuve);
-      if($next_epreuve < $this->_current_time and $next_epreuve != "") {
-        $status = "critical";
-        $comment = "DATE DE RÉ-ÉPREUVE DÉPASSÉE !!! ";
-      } else if($next_epreuve_warn < $this->_current_time) {
-        $comment = "Attention !!! Date de ré-épreuve bientôt dépassé ! ";
-        $status = "warning";
-      }
-    } else if($label == "date_dernier_tiv") {
-      $comment = "Prochaine inspection TIV : ";
-      $status = "ok";
-      $next_tiv      = strtotime("+".$this->_tiv_month_count." months",      $time_value);
-      $next_tiv_warn = strtotime("+".$this->_tiv_month_count_warn." months", $time_value);
-      $next_date = date("Y-m-d", $next_tiv);
-      if($next_tiv < $this->_current_time) {
-        $status = "critical";
-        $comment = "DATE DE TIV DÉPASSÉE !!! : ";
-      } else if($next_tiv_warn < $this->_current_time) {
-        $comment = "Attention !!! Date de TIV bientôt dépassé ! ";
-        $status = "warning";
+    if($time_value){
+      if($label == "date_derniere_epreuve") {
+        $status = "ok";
+        $comment = "Prochaine ré-épreuve : ";
+        $next_epreuve      = strtotime("+".$this->_epreuve_month_count." months",      $time_value);
+        $next_epreuve_warn = strtotime("+".$this->_epreuve_month_count_warn." months", $time_value);
+        $next_date = date("Y-m-d", $next_epreuve);
+        if($next_epreuve < $this->_current_time and $next_epreuve != "") {
+          $status = "critical";
+          $comment = "DATE DE RÉ-ÉPREUVE DÉPASSÉE !!! ";
+        } else if($next_epreuve_warn < $this->_current_time) {
+          $comment = "Attention !!! Date de ré-épreuve bientôt dépassé ! ";
+          $status = "warning";
+        }
+      } else if($label == "date_dernier_tiv") {
+        $comment = "Prochaine inspection TIV : ";
+        $status = "ok";
+        $next_tiv      = strtotime("+".$this->_tiv_month_count." months",      $time_value);
+        $next_tiv_warn = strtotime("+".$this->_tiv_month_count_warn." months", $time_value);
+        $next_date = date("Y-m-d", $next_tiv);
+        if($next_tiv < $this->_current_time) {
+          $status = "critical";
+          $comment = "DATE DE TIV DÉPASSÉE !!! : ";
+        } else if($next_tiv_warn < $this->_current_time) {
+          $comment = "Attention !!! Date de TIV bientôt dépassé ! ";
+          $status = "warning";
+        }
       }
     }
     return $status;
