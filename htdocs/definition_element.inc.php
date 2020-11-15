@@ -103,7 +103,7 @@ class TIVElement {
     return $form_input;
   }
   function constructSelectInputLabels($label, $labels, $value) {
-    $form_input = "<select id=\"$label\" name=\"$label\" class=\"form-control\">\n";
+    $form_input = "<select id=\"$label\" name=\"$label\" class=\"form-control my-custom-select\">\n";
     foreach(array_keys($labels) as $option) {
       $selected = ($option == $value ? " selected='selected'" : "");
       $form_input .= "<option value='$option'$selected>".$labels[$option]."</option>\n";
@@ -138,9 +138,11 @@ class TIVElement {
         changeMonth: true,
         changeYear: true,
         dateFormat: 'yy-mm-dd',
-        appendText: '(yyyy-mm-dd)',
+        appendText: '(dd-mm-yyyy)',
+        language: 'fr',
+        altFormat: 'dd-mm-yyyy'
+
       });
-      $( \"#$label\" ).datepicker({ altFormat: 'yyyy-mm-dd' });
     });
     </script>\n";
     $form_input .= $this->constructTextInput($label, 10, $value);
@@ -353,32 +355,44 @@ class TIVElement {
     $form .= "<input type='hidden' name='id' value='$id' />\n";
     $form .= "<input type='hidden' name='element' value='".$this->_name."' />\n";
     $form .= "<div class='form-row'>\n";
-      //$form .= "  <div class='form-group col-md-6'>\n";
-      $i = 0;
       $columns = array();
       foreach($this->getFormsKey() as $elt) {
         $value = $this->_values[$elt];
-        if(!isset($columns[$i])) $columns[$i] = "";
-        echo $elt;
-        $columns[$i++] .= "<label for=\"".$elt."\">".$this->getElementLabel($elt, $value)."</label>".
-                          $this->getFormInput($elt, stripcslashes($value));
+        if(substr($elt,0,5) != "date_"){
+          $form .= "<div class='form-group col-md-6'><label for=\"".$elt."\">".$this->getElementLabel($elt, $value)."</label>".
+                          $this->getFormInput($elt, stripcslashes($value))."</div>";
+        }
         // if($this->_form_split_count && $i > $this->_form_split_count) $i = 0;
       }
-      $form .= "<div class='form-group col-md-6'>".join("</div>\n<div class='form-group col-md-6'>", $columns)."</div>";
+      
       //$form .= "<div class='form-group col-md-6'>".join("</div>\n<div class='form-group col-md-6'>", $columns)."</div>";
       // $form .= '<pre>'.print_r($columns).'</pre>';
       //$form .= "  </div>\n";
     $form .= "</div>\n";
-    $form .= "<span style='height:0; width:0; overflow: hidden;'>\n";
-    $form .= "  <button type='submit' value='default action' />\n";
-    $form .= "</span>\n";
+    $formDate = false;
+    foreach($this->getFormsKey() as $elt) {
+        $value = $this->_values[$elt];
+        if(substr($elt,0,5) == "date_"){
+          $formDate .= "<div class='form-group col-md-4'><label for=\"".$elt."\">".$this->getElementLabel($elt, $value)."</label>".
+                          $this->getFormInput($elt, stripcslashes($value))."</div>";
+        }
+        // if($this->_form_split_count && $i > $this->_form_split_count) $i = 0;
+    }
+    if($formDate){
+      $form .= "<div class='form-row d-flex align-items-end'>\n";
+        $form .= $formDate;
+      $form .= "</div>\n";
+    }
+    /*$form .= "<span style='height:0; width:0; overflow: hidden;'>\n";
+    $form .= "  <button type='submit'class='toto' value='default action' />\n";
+    $form .= "</span>\n";*/
 
     if($this->_show_delete_form) {
       $form .= "<input type='hidden' name='embedded' value='1' />\n"; // Utilisé pour détecter une suppression depuis le formulaire
-      $form .= "<input type='submit' style='background: red;' name='delete' ".
-               "value='".$this->_delete_label."' />\n";
+      $form .= "<button type='submit' style='background: red;' name='delete' class='btn btn-danger' ".
+               "value='".$this->_delete_label."'>".$this->_delete_label."</button>\n";
     }
-    $form .= "<input type='submit' name='lancer' value='".$this->getUpdateLabel()."' />\n";
+    $form .= "<button type='submit' name='lancer' class='btn btn-primary' value='".$this->getUpdateLabel()."'>".$this->getUpdateLabel()."</button>\n";
     $form .= "</form>\n";
     return $form;
   }
