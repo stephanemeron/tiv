@@ -95,9 +95,11 @@ class TIVElement {
   }
   function getElements() { return array_keys($this->_elements); }
   function getHeaderElements() { return array_values($this->_elements); }
+  function getHeaderElementsArray() { return $this->_elements; }
   function getFormsRules() { return $this->_forms_rules; }
   function getForms() { return $this->_forms; }
   function getFormsKey() { return array_keys($this->_forms); }
+  function getHiddenColumn() { return array("id","nom_proprietaire", "pression_service", "gaz");}
   function constructTextInput($label, $size, $value, $class = false) {
     $form_input = "<input type=\"text\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\" />\n";
     return $form_input;
@@ -241,10 +243,17 @@ class TIVElement {
 </script>\n";
   }
   function getHTMLHeaderTable() {
-    $header = "    <tr>\n      <th>";
-    $header .= join("</th><th>", $this->getHeaderElements());
-    if(!$this->_read_only) $header .= "</th><th>Opérations";
-    $header .= "</th>\n    </tr>\n";
+    $header = "    <tr>\n"; //      <th>";
+    //$header .= join("</th><th>", $this->getHeaderElements());
+    foreach ($this->getHeaderElementsArray() as $key => $value) {
+      
+      if (!in_array($key, $this->getHiddenColumn())){
+        $header .= '<th>'.$value.'</th>';
+      }
+    }
+    
+    if(!$this->_read_only) $header .= "<th>Opérations</th>";
+    $header .= "</tr>\n";
     return $header;
   }
   function getHTMLLineTable(&$record, $default_class) {
@@ -252,17 +261,32 @@ class TIVElement {
     if($tmp = $this->updateRecord($record)) {
       $current_class = $tmp;
     }
-    $line = "    <tr class=\"$current_class\">\n      <td>";
+    $line = "    <tr class=\"$current_class\">\n ";
     $id = $record[0];
     $to_display = array();
+    
+
     foreach($this->getElements() as $elt) {
-      $to_display []= $record[$elt];
+      if (!in_array($elt, $this->getHiddenColumn())){
+        $to_display []= $record[$elt];
+      }
     }
     if(!$this->_read_only) {
       $to_display [] = $this->getEditUrl($id);
     }
-    $line .= implode("</td><td>", $to_display);
-    $line .= "</td>\n    </tr>\n";
+    
+    foreach ($to_display as $key => $value) {
+      
+      if(is_array($value)){
+        $line .= '<td class="'.$value[1].'">'.$value[0].'</td>';
+      }
+      else{
+        $line .= '<td>'.$value.'</td>';
+      }
+    }
+    //$line .= implode("</td><td>", $to_display);
+    //$line .= "</td>\n    </tr>\n";
+    $line .= "</tr>\n";
     return $line;
   }
   function getExtraInformation($id) {
@@ -281,8 +305,8 @@ class TIVElement {
            "<img src='images/delete.png' style='vertical-align:middle;' /></a>";
   }
   function getParentUrl() {
-    return "Navigation : <a href='./'><img src='images/accueil.png' /> Accueil</a> > \n".
-           "<a href='".$this->_parent_url."'>".$this->_parent_url_label."</a>";
+    return "<div class='row'><div class='col'>Navigation : <a href='./'><img src='images/accueil.png' /> Accueil</a> > \n".
+           "<a href='".$this->_parent_url."'>".$this->_parent_url_label."</a></div></div>";
   }
   function getQuickNavigationFormInput() {
     $input  = " > Navigation rapide<select name='id' onchange='this.form.submit()'>\n".
