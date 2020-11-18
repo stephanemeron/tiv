@@ -64,7 +64,7 @@ class TIVElement {
     $this->_legend_label     = "Édition du ".$this->_name." __ID__";
     $this->_back_url         = "affichage_element.php?element=".$this->_name;
     $this->_parent_url       = "./";
-    $this->_parent_url_label = "<img src='images/accueil.png' /> Accueil";
+    $this->_parent_url_label = "<i class='fa fa-home'></i> Accueil";
     $this->_form_dependency  = array();
     $this->_form_split_count = 0;
     $this->_record_count = 0;
@@ -81,6 +81,8 @@ class TIVElement {
     $this->_read_only = false;
     $this->_show_create_form = true;
     $this->_force_display = false;
+    $this->_hidden_column = array();
+    $this->_hidden_column_sm = array();
   }
   function getTableName() {
     global $db_table_prefix;
@@ -99,7 +101,6 @@ class TIVElement {
   function getFormsRules() { return $this->_forms_rules; }
   function getForms() { return $this->_forms; }
   function getFormsKey() { return array_keys($this->_forms); }
-  function getHiddenColumn() { return array("id","nom_proprietaire", "pression_service", "gaz");}
   function constructTextInput($label, $size, $value, $class = false) {
     $form_input = "<input type=\"text\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\" />\n";
     return $form_input;
@@ -215,7 +216,7 @@ class TIVElement {
     $table = $this->getJSOptions($id, $label);
     if($show_additional_control)
       $table .= $this->getAdditionalControl($id);
-    $table .= "<table class='table table-striped table-bordered dt-responsive nowrap' style='width:100%' id='$id'>\n";
+    $table .= "<div class='table-responsive'><table class='table table-striped table-bordered nowrap' id='$id'>\n";
     $table .= "  <thead>".$this->getHTMLHeaderTable()."</thead>\n";
     $table .= "  <tbody>\n";
     if(!$db_query) $db_query = $this->getDBQuery();
@@ -232,7 +233,7 @@ class TIVElement {
 
     $table .= "  </tbody>\n";
     $table .= "  <tfoot>".$this->getHTMLHeaderTable()."</tfoot>\n";
-    $table .= "</table>\n";
+    $table .= "</table></div>\n";
     return $table;
   }
   function getJSOptions($id, $label, $display = 25) {
@@ -247,9 +248,16 @@ class TIVElement {
     //$header .= join("</th><th>", $this->getHeaderElements());
     foreach ($this->getHeaderElementsArray() as $key => $value) {
       
-      if (!in_array($key, $this->getHiddenColumn())){
-        $header .= '<th>'.$value.'</th>';
+      if (!in_array($key, $this->_hidden_column)){
+        if (in_array($key, $this->_hidden_column_sm)){
+          $header .= '<th class="d-none d-md-table-cell">'.$value.'</th>';
+        }
+        else{
+          $header .= '<th>'.$value.'</th>';
+        }
       }
+      
+
     }
     
     if(!$this->_read_only) $header .= "<th>Opérations</th>";
@@ -267,18 +275,25 @@ class TIVElement {
     
 
     foreach($this->getElements() as $elt) {
-      if (!in_array($elt, $this->getHiddenColumn())){
-        $to_display []= $record[$elt];
+      if (!in_array($elt, $this->_hidden_column)){
+        if (in_array($elt, $this->_hidden_column_sm)){
+          $to_display []= array("d-none d-md-table-cell",$record[$elt]);
+        }
+        else{
+          $to_display []= $record[$elt];
+        }
       }
+
     }
     if(!$this->_read_only) {
       $to_display [] = $this->getEditUrl($id);
     }
+    //echo'<pre>'; print_r($to_display);echo'</pre>';
     
     foreach ($to_display as $key => $value) {
       
-      if(is_array($value)){
-        $line .= '<td class="'.$value[1].'">'.$value[0].'</td>';
+      if (is_array($value)){
+        $line .= '<td class="'.$value[0].'">'.$value[1].'</td>';
       }
       else{
         $line .= '<td>'.$value.'</td>';
@@ -299,13 +314,13 @@ class TIVElement {
   function getEditUrl($id) {
     $element_to_manage = $this->getURLReference($id);
     $delete_confirmation = "return(confirm(\"Suppression élément ".$this->_name." (id = $id) ?\"));";
-    return "<a href='edit.php?$element_to_manage' title=\"Éditer cet élément\">".
-           "<img src='images/edit.png' style='vertical-align:middle;' /></a> / ".
-           "<a style='color: #F33;' onclick='$delete_confirmation' title='Supprimer cet élément (confirmation nécessaire)' href='delete.php?$element_to_manage'>".
-           "<img src='images/delete.png' style='vertical-align:middle;' /></a>";
+    return "<a href='edit.php?$element_to_manage' title=\"Éditer cet élément\" class='btn btn-info mr-3'>".
+           "<i class='fa fa-pencil-square-o' aria-hidden='rue'></i></a> / ".
+           "<a onclick='$delete_confirmation' title='Supprimer cet élément (confirmation nécessaire)' href='delete.php?$element_to_manage' class='btn btn-danger ml-3'>".
+           "<i class='fa fa-times' aria-hidden='true'></i></a>";
   }
   function getParentUrl() {
-    return "<div class='row'><div class='col'>Navigation : <a href='./'><img src='images/accueil.png' /> Accueil</a> > \n".
+    return "<div class='row'><div class='col'>Navigation : <a href='./'><i class='fa fa-home'></i> Accueil</a> > \n".
            "<a href='".$this->_parent_url."'>".$this->_parent_url_label."</a></div></div>";
   }
   function getQuickNavigationFormInput() {
@@ -416,7 +431,7 @@ class TIVElement {
       $form .= "<button type='submit' style='background: red;' name='delete' class='btn btn-danger' ".
                "value='".$this->_delete_label."'>".$this->_delete_label."</button>\n";
     }
-    $form .= "<button type='submit' name='lancer' class='btn btn-primary' value='".$this->getUpdateLabel()."'>".$this->getUpdateLabel()."</button>\n";
+    $form .= "<button type='submit' name='lancer' class='btn btn-lg btn-outline-primary' value='".$this->getUpdateLabel()."'>".$this->getUpdateLabel()."</button>\n";
     $form .= "</form>\n";
     return $form;
   }

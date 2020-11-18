@@ -11,7 +11,7 @@ class blocElement extends TIVElement {
     $this->_creation_label = "Création d'un ".$this->_name;
     $this->_update_label = "Mettre à jour le bloc";
     $this->_parent_url       = "/#materiel-tab";
-    $this->_parent_url_label = "<img src='images/materiel.png' /> Matériel";
+    $this->_parent_url_label = "<i class='fa fa-wrench'></i> Matériel";
     $this->_force_display = array_key_exists("force_bloc_display", $_GET) || array_key_exists("force_bloc_display", $_POST);
     $this->_current_time = time();
     $this->_elements = array(
@@ -20,6 +20,8 @@ class blocElement extends TIVElement {
       "date_derniere_epreuve" => "Date dernière épreuve", "date_dernier_tiv" => "Date dernière inspection TIV",
       "pression_service" => "Pression de service", "gaz" => "Gaz", "etat" => "État",
     );
+    $this->_hidden_column = array("nom_proprietaire","pression_service", "gaz");
+    $this->_hidden_column_sm = array("nom_proprietaire","constructeur","marque","capacite","id_robinet","pression_service","gaz");
     $this->_field_to_retrieve = array(
       "robinet" => "CONCAT('Réf: ', id, ' - ', marque, '-', nb_sortie,' sortie(s)')");
     $bloc_capacite = array("", "6", "10", "12 long", "12 court", "15");
@@ -138,7 +140,7 @@ class blocElement extends TIVElement {
     if($this->_record_count > 0) {
       $message_alerte = str_replace("__COUNT__", $this->_record_count, $error_label);
     } else {
-      $error_class = 'ok';
+      $error_class = 'ok d-flex align-items-center';
     }
     $html_code = "<p><div class='$error_class'>$message_alerte</div></p>\n";
     $html_code .= "<script>
