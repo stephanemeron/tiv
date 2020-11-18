@@ -14,7 +14,7 @@
       @import "css/bootstrap.min.css";
       /*@import "css/datatable.min.css";*/
       @import "DataTables-1.10.22/css/dataTables.bootstrap4.min.css";
-      @import "js/jQueryUI-1.12.1/themes/base/jquery-ui.css";
+      /*@import "js/jQueryUI-1.12.1/themes/base/jquery-ui.css";*/ /* Pour mettre les text des boutons en phase avec bs4 */
       @import "css/magicsuggest.css";
       @import "font-awesome-4.7.0/css/font-awesome.css";
     </style>
