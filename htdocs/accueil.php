@@ -1,24 +1,24 @@
 <div class="jumbotron">
-	<div class="mb-5">
-		<div class="row">
-			<img class="col-12 col-md-3" src='<?php print $logo_club; ?>' />
-			<h1 class="col-12 col-md-9 title">Bienvenue sur le site de gestion du matériel du club <?php print $nom_club; ?></h1>
+	<div class="row">
+		<img class="col-12 col-md-3" src='<?php print $logo_club; ?>' />
+		
+		<div class="col-12 col-md-9">
+			<h1 class="title">Bienvenue sur le site de gestion du matériel du club <?php print $nom_club; ?></h1>
+			<p>
+			Vous êtes à la racine du site permettant de gérer le matériel du club <?php print $nom_club; ?>.
+			</p>
+			<ul>
+				<li>L'onglet bloc/détendeur/stabs vous donnera un recensement simple du matériel du club.</li>
+				<li>L'onglet Inspecteur TIV vous donnera la liste des personnes recensées dans le club en mesure de faire des inspections visuelles. Vous pourrez également accéder à la liste des blocs qui auront été inspectées par chaque TIV.</li>
+				<li>L'onglet Status des blocs (TIV/ré-épreuve) vous donnera une liste des blocs nécessitant des blocs dans moins de 5 mois ainsi que les blocs nécessitant une inspection TIV dans moins de 1 mois.</li>
+			</ul>
+			<p>Bonne inspection de bloc !</p>
 		</div>
 	</div>
-	<div class="mb-5">
-		<p>
-		Vous êtes à la racine du site permettant de gérer le matériel du club <?php print $nom_club; ?>.
-		</p>
-		<ul>
-		<li>L'onglet bloc/détendeur/stabs vous donnera un recensement simple du matériel du club.</li>
-		<li>L'onglet Inspecteur TIV vous donnera la liste des personnes recensées dans le club en mesure de faire des inspections visuelles. Vous pourrez également accéder à la liste des blocs qui auront été inspectées par chaque TIV.</li>
-		<li>L'onglet Status des blocs (TIV/ré-épreuve) vous donnera une liste des blocs nécessitant des blocs dans moins de 5 mois ainsi que les blocs nécessitant une inspection TIV dans moins de 1 mois.</li>
-		</ul>
-		<p>Bonne inspection de bloc !</p>
-	</div>
-	<div class="mb-5">
-		<h2 class="title">Messages importants</h2>
-		<div class="bg-warning" id="message_important_reepreuve"></div>
-		<div class="bg-danger" id="message_important_tiv"></div>
-	</div>
+	
+</div>
+<div class="jumbotron mt-5">
+	<h2 class="title">Messages importants</h2>
+	<div class="bg-warning" id="message_important_reepreuve">--</div>
+	<div class="bg-danger" id="message_important_tiv">++</div>
 </div>

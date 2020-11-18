@@ -1,12 +1,11 @@
-<h2>Liste des personnes du club</h2>
+<h1 class="title my-5"><i class='fa fa-graduation-cap fa-2x'></i> Personnes/inspecteurs TIV</h1>
 
-<ul>
-  <li><a href='affichage_element.php?element=inspecteur_tiv'>Afficher les inspecteurs TIV du club</a></li>
-  <li><a href='affichage_element.php?element=personne'>Afficher les plongeurs du club</a></li>
-</ul>
+<h2 class="title my-5"><i class='fa fa-users'></i> Liste des personnes du club</h2>
 
-<h2>Prêt de matériel</h2>
+<a href='affichage_element.php?element=inspecteur_tiv' class='btn btn-outline-primary'>Afficher les inspecteurs TIV du club</a>
+<a href='affichage_element.php?element=personne' class='btn btn-outline-primary'>Afficher les plongeurs du club</a>
 
-<ul>
-  <li><a href='affichage_element.php?element=pret'>Afficher les prêts en cours</a></li>
-</ul>
+
+<h2 class="title my-5"><i class='fa fa-file-text-o'></i> Prêt de matériel</h2>
+
+<a href='affichage_element.php?element=pret' class='btn btn-outline-primary'>Afficher les prêts en cours</a>
