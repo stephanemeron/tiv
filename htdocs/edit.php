@@ -16,8 +16,10 @@ $edit_class = get_element_handler($element, $db_con);
 print $edit_class->getNavigationUrl();
 
 if($show_additional_information && $extra_info = $edit_class->getExtraInformation($id)) {
-  print "<h1 class='title'>Informations supplémentaires</h1>\n";
-  print $extra_info;
+  print "<div class=\"alert alert-info\" role=\"alert\">";
+    print "<h1 class='title'>Informations supplémentaires</h1>\n";
+    print $extra_info;
+  print "</div>";
 }
 print "<h2 class='title'>".$edit_class->getEditLabel()."</h2>
 <script type='text/javascript'>
