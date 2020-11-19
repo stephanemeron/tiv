@@ -10,11 +10,11 @@ class robinetElement extends TIVElement {
     $this->_elements =  array("id" => "Réf.", "marque" => "Marque", "serial_number"=>" Numéro de série",  "filetage" => "Filetage",
                               "nb_sortie" => "Nombre de sortie(s)", "observation" => "Observations/Remarques");
     $this->_forms = array(
-      "marque"       => array("required", "number", "Marque du robinet"),
-      "serial_number"       => array("required", "text", "Numéro de série du robinet"),
-      "filetage"       => array("required", "text" , "Pas du filetage"),
-      "nb_sortie"   => array("required", array(1,2) , "Nombre de sortie(s)"),
-      "observation"  => array("required", "text" , "Observations/Remarques"),
+      "marque"        => array("required", "number", "Marque du robinet"),
+      "serial_number" => array("required", "text", "Numéro de série du robinet"),
+      "filetage"      => array("required", "text" , "Pas du filetage"),
+      "nb_sortie"     => array("required", array(1,2) , "Nombre de sortie(s)"),
+      "observation"   => array("required", "text" , "Observations/Remarques"),
     );
     $this->_forms_rules = '
   debug: false,
