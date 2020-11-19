@@ -22,6 +22,7 @@
     </div>
   </form>
 </div>
+<hr/>
 
 <div class="my-5">
   <h2 class="title">Consultation du journal</h2>
@@ -31,6 +32,7 @@
     </div>
   </div>
 </div>
+<hr/>
 
 <div class="my-5">
   <h2 class="title">Consultation d'un TIV</h2>
@@ -58,6 +60,7 @@
   </form>
   </p>
 </div>
+<hr/>
 
 <div class="my-5">
   <h2 class="title">Préparation d'un TIV</h2>
@@ -90,6 +93,7 @@
     </div>
   </div>
 </div>
+<hr/>
 <div class="my-5">
   <form name="preparation_tiv" id="preparation_tiv" action="preparation_tiv.php" method="POST">
     <script>
