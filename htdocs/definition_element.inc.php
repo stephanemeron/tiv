@@ -60,7 +60,7 @@ class TIVElement {
     // Init chaîne de texte
     $this->_name = str_replace("Element", "", get_class($this));
     $this->_update_label     = "Mettre à jour le/la ".$this->_name;
-    $this->_url_title_label  = "<img src='images/liste.png' /> Liste des ".$this->_name."s";
+    $this->_url_title_label  = "<i class='fa fa-list' aria-hidden='true'></i> Liste des ".$this->_name."s";
     $this->_legend_label     = "Édition du ".$this->_name." __ID__";
     $this->_back_url         = "affichage_element.php?element=".$this->_name;
     $this->_parent_url       = "./";
@@ -320,11 +320,11 @@ class TIVElement {
            "<i class='fa fa-times' aria-hidden='true'></i></a>";
   }
   function getParentUrl() {
-    return "<div class='row'><div class='col'>Navigation : <a href='./'><i class='fa fa-home'></i> Accueil</a> > \n".
-           "<a href='".$this->_parent_url."'>".$this->_parent_url_label."</a></div></div>";
+    return "Navigation : <a href='./'><i class='fa fa-home'></i> Accueil</a> > \n".
+           "<a href='".$this->_parent_url."'>".$this->_parent_url_label."</a>";
   }
   function getQuickNavigationFormInput() {
-    $input  = " > Navigation rapide<select name='id' onchange='this.form.submit()'>\n".
+    $input  = " > Navigation rapide : <select name='id' onchange='this.form.submit()'>\n".
               "<option></option>\n";
     $db_result = $this->_db_con->query("SELECT id FROM ".$this->getTableName()." ORDER BY id");
     while($result = $db_result->fetch_array()) {
@@ -336,9 +336,9 @@ class TIVElement {
   }
   function getNavigationUrl() {
     $input_form = $this->getQuickNavigationFormInput();
-    return "<form action='edit.php' method='GET' style='display: inline!important;'>\n".
-           "<input type='hidden' name='element' value='".$this->_name."' />\n".
-           "<p>".$this->getParentUrl()." > \n<a href='".$this->getBackUrl()."'>".$this->getUrlTitle()."</a>\n$input_form</p>\n</form>\n";
+    return "<div class='row mt-3'><div class='col'><form action='edit.php' method='GET'>".
+           "<input type='hidden' name='element' value='".$this->_name."' />".
+           "<p>".$this->getParentUrl()." > <a href='".$this->getBackUrl()."'>".$this->getUrlTitle()."</a>$input_form</p></form></div></div>";
   }
   function getBackUrl() {
     return $this->_back_url;
