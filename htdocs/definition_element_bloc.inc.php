@@ -15,13 +15,13 @@ class blocElement extends TIVElement {
     $this->_force_display = array_key_exists("force_bloc_display", $_GET) || array_key_exists("force_bloc_display", $_POST);
     $this->_current_time = time();
     $this->_elements = array(
-      "id" => "Réf.", "id_club" => "n° club", "nom_proprietaire" => "Nom propriétaire", "constructeur" => "Constructeur",
-      "marque" => "Marque", "numero" => "Numéro constructeur", "capacite" => "Capacité", "id_robinet" => "Robinet",
+      "id" => "Réf.", "id_club" => "n° club", "nom_proprietaire" => "Nom propriétaire", "is_club" => "Est au Club", "constructeur" => "Constructeur",
+      "marque" => "Marque", "numero" => "Numéro constructeur", "capacite" => "Capacité", "filetage" => "Filetage du Bloc", "id_robinet" => "Robinet",
       "date_derniere_epreuve" => "Date dernière épreuve", "date_dernier_tiv" => "Date dernière inspection TIV",
       "pression_service" => "Pression de service", "gaz" => "Gaz", "etat" => "État",
     );
-    $this->_hidden_column = array("nom_proprietaire","pression_service", "gaz");
-    $this->_hidden_column_sm = array("nom_proprietaire","constructeur","marque","capacite","id_robinet","pression_service","gaz");
+    //$this->_hidden_column = array("nom_proprietaire", "pression_service", "gaz");
+    $this->_hidden_column_sm = array("nom_proprietaire","constructeur","marque","capacite","is_club", "id_robinet","pression_service","gaz");
     $this->_field_to_retrieve = array(
       "robinet" => "CONCAT('Réf: ', id, ' - ', marque, '-', nb_sortie,' sortie(s)')");
     $bloc_capacite = array("", "6", "10", "12 long", "12 court", "15");
@@ -36,11 +36,13 @@ class blocElement extends TIVElement {
     $this->_forms = array(
       "id_club"               => array("required", "number", "Référence du bloc au sein du club"),
       "nom_proprietaire"      => array("required", false,    "Nom du propriétaire du bloc"),
+      "is_club"               => array("required", false,    "Appartient au club"),
       "adresse"               => array("required", false,    "Adresse du propriétaire du bloc"),
       "constructeur"          => array("required", false,    "Constructeur du bloc (ex : ROTH)"),
       "marque"                => array("required", false,    "Marque du bloc (ex : Aqualung)"),
       "numero"                => array("required", false,    "Numéro de constructeur du bloc"),
       "capacite"              => array("required", $bloc_capacite,    "Capacité du bloc"),
+      "filetage"              => array("required", false,    "Filetage du bloc"),
       "id_robinet"            => array(false, "text", "Référence du robinet"),
       "date_premiere_epreuve" => array("required", "date",   "Date de la première épreuve du bloc"),
       "date_derniere_epreuve" => array("required", "date",   "Date de la dernière épreuve du bloc (tous les 5 ans)"),
@@ -60,6 +62,9 @@ class blocElement extends TIVElement {
     nom_proprietaire: {
         required: true,
     },
+    is_club: {
+        required: true,
+    },
     adresse: {
         required: true,
     },
@@ -73,6 +78,9 @@ class blocElement extends TIVElement {
         required: true,
     },
     capacite: {
+        required: true,
+    },
+    filetage: {
         required: true,
     },
     id_robinet: {
@@ -115,7 +123,7 @@ class blocElement extends TIVElement {
     $this->_tiv_month_count_warn = $tiv_month_count_warn;
   }
   function getQuickNavigationFormInput() {
-    $input  = " > Navigation rapide<select name='id' onchange='this.form.submit()'>\n".
+    $input  = " > Navigation rapide : <select name='id' onchange='this.form.submit()'>\n".
               "<option></option>\n";
     $db_result = $this->_db_con->query("SELECT id,id_club FROM ".$this->getTableName()." WHERE etat = 'OK' ORDER BY id_club");
     while($result = $db_result->fetch_array()) {
@@ -197,29 +205,28 @@ document.getElementById('$div_label_to_update').className='$error_class';
 </script>
 <h3>Création d'une fiche TIV individuelle</h3>
 <form name='preparation_tiv' id='preparation_tiv' action='preparation_tiv.php' method='POST'>
-<input type='hidden' name='id_bloc' value='$id'/>
-<script>
-$(function() {
-  $( '#admin-date-tiv-selector' ).datepicker({
-    changeMonth: true,
-    changeYear: true,
-    dateFormat: 'yy-mm-dd',
-    appendText: '(dd-mm-yyyy)',
-    language: 'fr',
-    altFormat: 'dd-mm-yyyy'
+  <input type='hidden' name='id_bloc' value='$id'/>
+  <script>
+  $(function() {
+    $( '#admin-date-tiv-selector' ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+      dateFormat: 'yy-mm-dd',
+      appendText: '(dd-mm-yyyy)',
+      language: 'fr',
+      altFormat: 'dd-mm-yyyy'
+    });
   });
-});
-</script>
-<p>Date de l'inspection TIV :<input type='text' name='date_tiv' id='admin-date-tiv-selector' size='10' value=''/>
-- Nom de l'inspecteur TIV : <select id='tivs' name='tivs[]'>
-  <option></option>\n";
-    $db_result = $this->_db_con->query("SELECT id,nom,actif FROM inspecteur_tiv WHERE actif = 'oui' ORDER BY nom");
-    while($result = $db_result->fetch_array()) {
-      $form .= "  <option value='".$result["id"]."'>".$result["nom"]."</option>\n";
-    }
-    $form .= "</select>
-</div>
-<input type='submit' name='lancer' value='Créer la fiche TIV' /></p>
+  </script>
+  <p>Date de l'inspection TIV :<input type='text' name='date_tiv' id='admin-date-tiv-selector' size='10' value=''/>
+  - Nom de l'inspecteur TIV : <select id='tivs' name='tivs[]'>
+    <option></option>\n";
+      $db_result = $this->_db_con->query("SELECT id,nom,actif FROM inspecteur_tiv WHERE actif = 'oui' ORDER BY nom");
+      while($result = $db_result->fetch_array()) {
+        $form .= "  <option value='".$result["id"]."'>".$result["nom"]."</option>\n";
+      }
+      $form .= "</select>
+  <input type='submit' name='lancer' value='Créer la fiche TIV' class='btn btn-outline-primary' /></p>
 </form>";
     return $form;
   }
