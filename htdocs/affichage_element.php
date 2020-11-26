@@ -16,11 +16,11 @@ if($element === "inspection_tiv") {
   $element_class->setDate($date_tiv);
 }
 
-print "<p>".$element_class->getParentUrl()."</p>";
+print "<div class=\"my-3\">".$element_class->getParentUrl()."</div>";
 
 print $element_class->getHTMLTable("liste_$element", $element);
 
-print "<p>".$element_class->getParentUrl()."</p>";
+print "<div class=\"my-3\">".$element_class->getParentUrl()."</div>";
 
 include_once("foot.inc.php");
 ?>
