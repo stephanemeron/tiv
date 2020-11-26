@@ -5,6 +5,7 @@ class blocElement extends TIVElement {
   var $_epreuve_month_count_warn;
   var $_tiv_month_count;
   var $_tiv_month_count_warn;
+  var $_robinets;
   function blocElement($db_con = false) {
     parent::__construct($db_con);
     $this->_show_delete_form = true;
@@ -17,11 +18,11 @@ class blocElement extends TIVElement {
     $this->_elements = array(
       "id" => "Réf.", "id_club" => "n° club", "nom_proprietaire" => "Nom propriétaire", "is_club" => "Est au Club", "constructeur" => "Constructeur",
       "marque" => "Marque", "numero" => "Numéro constructeur", "capacite" => "Capacité", "filetage" => "Filetage du Bloc", "id_robinet" => "Robinet",
-      "date_derniere_epreuve" => "Date dernière épreuve", "date_dernier_tiv" => "Date dernière inspection TIV",
-      "pression_service" => "Pression de service", "gaz" => "Gaz", "etat" => "État",
+      "date_derniere_epreuve" => "Date dernière épreuve", "date_dernier_tiv" => "Date dernièr TIV",
+      "pression_service" => "Pression de service", "gaz" => "Gaz", "etat" => "État", "etat_int" => "État intérieur"
     );
-    //$this->_hidden_column = array("nom_proprietaire", "pression_service", "gaz");
-    $this->_hidden_column_sm = array("nom_proprietaire","constructeur","marque","capacite","is_club", "id_robinet","pression_service","gaz");
+    $this->_hidden_column = array("adresse", "pression_service", "gaz","filetage","is_club");
+    $this->_hidden_column_sm = array("nom_proprietaire","constructeur","marque","capacite","id_robinet");
     $this->_field_to_retrieve = array(
       "robinet" => "CONCAT('Réf: ', id, ' - ', marque, '-', nb_sortie,' sortie(s)')");
     $bloc_capacite = array("", "6", "10", "12 long", "12 court", "15");
@@ -36,14 +37,14 @@ class blocElement extends TIVElement {
     $this->_forms = array(
       "id_club"               => array("required", "number", "Référence du bloc au sein du club"),
       "nom_proprietaire"      => array("required", false,    "Nom du propriétaire du bloc"),
-      "is_club"               => array("required", false,    "Appartient au club"),
-      "adresse"               => array("required", false,    "Adresse du propriétaire du bloc"),
+      "is_club"               => array("required", "boolean",    "Appartient au club"),
+      "adresse"               => array(false, false,    "Adresse du propriétaire du bloc"),
       "constructeur"          => array("required", false,    "Constructeur du bloc (ex : ROTH)"),
       "marque"                => array("required", false,    "Marque du bloc (ex : Aqualung)"),
       "numero"                => array("required", false,    "Numéro de constructeur du bloc"),
       "capacite"              => array("required", $bloc_capacite,    "Capacité du bloc"),
       "filetage"              => array("required", false,    "Filetage du bloc"),
-      "id_robinet"            => array(false, "text", "Référence du robinet"),
+      "id_robinet"            => array(false, false, "Référence du robinet"),
       "date_premiere_epreuve" => array("required", "date",   "Date de la première épreuve du bloc"),
       "date_derniere_epreuve" => array("required", "date",   "Date de la dernière épreuve du bloc (tous les 5 ans)"),
       "date_dernier_tiv"      => array("required", "date",   "Date de la dernière inspection visuelle (tous les ans)"),
@@ -51,6 +52,7 @@ class blocElement extends TIVElement {
       "pression_epreuve"      => array("required", $bloc_pression_epreuve, "Pression épreuve du bloc (ex : 300 bars)"),
       "gaz"                   => array("required", $bloc_gaz, "Type de gaz du bloc (air ou nitrox)"),
       "etat"                  => array("required", $bloc_etat, "État du bloc"),
+      "etat_int"              => array("required", "number", "État du bloc intérieur"),
     );
     $this->_form_split_count = 6;
     $this->_forms_rules = '
@@ -66,7 +68,7 @@ class blocElement extends TIVElement {
         required: true,
     },
     adresse: {
-        required: true,
+        required: false,
     },
     constructeur: {
         required: true,
@@ -112,6 +114,9 @@ class blocElement extends TIVElement {
     etat: {
         required: true,
     },
+    etat_int: {
+        required: true,
+    },
   }';
     global $epreuve_month_count;
     global $epreuve_month_count_warn;
@@ -140,6 +145,21 @@ class blocElement extends TIVElement {
   function getTIVWarnMonthCount() {
     return $this->_tiv_month_count - $this->_tiv_month_count_warn;
   }
+
+  function getFormInput($label, $value) {
+    if($label === "id_robinet") {
+      $db_query = "SELECT id,marque,nb_sortie FROM robinet";
+      $db_result = $this->_db_con->query($db_query);
+      $options = array("" => "");
+      while($result = $db_result->fetch_array()) {
+        $options[$result["id"]] = $result["id"]."-".$result["marque"]."-".$result["nb_sortie"];
+      }
+      return $this->constructSelectInputLabels($label, $options, $value);
+    }
+    return parent::getFormInput($label, $value);
+  }
+
+
   function constructResume($table_label, $time, $column, $div_label_to_update, $error_label, $error_class, $label_ok) {
     $db_query = "SELECT ".join(",", $this->getElements())." FROM bloc ".
                 "WHERE $column < '".date("Y-m-d", $time)."'";

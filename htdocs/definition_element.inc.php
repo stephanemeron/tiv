@@ -133,6 +133,36 @@ class TIVElement {
     foreach($options as $opt) { $labels[$opt] = $opt; }
     return $this->constructSelectInputLabels($label, $labels, $value);
   }
+
+  function constructBoolInputLabels($label, $value) {
+    echo "value : ".gettype($value). "  ".$value;
+    //$form_input = "<input type=\"checkbox\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\" />\n";
+    $form_input = "<div class=\"form-check form-check-inline\">
+                    <input class=\"form-check-input\" type=\"radio\" name=\"$label\" id=\"$label-true\"  value=\"1\"";
+    if($value == '1'){ $form_input .= " checked";}
+    $form_input .=  ">
+                    <label class=\"form-check-label\" for=\"$label-true\">Oui</label>
+                  </div>
+                  <div class=\"form-check form-check-inline\">
+                    <input class=\"form-check-input\" type=\"radio\" name=\"$label\" id=\"$label-false\" value=\"0\"";
+    if($value == '0'){ $form_input .= " checked";}
+    $form_input .=  ">
+                    <label class=\"form-check-label\" for=\"$label-false\">Non</label>
+                  </div>";
+    return $form_input;
+  }
+
+
+
+
+
+
+
+
+  function constructBoolInput($label, $value) {
+    return $this->constructBoolInputLabels($label, $value);
+  }
+
   function constructDateInput($label, $value) {
     $form_input = "
     <script>
@@ -216,7 +246,7 @@ class TIVElement {
     $table = $this->getJSOptions($id, $label);
     if($show_additional_control)
       $table .= $this->getAdditionalControl($id);
-    $table .= "<div class='table-responsive'><table class='table table-striped table-bordered nowrap' id='$id'>\n";
+    $table .= "<div class='table-responsive'><table class='table table-striped table-bordered nowrap def-obj' id='$id'>\n";
     $table .= "  <thead>".$this->getHTMLHeaderTable()."</thead>\n";
     $table .= "  <tbody>\n";
     if(!$db_query) $db_query = $this->getDBQuery();
@@ -248,7 +278,10 @@ class TIVElement {
     //$header .= join("</th><th>", $this->getHeaderElements());
     foreach ($this->getHeaderElementsArray() as $key => $value) {
       
-      if (!in_array($key, $this->_hidden_column)){
+      if (in_array($key, $this->_hidden_column)){
+        $header .= '<th class="d-none">'.$value.'</th>';
+      }
+      else{
         if (in_array($key, $this->_hidden_column_sm)){
           $header .= '<th class="d-none d-md-table-cell">'.$value.'</th>';
         }
@@ -256,8 +289,6 @@ class TIVElement {
           $header .= '<th>'.$value.'</th>';
         }
       }
-      
-
     }
     
     if(!$this->_read_only) $header .= "<th>Opérations</th>";
@@ -275,7 +306,10 @@ class TIVElement {
     
 
     foreach($this->getElements() as $elt) {
-      if (!in_array($elt, $this->_hidden_column)){
+      if (in_array($elt, $this->_hidden_column)){
+        $to_display []= array("d-none",$record[$elt]);
+      }
+      else{
         if (in_array($elt, $this->_hidden_column_sm)){
           $to_display []= array("d-none d-md-table-cell",$record[$elt]);
         }
@@ -336,9 +370,16 @@ class TIVElement {
   }
   function getNavigationUrl() {
     $input_form = $this->getQuickNavigationFormInput();
-    return "<div class='row mt-3'><div class='col'><form action='edit.php' method='GET'>".
-           "<input type='hidden' name='element' value='".$this->_name."' />".
-           "<p>".$this->getParentUrl()." > <a href='".$this->getBackUrl()."'>".$this->getUrlTitle()."</a>$input_form</p></form></div></div>";
+    return "<div class='row mt-3'>".
+              "<div class='col'>".
+                "<form action='edit.php' method='GET'>".
+                  "<input type='hidden' name='element' value='".$this->_name."' />".
+                  "<div class=\"my-3\">".$this->getParentUrl()." >".
+                    "<a href='".$this->getBackUrl()."'>".$this->getUrlTitle()."</a>$input_form".
+                  "</div>".
+                "</form>".
+              "</div>".
+            "</div>";
   }
   function getBackUrl() {
     return $this->_back_url;
@@ -363,6 +404,8 @@ class TIVElement {
       $form_input = $this->constructSelectInput($label, $forms_definition[$label][1], $value);
     } elseif($forms_definition[$label][1] === "select") {
       $form_input = $this->constructSelectInput($label, $forms_definition[$label][3], $value);
+    } elseif($forms_definition[$label][1] === "boolean") {
+      $form_input = $this->constructBoolInput($label, $value);
     } elseif($forms_definition[$label][1] === "date") {
       $form_input = $this->constructDateInput($label, $value);
     } elseif($forms_definition[$label][1] === "tags") {
@@ -394,15 +437,29 @@ class TIVElement {
     $form .= "<input type='hidden' name='id' value='$id' />\n";
     $form .= "<input type='hidden' name='element' value='".$this->_name."' />\n";
     $form .= "<div class='form-row'>\n";
-      $columns = array();
-      foreach($this->getFormsKey() as $elt) {
-        $value = $this->_values[$elt];
-        if(substr($elt,0,5) != "date_"){
-          $form .= "<div class='form-group col-md-6'><label for=\"".$elt."\">".$this->getElementLabel($elt, $value)."</label>".
-                          $this->getFormInput($elt, stripcslashes($value))."</div>";
-        }
-        // if($this->_form_split_count && $i > $this->_form_split_count) $i = 0;
+
+    $forms_definition = $this->getForms();
+
+    $columns = array();
+    foreach($this->getFormsKey() as $elt) {
+      $value = $this->_values[$elt];
+      if(substr($elt,0,5) != "date_"){
+        $form .= "<div class='form-group col-md-6'>";
+          if($forms_definition[$elt][1] === "boolean"){
+            echo $elt." - ".$value."<br/>";
+            $form .= "<div class=\"form-group row\">
+                        <div class=\"col-12 col-md-3\">".$this->getElementLabel($elt, $value)."</div>
+                        <div class=\"col-12 col-sm-9\">".$this->getFormInput($elt, stripcslashes($value))."</div>
+                      </div>";
+          }
+          else{
+            $form .= "<label for=\"".$elt."\">".$this->getElementLabel($elt, $value)."</label>".
+                          $this->getFormInput($elt, stripcslashes($value));
+          }
+        $form .= "</div>";
       }
+      // if($this->_form_split_count && $i > $this->_form_split_count) $i = 0;
+    }
       
       //$form .= "<div class='form-group col-md-6'>".join("</div>\n<div class='form-group col-md-6'>", $columns)."</div>";
       // $form .= '<pre>'.print_r($columns).'</pre>';
