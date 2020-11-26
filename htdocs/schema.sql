@@ -41,6 +41,7 @@ CREATE TABLE `bloc` (
   `pression_service` int(5) NULL,
   `gaz` varchar(16) NULL,
   `etat` varchar(16) NULL,
+  `etat_int` int(1) NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Liste des blocs du club';
 /*!40101 SET character_set_client = @saved_cs_client */;
