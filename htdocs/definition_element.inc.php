@@ -135,7 +135,6 @@ class TIVElement {
   }
 
   function constructBoolInputLabels($label, $value) {
-    echo "value : ".gettype($value). "  ".$value;
     //$form_input = "<input type=\"checkbox\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\" />\n";
     $form_input = "<div class=\"form-check form-check-inline\">
                     <input class=\"form-check-input\" type=\"radio\" name=\"$label\" id=\"$label-true\"  value=\"1\"";
@@ -446,7 +445,6 @@ class TIVElement {
       if(substr($elt,0,5) != "date_"){
         $form .= "<div class='form-group col-md-6'>";
           if($forms_definition[$elt][1] === "boolean"){
-            echo $elt." - ".$value."<br/>";
             $form .= "<div class=\"form-group row\">
                         <div class=\"col-12 col-md-3\">".$this->getElementLabel($elt, $value)."</div>
                         <div class=\"col-12 col-sm-9\">".$this->getFormInput($elt, stripcslashes($value))."</div>
