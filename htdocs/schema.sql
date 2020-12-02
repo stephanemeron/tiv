@@ -55,12 +55,20 @@ DROP TABLE IF EXISTS `detendeur`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `detendeur` (
   `id` int(15) NOT NULL,
-  `modele` varchar(128) NULL,
-  `id_1ier_etage` varchar(64) NULL,
+  `id_club` varchar(16) NOT NULL,
+  `marque` varchar(128) NULL,
+  `etat_1ier_etage` varchar(16) NULL,  
+  `id_1ier_etage` varchar(64) NULL,  
+  `etat_2e_etage` varchar(16) NULL,
   `id_2e_etage` varchar(64) NULL,
+  `etat_octopus` varchar(16) NULL,
   `id_octopus` varchar(64) NULL,
+  `etat_direct_system` varchar(16) NULL,
+  `etat_mano` varchar(16) NULL,
   `date_achat` date NULL,
   `observation` varchar(255) NULL,
+  `embout_enfant` varchar(16) NULL,
+  `eaux_froides` int(1) NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Liste des detendeurs du club';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -95,6 +103,8 @@ CREATE TABLE `inspecteur_tiv` (
   `numero_tiv` varchar(16) NULL,
   `adresse_tiv` varchar(255) NULL,
   `telephone_tiv` varchar(32) NULL,
+  `date_dernier_tiv` date NULL,
+  `date_prochain_recyclage` date NULL,
   `actif` varchar(3) NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Liste des inspecteurs TIV du club';
@@ -230,6 +240,9 @@ CREATE TABLE `robinet` (
   `filetage` varchar(32) NULL,
   `nb_sortie` int(1) NULL,
   `observation` varchar(255) NULL,
+  `spec_robinet` varchar(32) NULL,
+  `net_ultrason` int(1) NULL,
+
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Liste des robinets du club';
 /*!40101 SET character_set_client = @saved_cs_client */;
