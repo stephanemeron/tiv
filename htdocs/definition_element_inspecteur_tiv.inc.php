@@ -7,12 +7,14 @@ class inspecteur_tivElement extends TIVElement {
     $this->_creation_label = "Création d'un nouvel inspecteur";
     $this->_update_label = "Mettre à jour l&#145;inspecteur TIV";
     $this->_elements = array("id" => "Réf.", "nom" => "Prénom Nom", "numero_tiv" => "Numéro d'inspecteur TIV",
-                             "adresse_tiv" => "Adresse du TIV", "telephone_tiv" => "Téléphone de l'inspecteur", "actif" => "Actif ?",);
+                             "adresse_tiv" => "Adresse du TIV", "telephone_tiv" => "Téléphone de l'inspecteur", "date_dernier_tiv" => "Dernier TIV", "date_prochain_recyclage" => "Prochain recyclage", "actif" => "Actif ?",);
     $this->_forms = array(
       "nom"           => array("required", "text", "Nom de l'inspecteur TIV"),
       "numero_tiv"    => array("required", "text", "Numéro de TIV de l'inspecteur"),
       "adresse_tiv"   => array("required", "text", "Adresse du TIV"),
       "telephone_tiv" => array("required", "text", "Téléphone du TIV"),
+      "date_dernier_tiv" => array("required", "date",   "Date du dernier TIV"),
+      "date_prochain_recyclage" => array("required", "date",   "Date du prochain recyclage"),
       "actif"         => array("required", array("oui", "non"), "Le TIV est-il actif ?"),
     );
     $this->_forms_rules = '
@@ -25,9 +27,15 @@ class inspecteur_tivElement extends TIVElement {
         required: true,
     },
     adresse_tiv: {
-        required: true,
+        required: false,
     },
     telephone_tiv: {
+        required: false,
+    },
+    date_dernier_tiv: {
+        required: true,
+    },
+    date_prochain_recyclage: {
         required: true,
     },
     actif: {
@@ -76,5 +84,7 @@ class inspecteur_tivElement extends TIVElement {
       return "<div class='ok'>Pas de fiche TIV associées avec cet utilisateur.</div>";
     }
   }
+
+  
 }
 ?>

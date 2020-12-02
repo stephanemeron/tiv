@@ -23,8 +23,8 @@ class blocElement extends TIVElement {
     );
     $this->_hidden_column = array("adresse", "pression_service", "gaz","filetage","is_club");
     $this->_hidden_column_sm = array("nom_proprietaire","constructeur","marque","capacite","id_robinet");
-    $this->_field_to_retrieve = array(
-      "robinet" => "CONCAT('Réf: ', id, ' - ', marque, '-', nb_sortie,' sortie(s)')");
+    //$this->_field_to_retrieve = array(
+    //  "robinet" => "CONCAT('Réf: ', id, ' - ', marque, '-', nb_sortie,' sortie(s)')");
     $bloc_capacite = array("", "6", "10", "12 long", "12 court", "15");
     // Création d'une dépendance entre pression de service et d'épreuve
     $pression_definition = array("" => "", "200" => "300", "230" => "345", "232" => "348", "300" => "450");
