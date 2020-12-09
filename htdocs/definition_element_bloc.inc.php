@@ -6,6 +6,7 @@ class blocElement extends TIVElement {
   var $_tiv_month_count;
   var $_tiv_month_count_warn;
   var $_robinets;
+  var $_field_to_retrieve;
   function blocElement($db_con = false) {
     parent::__construct($db_con);
     $this->_show_delete_form = true;
@@ -23,8 +24,8 @@ class blocElement extends TIVElement {
     );
     $this->_hidden_column = array("adresse", "pression_service", "gaz","filetage","is_club");
     $this->_hidden_column_sm = array("nom_proprietaire","constructeur","marque","capacite","id_robinet");
-    //$this->_field_to_retrieve = array(
-    //  "robinet" => "CONCAT('Réf: ', id, ' - ', marque, '-', nb_sortie,' sortie(s)')");
+    $this->_field_to_retrieve = array(
+      "robinet" => "CONCAT('Réf: ', id, ' - ', marque, ' - ', nb_sortie,' sortie(s)')");
     $bloc_capacite = array("", "6", "10", "12 long", "12 court", "15");
     // Création d'une dépendance entre pression de service et d'épreuve
     $pression_definition = array("" => "", "200" => "300", "230" => "345", "232" => "348", "300" => "450");
@@ -145,6 +146,62 @@ class blocElement extends TIVElement {
   function getTIVWarnMonthCount() {
     return $this->_tiv_month_count - $this->_tiv_month_count_warn;
   }
+
+  function getHTMLLineTable(&$record, $default_class) {
+    $current_class = $default_class;
+    if($tmp = $this->updateRecord($record)) {
+      $current_class = $tmp;
+    }
+    $line = "    <tr class=\"$current_class\">\n ";
+    $id = $record[0];
+    $to_display = array();
+    
+
+    foreach($this->getElements() as $elt) {
+      if(preg_match("/id_(.*)/", $elt, $tmp)) {
+        if(array_key_exists($tmp[1],$this->_field_to_retrieve)){
+          $db_query = "SELECT id,".$this->_field_to_retrieve[$tmp[1]]." FROM ".$tmp[1]." WHERE id=".$id;
+          $db_result = $this->_db_con->query($db_query);
+
+          $result = $db_result->fetch_array();
+          $record[$elt] = '<a href="/edit.php?id='.$id.'&element='.$tmp[1].'">'.$result[1].'</a>';
+        }
+      }
+
+      if (in_array($elt, $this->_hidden_column)){
+        $to_display []= array("d-none",$record[$elt]);
+      }
+      else{
+        if (in_array($elt, $this->_hidden_column_sm)){
+          $to_display []= array("d-none d-md-table-cell",$record[$elt]);
+        }
+        else{
+          $to_display []= $record[$elt];
+        }
+      }
+
+    }
+    if(!$this->_read_only) {
+      $to_display [] = $this->getEditUrl($id);
+    }
+    //echo'<pre>'; print_r($to_display);echo'</pre>';
+    
+    foreach ($to_display as $key => $value) {
+      
+      if (is_array($value)){
+        $line .= '<td class="'.$value[0].'">'.$value[1].'</td>';
+      }
+      else{
+        $line .= '<td>'.$value.'</td>';
+      }
+    }
+    //$line .= implode("</td><td>", $to_display);
+    //$line .= "</td>\n    </tr>\n";
+    $line .= "</tr>\n";
+    return $line;
+  }
+
+
 
   function getFormInput($label, $value) {
     if($label === "id_robinet") {
