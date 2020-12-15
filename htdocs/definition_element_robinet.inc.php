@@ -3,7 +3,7 @@ class robinetElement extends TIVElement {
   function robinetElement($db_con = false) {
     parent::__construct($db_con);
     $this->_show_delete_form = true;
-    $this->_creation_label = "Création d'un robinet".$this->_name;
+    $this->_creation_label = "Création d'un robinet";
     $this->_update_label = "Mettre à jour le robinet";
     $this->_parent_url       = "./#materiel";
     $this->_parent_url_label = "<img src='images/materiel.png' /> Matériel";
