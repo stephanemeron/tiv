@@ -12,14 +12,14 @@ class blocElement extends TIVElement {
     $this->_show_delete_form = true;
     $this->_creation_label = "Création d'un ".$this->_name;
     $this->_update_label = "Mettre à jour le bloc";
-    $this->_parent_url       = "/#materiel-tab";
+    $this->_parent_url       = "/#materiel";
     $this->_parent_url_label = "<i class='fa fa-wrench'></i> Matériel";
     $this->_force_display = array_key_exists("force_bloc_display", $_GET) || array_key_exists("force_bloc_display", $_POST);
     $this->_current_time = time();
     $this->_elements = array(
       "id" => "Réf.", "id_club" => "n° club", "nom_proprietaire" => "Nom propriétaire", "is_club" => "Est au Club", "constructeur" => "Constructeur",
       "marque" => "Marque", "numero" => "Numéro constructeur", "capacite" => "Capacité", "filetage" => "Filetage du Bloc", "id_robinet" => "Robinet",
-      "date_derniere_epreuve" => "Date dernière épreuve", "date_dernier_tiv" => "Date dernièr TIV",
+      "date_derniere_epreuve" => "Date dernière épreuve", "date_dernier_tiv" => "Date dernier TIV",
       "pression_service" => "Pression de service", "gaz" => "Gaz", "etat" => "État", "etat_int" => "État intérieur"
     );
     $this->_hidden_column = array("adresse", "pression_service", "gaz","filetage","is_club");
@@ -251,12 +251,13 @@ document.getElementById('$div_label_to_update').className='$error_class';
       if(!array_key_exists($elt, $record)) { return false; }
     }
     if($record["etat"] != "OK") {
-      $record["etat"] = "<div class='critical'>".$record["etat"]."</label>";
+      $record["etat"] = "<div class='bg-danger critical'>".$record["etat"]."</label>";
       return "critical-etat";
     }
     foreach(array("date_derniere_epreuve", "date_dernier_tiv") as $field) {
-        if($tmp = $this->getDateDivClass($field, $record[$field], $comment, $next_date)) {
-          $record[$field] = "<div class='$tmp'>".$record[$field]."</label>";
+        if($tmp = $this->getDateDivClass($field, $record[$field], $comment, $next_date, $class_status)) {
+          //echo $tmp." - ".$field."<br/>";
+          $record[$field] = "<div class='$class_status $tmp'>".$record[$field]."</label>";
           if($tmp != "ok")
             return $tmp."-epreuve";
         }
@@ -307,37 +308,44 @@ document.getElementById('$div_label_to_update').className='$error_class';
 </form>";
     return $form;
   }
-  function getDateDivClass($label, $value, &$comment, &$next_date) {
+  function getDateDivClass($label, $value, &$comment, &$next_date, &$class_status) {
     $status = false;
     $time_value = strtotime($value);
     $comment = false;
     $next_date = false;
+    $class_status = false;
     if($time_value){
       if($label == "date_derniere_epreuve") {
-        $status = "ok";
-        $comment = "Prochaine ré-épreuve : ";
-        $next_epreuve      = strtotime("+".$this->_epreuve_month_count." months",      $time_value);
-        $next_epreuve_warn = strtotime("+".$this->_epreuve_month_count_warn." months", $time_value);
+        $status             = "ok";
+        $class_status       = "text-success";
+        $comment            = "Prochaine ré-épreuve : ";
+        $next_epreuve       = strtotime("+".$this->_epreuve_month_count." months",      $time_value);
+        $next_epreuve_warn  = strtotime("+".$this->_epreuve_month_count_warn." months", $time_value);
         $next_date = date("Y-m-d", $next_epreuve);
         if($next_epreuve < $this->_current_time and $next_epreuve != "") {
-          $status = "critical";
-          $comment = "DATE DE RÉ-ÉPREUVE DÉPASSÉE !!! ";
+          $status       = "critical";          
+          $class_status = "text-danger";
+          $comment      = "DATE DE RÉ-ÉPREUVE DÉPASSÉE !!! ";
         } else if($next_epreuve_warn < $this->_current_time) {
-          $comment = "Attention !!! Date de ré-épreuve bientôt dépassé ! ";
-          $status = "warning";
+          $comment      = "Attention !!! Date de ré-épreuve bientôt dépassé ! ";
+          $status       = "warning";
+          $class_status = "text-warning";
         }
       } else if($label == "date_dernier_tiv") {
-        $comment = "Prochaine inspection TIV : ";
-        $status = "ok";
-        $next_tiv      = strtotime("+".$this->_tiv_month_count." months",      $time_value);
-        $next_tiv_warn = strtotime("+".$this->_tiv_month_count_warn." months", $time_value);
-        $next_date = date("Y-m-d", $next_tiv);
+        $comment        = "Prochaine inspection TIV : ";
+        $status         = "ok";
+        $class_status   = "text-success";
+        $next_tiv       = strtotime("+".$this->_tiv_month_count." months",      $time_value);
+        $next_tiv_warn  =strtotime("+".$this->_tiv_month_count_warn." months", $time_value);
+        $next_date      = date("Y-m-d", $next_tiv);
         if($next_tiv < $this->_current_time) {
-          $status = "critical";
-          $comment = "DATE DE TIV DÉPASSÉE !!! : ";
+          $status       = "critical";
+          $class_status = "text-danger";
+          $comment      = "DATE DE TIV DÉPASSÉE !!! : ";
         } else if($next_tiv_warn < $this->_current_time) {
-          $comment = "Attention !!! Date de TIV bientôt dépassé ! ";
-          $status = "warning";
+          $comment      = "Attention !!! Date de TIV bientôt dépassé ! ";
+          $status       = "warning";
+          $class_status = "text-warning";
         }
       }
     }
@@ -345,8 +353,8 @@ document.getElementById('$div_label_to_update').className='$error_class';
   }
   function getElementLabel($label, $value) {
     $text = parent::getElementLabel($label, $value);
-    if($tmp = $this->getDateDivClass($label, $value, $comment, $next_date)) {
-      $text .= "<div class='$tmp'>$comment$next_date</div>";
+    if($tmp = $this->getDateDivClass($label, $value, $comment, $next_date, $class_status)) {
+      $text .= "<div class='$class_status $tmp'>$comment$next_date</div>";
     }
     return $text;
   }
