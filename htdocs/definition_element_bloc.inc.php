@@ -181,6 +181,7 @@ class blocElement extends TIVElement {
       }
 
     }
+
     if(!$this->_read_only) {
       $to_display [] = $this->getEditUrl($id);
     }
@@ -251,17 +252,20 @@ document.getElementById('$div_label_to_update').className='$error_class';
       if(!array_key_exists($elt, $record)) { return false; }
     }
     if($record["etat"] != "OK") {
-      $record["etat"] = "<div class='bg-danger critical'>".$record["etat"]."</label>";
+      $record["etat"] = "<div class='bg-danger critical'>".$record["etat"]."</div>";
       return "critical-etat";
     }
-    foreach(array("date_derniere_epreuve", "date_dernier_tiv") as $field) {
+    foreach(array("date_dernier_tiv","date_derniere_epreuve") as $field) {
+      
         if($tmp = $this->getDateDivClass($field, $record[$field], $comment, $next_date, $class_status)) {
-          //echo $tmp." - ".$field."<br/>";
-          $record[$field] = "<div class='$class_status $tmp'>".$record[$field]."</label>";
-          if($tmp != "ok")
-            return $tmp."-epreuve";
+          $record[$field] = "<div class='$class_status $tmp'>".$record[$field]."</div>";
         }
+
     }
+    if($tmp != "ok"){
+      return $tmp."-epreuve";
+    }
+    
   }
   function getTIVForm($id) {
     $form = "<script>
@@ -362,9 +366,12 @@ document.getElementById('$div_label_to_update').className='$error_class';
     // Recherche d'info sur les dates d'epreuves et dernière inspection
     $db_result = $this->_db_con->query("SELECT date_derniere_epreuve,date_dernier_tiv,etat FROM bloc WHERE id = $id");
     $result = $db_result->fetch_array();
+    $bg_color = "info";
     if($result["etat"] != "OK") {
-      return "Bloc rebuté.";
+      //return "Bloc rebuté.";
+      return array('bg_color' => "danger", 'extra_info' => "Bloc rebuté.");
     }
+
     // Construction des timestamps pour calcul date
     $derniere_epreuve = strtotime($result[0]);
     $dernier_tiv = strtotime($result[1]);
@@ -377,17 +384,21 @@ document.getElementById('$div_label_to_update').className='$error_class';
                            "Date prochaine réépreuve : <strong>".date("d/m/Y", $next_epreuve)."</strong> - ".
                            "Date prochain TIV : <strong>".date("d/m/Y", $next_tiv)."</strong></div>\n";
     if($next_epreuve < $this->_current_time) {
+      $bg_color = "danger";
       $message_expiration = "<div class='error'><i class='fa fa-calendar-times-o fa-2x text-danger mx-3' aria-hidden='true'/></i> ".
                             "ATTENTION !!! CE BLOC A DÉPASSÉ SA DATE DE RÉÉPREUVE (le ".date("d/m/Y", $next_epreuve).") !!!</div>\n";
-    } else if($next_epreuve_minus_one < $this->_current_time) {
+    } else if($next_epreuve_minus_one < $this->_current_time) {      
+      $bg_color = "warning";
       $message_expiration = "<div class='warning'><i class='fa fa-calendar fa-2x text-warning mx-3' aria-hidden='true'/></i> ".
                             "Attention, ce bloc va bientôt dépasser sa date de réépreuve ".
                             "(dans moins de ".$this->getEpreuveWarnMonthCount()." mois, le ".date("d/m/Y", $next_epreuve).")</div>\n";
     }
-    if($next_tiv < $this->_current_time) {
+    if($next_tiv < $this->_current_time) {      
+      $bg_color = "danger";
       $message_expiration = "<div class='error'><i class='fa fa-calendar-times-o fa-2x text-danger mx-3' aria-hidden='true'/></i> ".
                             "Attention !!! ce bloc a dépassé sa date de TIV (le ".date("d/m/Y", $next_tiv).")</div>\n";
     } else if($next_tiv_minus_one < $this->_current_time) {
+      $bg_color = "warning";
       $message_expiration = "<div class='warning'><i class='fa fa-calendar fa-2x text-warning mx-3' aria-hidden='true'/></i> ".
                             "Attention, ce bloc va bientôt dépasser sa date de TIV ".
                             "(dans moins de ".$this->getTIVWarnMonthCount()." mois, le ".date("d/m/Y", $next_tiv).")</div>\n";
@@ -411,7 +422,8 @@ document.getElementById('$div_label_to_update').className='$error_class';
       $message .= "<p>Pas de fiche d'inspection TIV associée au bloc.</p>";
     }
     $message .= $this->getTIVForm($id);
-    return $message;
+    //return $message;
+    return array('bg_color' => $bg_color, 'extra_info' => $message);
   }
 }
 ?>
