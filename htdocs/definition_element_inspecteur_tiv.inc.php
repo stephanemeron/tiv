@@ -73,15 +73,15 @@ class inspecteur_tivElement extends TIVElement {
       $count++;
     }
     if($count > 0) {
-      return "<h3>Liste des fiches d'inspection TIV associées à l'inspecteur :</h3>\n".
+      return array('bg_color' => "info", 'extra_info' => "<h3>Liste des fiches d'inspection TIV associées à l'inspecteur :</h3>\n".
              $this->getJSOptions("liste-inspections", "fiche", 10).
 "<table cellpadding='0' cellspacing='0' border='0' class='display' id='liste-inspections'>
 <thead><tr><th>Date inspection TIV</th><th>Références bloc</th><th>Décision</th><th>Éditer la fiche / Accéder au PDF</th></tr></thead>
 <tbody>
 <tr>".implode("</tr>\n<tr>", $extra_info)."</tr>
-</tbody></table>\n";
+</tbody></table>\n");
     } else {
-      return "<div class='ok'>Pas de fiche TIV associées avec cet utilisateur.</div>";
+      return array('bg_color' => "info", 'extra_info' => "<div class='ok'>Pas de fiche TIV associées avec cet utilisateur.</div>");
     }
   }
 

@@ -69,7 +69,7 @@ class inspection_tivElement extends TIVElement {
                   "<img src='images/personne.png' style='vertical-align:middle;' /> fiche de l'inspecteur TIV</a> - ".
                   "<a href='impression_fiche_tiv.php?id_bloc=".$result[0]."&date=".$this->_date."'>".
                   "<img src='images/pdf.png' style='vertical-align:middle;' /> fiche au format PDF</a>";
-    return $extra_info;
+    return array('bg_color' => "info", 'extra_info' => $extra_info);
   }
   function getExtraOperation($id) {
     $db_query = "SELECT date_dernier_tiv ".
