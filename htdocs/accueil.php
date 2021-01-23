@@ -1,6 +1,8 @@
 <div class="jumbotron">
 	<div class="row">
-		<img class="col-12 col-md-3" src='<?php print $logo_club; ?>' />
+		<div class="col-12 col-md-3">
+			<img class="img-fluid" src='<?php print $logo_club; ?>' />
+		</div>
 		
 		<div class="col-12 col-md-9">
 			<h1 class="title">Bienvenue sur le site de gestion du matériel du club <?php print $nom_club; ?></h1>
