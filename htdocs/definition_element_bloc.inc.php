@@ -23,7 +23,7 @@ class blocElement extends TIVElement {
       "pression_service" => "Pression de service", "gaz" => "Gaz", "etat" => "État", "etat_int" => "État intérieur"
     );
     $this->_hidden_column = array("adresse", "pression_service", "gaz","filetage","is_club");
-    $this->_hidden_column_sm = array("nom_proprietaire","constructeur","marque","capacite","id_robinet");
+    $this->_hidden_column_sm = array("nom_proprietaire","constructeur", "numero", "marque","capacite","id_robinet");
     $this->_field_to_retrieve = array(
       "robinet" => "CONCAT('Réf: ', id, ' - ', marque, ' - ', nb_sortie,' sortie(s)')");
     $bloc_capacite = array("", "6", "10", "12 long", "12 court", "15");
