@@ -1,4 +1,4 @@
-<h1 class="title my-5"><i class='fa fa-sliders fa-2x'></i> Administration</h1>
+<h1 class="title mb-5"><i class='fa fa-sliders fa-2x'></i> Administration</h1>
 <div class="my-5">
   <h2 class="title">Déclaration d'un nouvel élément dans la base</h2>
   
