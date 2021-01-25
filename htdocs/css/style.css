@@ -19,3 +19,12 @@
     font-size: 1.6rem;
   }
 }
+
+.flex-grow-1{
+  flex-grow:1;
+}
+
+.navbar-brand .img-fluid{
+    height: 30px;
+    width: auto;
+}
