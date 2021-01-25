@@ -1,4 +1,4 @@
-		<div class="container-fluid container-footer bg-light">
+		<div class="bg-light">
 	  	    <div class="d-flex align-items-center justify-content-center py-3">
 		      	<div class="d-flex flex-column flex-md-row justify-content-center">
 			      	<div>

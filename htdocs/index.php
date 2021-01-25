@@ -8,7 +8,6 @@ include_once('head.inc.php');
   //  $( "#MenuNavigation" ).tabs();
   //});
 </script>
-        <div class="container-fluid container-navbar d-flex align-items-end flex-column">
             <nav class="navbar navbar-expand-md navbar-light w-100 align-items-center">
                 <a class="navbar-brand d-block d-md-none d-flex" href="#">
                     <img src="<?php print $logo_club; ?>" class="img-fluid d-inline-block align-top" alt="" loading="lazy">
@@ -38,9 +37,7 @@ include_once('head.inc.php');
                     </ul>
                 </div>
             </nav>
-        </div><!--  fin div container-fluid container-navbar-->
-        <div class="container-fluid container-tab">
-            <div class="tab-content p-3">
+            <div class="tab-content py-3">
                 <div class="tab-pane active" role="tabpanel" aria-labelledby="accueil-tab" id="accueil">
                     <?php include("accueil.php");?>
                 </div>
@@ -57,7 +54,6 @@ include_once('head.inc.php');
                     <?php include("affichage_bloc_tiv.php"); ?>
                 </div>
             </div>
-        </div><!--  fin div container-fluid container-tab-->
 <?php
 include_once('foot.inc.php');
 ?>

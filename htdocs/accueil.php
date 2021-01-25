@@ -1,4 +1,4 @@
-<div class="jumbotron m-3">
+<div class="jumbotron my-3">
 	<div class="row">
 		<div class="col-12 col-md-3">
 			<img class="img-fluid" src='<?php print $logo_club; ?>' />
@@ -19,7 +19,7 @@
 	</div>
 	
 </div>
-<div class="jumbotron m-3">
+<div class="jumbotron my-3">
 	<h2 class="title">Messages importants</h2>
 	<div class="bg-warning" id="message_important_reepreuve">--</div>
 	<div class="bg-danger" id="message_important_tiv">++</div>
