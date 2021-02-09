@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `bloc`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `bloc` (
   `id` int(15) NOT NULL AUTO_INCREMENT,
-  `id_club` int(15) NULL,
+  `id_club` varchar(16) NULL,
   `nom_proprietaire` varchar(255) NULL,
   `is_club` int(1) NULL,
   `adresse` varchar(255) NULL,
@@ -55,7 +55,7 @@ DROP TABLE IF EXISTS `detendeur`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `detendeur` (
   `id` int(15) NOT NULL,
-  `id_club` varchar(16) NOT NULL,
+  `id_club` varchar(16) NULL,
   `marque` varchar(128) NULL,
   `etat_1ier_etage` varchar(16) NULL,  
   `id_1ier_etage` varchar(64) NULL,  
@@ -239,6 +239,7 @@ CREATE TABLE `robinet` (
   `serial_number` varchar(32) NULL,
   `filetage` varchar(32) NULL,
   `nb_sortie` int(1) NULL,
+  `filetage_sortie` varchar(25) NULL,
   `observation` varchar(255) NULL,
   `spec_robinet` varchar(32) NULL,
   `net_ultrason` int(1) NULL,
