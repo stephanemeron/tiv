@@ -9,13 +9,14 @@ class inspection_tivElement extends TIVElement {
     $this->_parent_url_label = "<img src='images/admin.png' /> Administration";
     $this->_update_label = "Mettre à jour les informations sur l&#145;inspection TIV";
     $this->_elements = array(
-      "id", "id_bloc", "id_inspecteur_tiv", "date", "etat_exterieur", "remarque_exterieur", "etat_interieur",
+      "id", "id_bloc", "id_robinet", "id_inspecteur_tiv", "date", "etat_exterieur", "remarque_exterieur", "etat_interieur",
       "remarque_interieur", "etat_filetage", "remarque_filetage", "etat_robineterie", "remarque_robineterie",
       "decision", "remarque",);
-    $this->_columns = array("Réf.", "Numéro du bloc", "Constructeur bloc", "Marque bloc", "Capacité bloc",
+    $this->_columns = array("Réf.", "Numéro du bloc", "Constructeur bloc", "Marque bloc", "Capacité bloc", "Robinet",
                             "Nom de l'inspecteur TIV", "Date dernière épreuve", "Date dernier TIV", "Décision", "Remarque");
     $this->_forms = array(
       "id_bloc"              => array("required", "text", "Numéro du bloc associé"),
+      "id_robinet"           => array("required", "text", "Numéro du robinet du bloc"),
       "id_inspecteur_tiv"    => array("required", "text", "Numéro de TIV de l'inspecteur"),
       "date"                 => array("required", "date", "Date de l'inspection TIV"),
       "etat_exterieur"       => array("required", $this->getPossibleStatus(), "État externe du bloc"),
@@ -36,6 +37,9 @@ class inspection_tivElement extends TIVElement {
         required: true,
     },
     id_bloc: {
+        required: true,
+    },
+    id_robinet: {
         required: true,
     },
     id_inspecteur_tiv: {
