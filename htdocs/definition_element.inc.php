@@ -1,6 +1,5 @@
 <?php
 include_once("configuration.inc.php");
-
 function get_element_handler($element, &$db_con) {
   $class_element = $element."Element";
   $to_retrieve = "\$edit_class = new $class_element(\$db_con);";
@@ -83,6 +82,7 @@ class TIVElement {
     $this->_force_display = false;
     $this->_hidden_column = array();
     $this->_hidden_column_sm = array();
+    $this->bloc_filetage = array("M 25 x 2 ISO", "25 x 200 SI", "G 3/4 DIN 259", "E17 Conique", "M18X1.5 ISO");
   }
   function getTableName() {
     global $db_table_prefix;
