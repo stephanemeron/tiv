@@ -15,7 +15,7 @@ class PdfTIV extends FPDF {
   function Header() {
     global $logo_club;
     global $nom_club;
-    $this->Image($logo_club, 10, 6, 10);
+    //$this->Image("/images/portrait_femme01.jpg",10,6,30,"jpg");
     $this->SetFont('Arial','B',10);
     $this->Cell(10);
     $this->Cell(0, 8, utf8_decode('Fiche TIV du '.$this->_date." - club $nom_club"), 'B', 0, 'C');
