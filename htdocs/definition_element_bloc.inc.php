@@ -24,37 +24,38 @@ class blocElement extends TIVElement {
     );
     $this->_hidden_column = array("constructeur","adresse", "pression_service", "gaz","filetage","is_club","etat", "etat_int");
     $this->_hidden_column_sm = array("constructeur", "nom_proprietaire","constructeur", "numero", "marque","capacite","id_robinet", "etat", "etat_int");
+    $this->_readonly_column = array("id_club", "constructeur", "marque", "capacite", "numero","filetage", "gaz","pression_service","pression_epreuve");
     $this->_field_to_retrieve = array(
       "robinet" => "CONCAT('Réf: ', id, ' - ', marque, ' - ', nb_sortie,' sortie(s)')");
-    $bloc_capacite = array("", "6", "10", "12 long", "12 court", "15");
+    $bloc_capacite = array("6", "10", "12 long", "12 court", "15");
     $array_constructeur = array("Eurocylinder ECS", "Faber", "IWKA", "Mannesmann", "Roth", "ANCIENS ETABLISSEMENTS POULET (AP)","APOLDAER","CATALINA","CTCO","EM ANZIN","HEISER", "ISER","LUXFER","MCS","MES ALUMINIUM","MILMET SA","OLAER","PRODUCTOS TUBULARES (PT)","SOCIETE DE FORGEAGE DE RIVE-DE-GIER (SFR)","SOCIETE METALLURGIQUE DE GERZAT (SMG)","TENARIS DALMINE (TDL)","VALLOUREC","VITKOVICE","WORTHINGTON");
     // Création d'une dépendance entre pression de service et d'épreuve
-    $pression_definition = array("" => "", "200" => "300", "230" => "345", "232" => "348", "300" => "450");
+    $pression_definition = array("200" => "300", "230" => "345", "232" => "348", "300" => "450");
     $bloc_pression         = array_keys  ($pression_definition);
     $bloc_pression_epreuve = array_values($pression_definition);
     $this->_form_dependency ["pression_service"] = array("pression_epreuve" => $pression_definition);
 
-    $bloc_gaz = array("", "air", "nitrox");
-    $bloc_etat = array("", "OK", "Rebuté");
+    $bloc_gaz = array("air", "nitrox");
+    $bloc_etat = array("OK", "Rebuté");
     $this->_forms = array(
-      "id_club"               => array("required", "number",                "Référence du bloc au sein du club"),
-      "nom_proprietaire"      => array("required", false,                   "Nom du propriétaire du bloc"),
-      "is_club"               => array("required", "boolean",               "Appartient au club"),
-      "adresse"               => array(false     , false,                   "Adresse du propriétaire du bloc"),
-      "constructeur"          => array("required", $array_constructeur,     "Constructeur du bloc (ex : ROTH)"),
-      "marque"                => array("required", false,                   "Marque du bloc (ex : Aqualung)"),
-      "numero"                => array("required", false,                   "N° de série"),
-      "capacite"              => array("required", $bloc_capacite,          "Capacité du bloc"),
-      "filetage"              => array("required", $this->bloc_filetage,          "Filetage du bloc"),
-      "id_robinet"            => array(false     , false,                   "Référence du robinet"),
-      "date_premiere_epreuve" => array("required", "date",                  "Date de la première épreuve du bloc"),
-      "date_derniere_epreuve" => array("required", "date",                  "Date de la dernière épreuve du bloc (tous les 5 ans)"),
-      "date_dernier_tiv"      => array("required", "date",                  "Date de la dernière inspection visuelle (tous les ans)"),
-      "pression_service"      => array("required", $bloc_pression,          "Pression de service du bloc (ex : 200 bars)"),
-      "pression_epreuve"      => array("required", $bloc_pression_epreuve,  "Pression épreuve du bloc (ex : 300 bars)"),
-      "gaz"                   => array("required", $bloc_gaz,               "Type de gaz du bloc (air ou nitrox)"),
-      "etat"                  => array("required", $bloc_etat,              "État du bloc"),
-      "etat_int"              => array("required", "number",                "État du bloc intérieur"),
+      "id_club"               => array("required", "number",            "Référence du bloc au sein du club"),
+      "nom_proprietaire"      => array("required", false,               "Nom du propriétaire du bloc"),
+      "is_club"               => array("required", "boolean",           "Appartient au club"),
+      "adresse"               => array(false     , false,               "Adresse du propriétaire du bloc"),
+      "constructeur"          => array("required", $array_constructeur, "Constructeur du bloc (ex : ROTH)"),
+      "marque"                => array("required", false,               "Marque du bloc (ex : Aqualung)"),
+      "numero"                => array("required", false,               "N° de série"),
+      "capacite"              => array("required", "radio",             "Capacité du bloc",$bloc_capacite),
+      "filetage"              => array("required", "radio",             "Filetage du bloc", $this->bloc_filetage),
+      "id_robinet"            => array(false     , false,               "Référence du robinet"),
+      "date_premiere_epreuve" => array("required", "date",              "Date de la première épreuve du bloc"),
+      "date_derniere_epreuve" => array("required", "date",              "Date de la dernière épreuve du bloc (tous les 5 ans)"),
+      "date_dernier_tiv"      => array("required", "date",              "Date de la dernière inspection visuelle (tous les ans)"),
+      "pression_service"      => array("required", "radio",             "Pression de service du bloc (ex : 200 bars)",$bloc_pression),
+      "pression_epreuve"      => array("required", "radio",             "Pression épreuve du bloc (ex : 300 bars)",$bloc_pression_epreuve),
+      "gaz"                   => array("required", "radio",             "Type de gaz du bloc (air ou nitrox)",$bloc_gaz),
+      "etat"                  => array("required", "radio",             "État du bloc",$bloc_etat),
+      "etat_int"              => array("required", "number",            "État du bloc intérieur"),
     );
     $this->_form_split_count = 6;
     $this->_forms_rules = '
