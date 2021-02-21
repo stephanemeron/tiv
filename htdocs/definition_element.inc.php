@@ -82,6 +82,7 @@ class TIVElement {
     $this->_force_display = false;
     $this->_hidden_column = array();
     $this->_hidden_column_sm = array();
+    $this->_readonly_column = array();
     $this->bloc_filetage = array("M 25 x 2 ISO", "25 x 200 SI", "G 3/4 DIN 259", "E17 Conique", "M18X1.5 ISO");
   }
   function getTableName() {
@@ -102,11 +103,24 @@ class TIVElement {
   function getForms() { return $this->_forms; }
   function getFormsKey() { return array_keys($this->_forms); }
   function constructTextInput($label, $size, $value, $class = false) {
-    $form_input = "<input type=\"text\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\" />\n";
+    if(in_array($label, $this->_readonly_column) && $value && $value!=""){
+      $input_readonly = " readonly";
+    }
+    else{
+      $input_readonly="";
+    }
+
+    $form_input = "<input type=\"text\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\"$input_readonly/>\n";
     return $form_input;
   }
   function constructSelectInputLabels($label, $labels, $value) {
-    $form_input = "<select id=\"$label\" name=\"$label\" class=\"form-control my-custom-select\">\n";
+    if(in_array($label, $this->_readonly_column) && $value && $value!=""){
+      $input_readonly = " disabled=true data-tt=\"labels\" data=\"value\"";
+    }
+    else{
+      $input_readonly="";
+    }
+    $form_input = "<select id=\"$label\" name=\"$label\" class=\"form-control my-custom-select\"$input_readonly>\n";
     foreach(array_keys($labels) as $option) {
       $selected = ($option == $value ? " selected='selected'" : "");
       $form_input .= "<option value='$option'$selected>".$labels[$option]."</option>\n";
@@ -133,6 +147,58 @@ class TIVElement {
     foreach($options as $opt) { $labels[$opt] = $opt; }
     return $this->constructSelectInputLabels($label, $labels, $value);
   }
+
+  function constructRadioInputLabels($label, $labels, $value) {
+
+    //<div class="form-check form-check-inline">
+    //  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+    //  <label class="form-check-label" for="inlineRadio1">1</label>
+    //</div>
+
+
+
+
+    $form_input = "";
+    $inc=1;
+    foreach(array_keys($labels) as $option) {
+      if(in_array($label, $this->_readonly_column) && $value && $value!=""){
+        $input_readonly = " disabled=true";
+      }
+      else{
+        $input_readonly="";
+      }
+      $checked = ($option == $value ? " checked='checked'" : "");
+      $form_input .= "<div class=\"form-check form-check-inline\">";
+      $form_input .=  "<input class=\"form-check-input\" type=\"radio\" name=\"$label\" id=\"$label.$inc\" value=\"$option\"$checked $input_readonly>";
+      $form_input .=  "<label class=\"form-check-label\" for=\"$label.$inc\">".$labels[$option]."</label>";
+      $form_input .= "</div>\n";
+      
+      //$form_input .= "<option value='$option'$selected>".$labels[$option]."</option>\n";
+      $inc++;
+    }
+    //$form_input .= "</select>\n";
+    // Gestion de la dépendance entre élément du formulaire.
+    if(array_key_exists($label, $this->_form_dependency)) {
+      $form_input .= "<script>\n$('#$label').change(function() {\n";
+      $tmp = $this->_form_dependency[$label];
+      $dependency = array_keys($tmp);
+      $link = $dependency[0];
+      $linked_values = $tmp[$link];
+      foreach($linked_values as $key=>$value) {
+        $form_input .= "if($('#$label').val() == '$key') {\n";
+        $form_input .= "  $('#$link').val($value);\n";
+        $form_input .= "}\n";
+      }
+      $form_input .= "});\n</script>";
+    }
+    return $form_input;
+  }
+  function constructRadioInput($label, $options, $value) {
+    $labels = array();
+    foreach($options as $opt) { $labels[$opt] = $opt; }
+    return $this->constructRadioInputLabels($label, $labels, $value);
+  }
+
 
   function constructBoolInputLabels($label, $value) {
     //$form_input = "<input type=\"checkbox\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\" />\n";
@@ -399,10 +465,12 @@ class TIVElement {
   function getFormInput($label, $value) {
     $forms_definition = $this->getForms();
     $form_input = "";
-    if(is_array($forms_definition[$label][1])) {
+    if(is_array($forms_definition[$label][1])) {      
       $form_input = $this->constructSelectInput($label, $forms_definition[$label][1], $value);
     } elseif($forms_definition[$label][1] === "select") {
       $form_input = $this->constructSelectInput($label, $forms_definition[$label][3], $value);
+    } elseif($forms_definition[$label][1] === "radio") {
+      $form_input = $this->constructRadioInput($label, $forms_definition[$label][3], $value);
     } elseif($forms_definition[$label][1] === "boolean") {
       $form_input = $this->constructBoolInput($label, $value);
     } elseif($forms_definition[$label][1] === "date") {
@@ -444,11 +512,9 @@ class TIVElement {
       $value = $this->_values[$elt];
       if(substr($elt,0,5) != "date_"){
         $form .= "<div class='form-group col-md-6'>";
-          if($forms_definition[$elt][1] === "boolean"){
-            $form .= "<div class=\"form-group row\">
-                        <div class=\"col-12 col-md-3\">".$this->getElementLabel($elt, $value)."</div>
-                        <div class=\"col-12 col-sm-9\">".$this->getFormInput($elt, stripcslashes($value))."</div>
-                      </div>";
+          if(in_array($forms_definition[$elt][1] ,array("radio", "boolean"))){
+            $form .= "<label for=\"".$elt."\">".$this->getElementLabel($elt, $value)."</label><br/>".
+                          $this->getFormInput($elt, stripcslashes($value));
           }
           else{
             $form .= "<label for=\"".$elt."\">".$this->getElementLabel($elt, $value)."</label>".
