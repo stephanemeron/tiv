@@ -18,21 +18,32 @@ class PdfTIV extends FPDF {
     global $logo_club;
     global $nom_club;
     
-    //$this->Image("/images/portrait_femme01.jpg",10,6,30,"jpg");
+    //$this->Image("/images/portrait_femme01.jpg",10,5,30,"jpg");
     $this->SetFont('Arial','B',10);
     if(array_key_exists("id_bloc", $_GET)){
       $id_bloc = $_GET['id_bloc'];
+
+      $bloc_condition = "id_bloc = $id_bloc";
+      $db_query = "SELECT  id_bloc, inspection_tiv.id AS i_t_id, bloc.id_club AS bloc_id_club ".
+                  "FROM inspection_tiv, bloc ".
+                  "WHERE inspection_tiv.date = '".$this->_date."' ".
+                  "AND $bloc_condition ";
+      $db_result = $this->_db_con->query($db_query);
+      $result = $db_result->fetch_array();
+
       //$this->Cell(145);
+      // Affichage numéro fiche tiv
+      $this->SetFont('Helvetica', 'B', 10);
+      $this->Cell(25,18,utf8_decode("Fiche TIV n° "), 0, 0);
+      $this->SetFont('Helvetica',  '', 20);
+      $this->Cell(10,16,$result["i_t_id"], 0, 0);
+
       $this->SetFont('Helvetica', 'I',10);
       //$this->Cell(0, 8, utf8_decode('Fiche TIV du '.$this->_date." - club $nom_club"), 'B', 0, 'C');
-      $this->Cell(173, 18, utf8_decode('Numéro du bloc : '),0, 0, 'R');
+      $this->Cell(138, 18, utf8_decode('Numéro du bloc : '),0, 0, 'R');
       $this->SetFont('Helvetica','' ,40);
-      $db_query = "SELECT id_club ".
-                  "FROM bloc ".
-                  "WHERE id ='$id_bloc'";
-      $db_result = $this->_db_con->query($db_query);
-      $bloc = $db_result->fetch_array();
-      $this->Cell(0,12,$bloc["id_club"],0, 1, 'R');
+      
+      $this->Cell(0,12,$result["bloc_id_club"],0, 1, 'R');
     }
     //$this->Cell(0, 8, utf8_decode('Fiche TIV du '.$this->_date." - club $nom_club".$logo_club), 'B', 0, 'C');
     //$this->Ln(11);
@@ -269,9 +280,19 @@ class PdfTIV extends FPDF {
       $this->SetFont('Helvetica', 'B',12);
       $this->Cell(0,8,utf8_decode("FICHE D'ÉVALUATION ET DE SUIVI D'UNE BOUTEILLE DE PLONGÉE"),0, 1, 'C');
       $this->addBlocInformation($result[1]);
+      foreach(array("exterieur", "interieur") as $element)
+        $this->addAspectBlocInformation($result[0], $element);
+      $this->addBlocRobinet($result[1]);
+      foreach(array("filetage") as $element)
+        $this->addAspectBlocInformation($result[0], $element);
+      $this->addRobinetterie($result[1]);
+      foreach(array("robineterie") as $element)
+        $this->addAspectBlocInformation($result[0], $element);
+      //$this->addCommentaireRobinetterie($result[0]);
       // Ligne de séparation
       $this->Cell(0,5,"", 'B', 1, 1);
       $this->Ln(8);
+      $this->addCommentaire($result[0]);
       // Information concernant l'inspection TIV
       $this->SetFont('Helvetica', 'B', 14);
       $this->Cell(45,10,utf8_decode("Vérificateur TIV n° "), 0, 0);
@@ -283,8 +304,8 @@ class PdfTIV extends FPDF {
       $this->Cell(30,10,utf8_decode("Fiche TIV n° "), 0, 0);
       $this->SetFont('Helvetica',  '', 12);
       $this->Cell($this->GetStringWidth($result[0]) + 2,8,$result[0], 1, 1);
-      foreach(array("exterieur", "interieur", "filetage", "robineterie") as $element)
-        $this->addAspectInformation($result[0], $element);
+      //foreach(array("exterieur", "interieur", "filetage", "robineterie") as $element)
+      //  $this->addAspectInformation($result[0], $element);
       // Ligne de séparation
       $this->Cell(0,2,"", 'B', 1, 1);
       // Conclusion + signature
@@ -312,7 +333,11 @@ class PdfTIV extends FPDF {
   }
   
   function addBlocInformation($id_bloc) {
-    $db_query = "SELECT bloc.id, bloc.id_club, bloc.nom_proprietaire, bloc.numero, bloc.constructeur, bloc.marque, bloc.capacite, bloc.date_premiere_epreuve, bloc.date_derniere_epreuve, bloc.date_dernier_tiv, bloc.pression_service, bloc.pression_epreuve, bloc.id_robinet, robinet.id, robinet.marque AS r_marque, robinet.serial_number AS r_serial_number ".
+
+    //global $bloc_filetage;
+    //global $robinet_filetage_sortie;
+
+    $db_query = "SELECT bloc.id, bloc.id_club, bloc.nom_proprietaire, bloc.numero, bloc.constructeur, bloc.marque, bloc.capacite, bloc.date_premiere_epreuve, bloc.date_derniere_epreuve, bloc.date_dernier_tiv, bloc.pression_service, bloc.pression_epreuve, bloc.id_robinet, bloc.filetage, robinet.id, robinet.marque AS r_marque, robinet.serial_number AS r_serial_number, robinet.filetage AS r_filetage, robinet.filetage_sortie AS r_filetage_sortie ".
                 "FROM bloc, robinet ".
                 "WHERE bloc.id ='$id_bloc' AND robinet.id=bloc.id_robinet";
     $db_result = $this->_db_con->query($db_query);
@@ -321,68 +346,70 @@ class PdfTIV extends FPDF {
     // BLOC NOM PROPRIETAIRE
     $this->SetFont('Helvetica', 'IB', 10);
     //$this->Rect(10,37, 190, 15,'D');
-    $this->Cell(30,15,utf8_decode("Nom propriétaire "), "LTB", 0,'L');
+    $this->Cell(30,10,utf8_decode("Nom propriétaire "), "LTB", 0,'L');
     $this->SetFont('Helvetica', 'B', 15);
-    $this->Cell($this->GetPageWidth()-80,15, $bloc["nom_proprietaire"], "TB", 0, 'C');
+    $this->Cell($this->GetPageWidth()-80,10, $bloc["nom_proprietaire"], "TB", 0, 'C');
     $this->SetFont('Helvetica', '', 10);
-    $this->Cell(0,15,utf8_decode("Folio 1/2"), "TRB", 1, 'R');
+    $this->Cell(0,10,utf8_decode("Folio 1/2"), "TRB", 1, 'R');
     // FIN BLOC NOM PROPRIETAIRE
 
     // BLOC IDENTIFICATION BOUTEILLE + ROBINET
     //$this->Ln(8);
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(0,12,utf8_decode("IDENTIFICATION DE L'ÉQUIPEMENT"), 0, 1, 'C');
+    $this->Cell(0,8,utf8_decode("IDENTIFICATION DE L'ÉQUIPEMENT"), 0, 1, 'C');
 
-    $this->Cell(140,8,utf8_decode("BLOC"), 1, 0, 'C');
-    $this->Cell(0,8,utf8_decode("ROBINET"), 1, 1, 'C');
+    $this->Cell(140,5,utf8_decode("BLOC"), 1, 0, 'C');
+    $this->Cell(0,5,utf8_decode("ROBINET"), 1, 1, 'C');
 // largeur 190
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(25,6,utf8_decode("Constructeur"), 1, 0, 'L');
+    $this->Cell(25,5,utf8_decode("Constructeur"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(35,6,$bloc["constructeur"], 1, 0, 'L');
+    $this->Cell(35,5,$bloc["constructeur"], 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(35,6,utf8_decode("Date 1ère épreuve"), 1, 0, 'L');
+    $this->Cell(35,5,utf8_decode("Date 1ère épreuve"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(45,6,$this->resetDate($bloc["date_premiere_epreuve"]), 1, 0, 'L');
+    $this->Cell(45,5,$this->resetDate($bloc["date_premiere_epreuve"]), 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(0,6,'', 1, 1, 'L');
+    $this->Cell(0,5,'', 1, 1, 'L');
 
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(25,6,utf8_decode("Marque"), 1, 0, 'L');
+    $this->Cell(25,5,utf8_decode("Marque"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(35,6,$bloc["marque"], 1, 0, 'L');
+    $this->Cell(35,5,$bloc["marque"], 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(35,6,utf8_decode("Date dernière qualif"), 1, 0, 'L');
+    $this->Cell(35,5,utf8_decode("Date dernière qualif"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(45,6,$this->resetDate($bloc["date_derniere_epreuve"]), 1, 0, 'L');
+    $this->Cell(45,5,$this->resetDate($bloc["date_derniere_epreuve"]), 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(15,6,utf8_decode("Marque"), 1, 0, 'L');
+    $this->Cell(15,5,utf8_decode("Marque"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(0,6,$bloc["r_marque"], 1, 1, 'L');
+    $this->Cell(0,5,$bloc["r_marque"], 1, 1, 'L');
 
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(25,6,utf8_decode("N° de série"), 1, 0, 'L');
+    $this->Cell(25,5,utf8_decode("N° de série"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(35,6,$bloc["numero"], 1, 0, 'L');
+    $this->Cell(35,5,$bloc["numero"], 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(35,6,utf8_decode("Capacité (L)"), 1, 0, 'L');
+    $this->Cell(35,5,utf8_decode("Capacité (L)"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(45,6,$bloc["capacite"], 1, 0, 'L');
+    $this->Cell(45,5,$bloc["capacite"], 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(15,6,utf8_decode("N° série"), 1, 0, 'L');
+    $this->Cell(15,5,utf8_decode("N° série"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(0,6,$bloc["r_serial_number"], 1, 1, 'L');    
+    $this->Cell(0,5,$bloc["r_serial_number"], 1, 1, 'L');    
 
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(25,6,utf8_decode("PE (bar)"), 1, 0, 'L');
+    $this->Cell(25,5,utf8_decode("PE (bar)"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(35,6,'', 1, 0, 'L');
+    $this->Cell(35,5,'', 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(35,6,utf8_decode("PS (bar)"), 1, 0, 'L');
+    $this->Cell(35,5,utf8_decode("PS (bar)"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(45,6,'', 1, 0, 'L');
+    $this->Cell(45,5,'', 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(0,6,'', 1, 1, 'L');
+    $this->Cell(0,5,'', 1, 1, 'L');
+
+    //$this->addBlocAlert($id_bloc);
 
     $this->SetTextColor(255,0,0);
     $this->SetFont('Helvetica', 'B', 11);
@@ -401,403 +428,650 @@ class PdfTIV extends FPDF {
 
     // BLOC DONNEES BOUTEILLES
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(0,6,"", 0, 1, 'C');
-    $this->Cell(80,6,utf8_decode("CONSTAT"), 0, 0, 'C');
-    $this->Cell(60,6,utf8_decode("DECISION"), 0, 0, 'C');
-    $this->Cell(0,6,utf8_decode("REALISATION"), 0, 1, 'C');    
+    $this->Cell(0,5,"", 0, 1, 'C');
+    $this->Cell(80,5,utf8_decode("CONSTAT"), 0, 0, 'C');
+    $this->Cell(60,5,utf8_decode("DECISION"), 0, 0, 'C');
+    $this->Cell(0,5,utf8_decode("REALISATION"), 0, 1, 'C');    
     $this->Cell(0,2,"", "B", 1, 'C');
-    $this->Cell(80,6,utf8_decode("BOUTEILLE"), "RTL", 0, 'C');
-    $this->Cell(60,6,"", "RTL", 0, 'C');
-    $this->Cell(0,6,"", "RTL", 1, 'C');
+    $this->Cell(80,5,utf8_decode("BOUTEILLE"), "RTL", 0, 'C');
+    $this->Cell(60,5,"", "RTL", 0, 'C');
+    $this->Cell(0,5,"", "RTL", 1, 'C');
 
-    $this->Cell(60,6,utf8_decode("Filetage"), "L", 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(10,6,utf8_decode("oui"), 1, 0, 'C');
-    $this->Cell(10,6,utf8_decode("non"), 1, 0, 'C');
-    $this->Cell(60,6,"", 0, 0, 'C');
-    $this->Cell(20,6,"Date", 1, 0, 'C');
-    $this->Cell(0,6,"Par", 1, 1, 'C');
+    $this->Cell(60,5,utf8_decode("Filetage"), "L", 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(10,5,utf8_decode("oui"), 1, 0, 'C');
+    $this->Cell(10,5,utf8_decode("non"), 1, 0, 'C');
+    $this->Cell(60,5,"", 0, 0, 'C');
+    $this->Cell(20,5,"Date", 1, 0, 'C');
+    $this->Cell(0,5,"Par", 1, 1, 'C');
 
-    $this->Cell(60,6,utf8_decode("Filetage col en bon état"), 1, 0, 'L');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(60,5,utf8_decode("Filetage col en bon état"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(60,6,utf8_decode("À vérifier avec tampon"), 1, 0, 'L');
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(60,5,utf8_decode("À vérifier avec tampon"), 1, 0, 'L');
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
-    $this->Cell(60,6,utf8_decode("Filetage col en légèrement oxydé"), 1, 0, 'L');
+    $this->Cell(60,5,utf8_decode("Filetage col en légèrement oxydé"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(40,6,utf8_decode("À nettoyer"), 1, 0, 'L');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À nettoyer"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
-    $this->Cell(60,6,utf8_decode("Filets actifs détériorés"), 1, 0, 'L');
+    $this->Cell(60,5,utf8_decode("Filets actifs détériorés"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(40,6,utf8_decode("REJET"), 1, 0, 'C');
+    $this->Cell(40,5,utf8_decode("REJET"), 1, 0, 'C');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(60,6,utf8_decode("À faire"), 1, 0, 'C');
+    $this->Cell(60,5,utf8_decode("À faire"), 1, 0, 'C');
     //$this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"OK", 1, 0, 'C');
-    $this->Cell(10,6,"NOK", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(60,6,"", "R", 0, 'L');
-    $this->Cell(0,6,"", "R", 1, 'C');
+    $this->Cell(10,5,"OK", 1, 0, 'C');
+    $this->Cell(10,5,"NOK", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(60,5,"", "R", 0, 'L');
+    $this->Cell(0,5,"", "R", 1, 'C');
 
-    $this->Cell(60,6,utf8_decode("Tampons filetés entre/entre pas"), 1, 0, 'L');
+    $this->Cell(60,5,utf8_decode("Tampons filetés entre/entre pas"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(40,6,utf8_decode("REJET"), 1, 0, 'C');
+    $this->Cell(40,5,utf8_decode("REJET"), 1, 0, 'C');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
-    //$this->Cell(80,6,"", 0, 0, 'C');
-    //$this->Cell(60,6,"", 0, 0, 'C');
-    $this->Cell(0,6,"", "RL", 1, 'C');
+    //$this->Cell(80,5,"", 0, 0, 'C');
+    //$this->Cell(60,5,"", 0, 0, 'C');
+    $this->Cell(0,5,"", "RL", 1, 'C');
 
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(60,6,utf8_decode("Extérieur"), "L", 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(10,6,utf8_decode("oui"), 1, 0, 'C');
-    $this->Cell(10,6,utf8_decode("non"), 1, 0, 'C');
-    $this->Cell(60,6,"", 0, 0, 'C');
-    $this->Cell(20,6,"", 0, 0, 'C');
-    $this->Cell(0,6,"", "R", 1, 'C');
+    $this->Cell(60,5,utf8_decode("Extérieur"), "L", 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(10,5,utf8_decode("oui"), 1, 0, 'C');
+    $this->Cell(10,5,utf8_decode("non"), 1, 0, 'C');
+    $this->Cell(60,5,"", 0, 0, 'C');
+    $this->Cell(20,5,"", 0, 0, 'C');
+    $this->Cell(0,5,"", "R", 1, 'C');
 
-    $this->Cell(60,6,utf8_decode("Atteintes profondes"), 1, 0, 'L');
+    $this->Cell(60,5,utf8_decode("Atteintes profondes"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(40,6,utf8_decode("REJET"), 1, 0, 'C');
+    $this->Cell(40,5,utf8_decode("REJET"), 1, 0, 'C');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
-    $this->Cell(60,6,utf8_decode("Peintures en bon état"), 1, 0, 'L');
+    $this->Cell(60,5,utf8_decode("Peintures en bon état"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(60,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
+    $this->Cell(60,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
     $this->SetFontSize(10);
-    $this->Cell(60,6,utf8_decode("Cloques, écailles non corrodés"), 1, 0, 'R');
+    $this->Cell(60,5,utf8_decode("Cloques, écailles non corrodés"), 1, 0, 'R');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(40,6,utf8_decode("Retouche"), 1, 0, 'L');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("Retouche"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
     $this->SetFontSize(10);
-    $this->Cell(60,6,utf8_decode("Cloques, écailles corrodés"), 1, 0, 'R');
+    $this->Cell(60,5,utf8_decode("Cloques, écailles corrodés"), 1, 0, 'R');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(40,6,utf8_decode("À nettoyer (*)"), 1, 0, 'L');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À nettoyer (*)"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
     $this->SetFontSize(10);
-    $this->Cell(60,6,utf8_decode("Corrosion superficielle localisée"), 1, 0, 'R');
+    $this->Cell(60,5,utf8_decode("Corrosion superficielle localisée"), 1, 0, 'R');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(40,6,utf8_decode("À nettoyer (*)"), 1, 0, 'L');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À nettoyer (*)"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
     $this->SetFontSize(10);
-    $this->Cell(60,6,utf8_decode("Corrosion superficielle généralisée"), 1, 0, 'R');
+    $this->Cell(60,5,utf8_decode("Corrosion superficielle généralisée"), 1, 0, 'R');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(40,6,utf8_decode("À sabler (*)"), 1, 0, 'L');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À sabler (*)"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
     $this->SetFont('Helvetica', 'B', 10);
-    $this->Cell(80,6,utf8_decode("(*) Nettoyage: Élimination de la corrosion,"), "RTL", 0, 'C');
-    $this->Cell(40,6,utf8_decode("Traitement Sablage"), "RTL", 0, 'C');
-    $this->Cell(20,6,"", "RTL", 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6, "", "RTL", 0, 'C');
-    $this->Cell(0,6, "", "RTL", 1, 'C');
+    $this->Cell(80,5,utf8_decode("(*) Nettoyage: Élimination de la corrosion,"), "RTL", 0, 'C');
+    $this->Cell(40,5,utf8_decode("Traitement Sablage"), "RTL", 0, 'C');
+    $this->Cell(20,5,"", "RTL", 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5, "", "RTL", 0, 'C');
+    $this->Cell(0,5, "", "RTL", 1, 'C');
 
     $this->SetFont('Helvetica', 'B', 10);
-    $this->Cell(80,6,utf8_decode("galvanisation et retouche peinture"), "RBL", 0, 'C');
-    $this->Cell(40,6,utf8_decode("+ Peinture"), "RBL", 0, 'C');
+    $this->Cell(80,5,utf8_decode("galvanisation et retouche peinture"), "RBL", 0, 'C');
+    $this->Cell(40,5,utf8_decode("+ Peinture"), "RBL", 0, 'C');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", "RBL", 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", "RBL", 0, 'C');
-    $this->Cell(0,6,"", "RBL", 1, 'C');
+    $this->Cell(20,5,"o", "RBL", 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", "RBL", 0, 'C');
+    $this->Cell(0,5,"", "RBL", 1, 'C');
 
-    $this->Cell(0,6,"", "RL", 1, 'C');
-
-    $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(60,6,utf8_decode("Intérieur"), "L", 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(10,6,utf8_decode("oui"), 1, 0, 'C');
-    $this->Cell(10,6,utf8_decode("non"), 1, 0, 'C');
-    $this->Cell(60,6,"", 0, 0, 'C');
-    $this->Cell(20,6,"", 0, 0, 'C');
-    $this->Cell(0,6,"", "R", 1, 'C');
-
-    $this->Cell(60,6,utf8_decode("Présence de résidus"), 1, 0, 'L');
-    $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(40,6,utf8_decode("À nettoyer"), 1, 0, 'L');
-    $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
-
-    $this->Cell(60,6,utf8_decode("Sec"), 1, 0, 'L');
-    $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(40,6,utf8_decode("À sécher"), 1, 0, 'L');
-    $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
-
-    $this->Cell(60,6,utf8_decode("Revêtement"), 1, 0, 'L');
-    $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(40,6,"", 1, 0, 'L');
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
-
-    $this->Cell(60,6,utf8_decode("Opaque"), 1, 0, 'R');
-    $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(40,6,utf8_decode("À éliminer"), 1, 0, 'L');
-    $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
-
-    $this->Cell(60,6,utf8_decode("Transparent adhérent"), 1, 0, 'R');
-    $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(40,6,utf8_decode("À éliminer"), 1, 0, 'L');
-    $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(20,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
-
-    $this->AddPage();
+    $this->Cell(0,5,"", "RL", 1, 'C');
 
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(0,6,"", 0, 1, 'C');
+    $this->Cell(60,5,utf8_decode("Intérieur"), "L", 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(10,5,utf8_decode("oui"), 1, 0, 'C');
+    $this->Cell(10,5,utf8_decode("non"), 1, 0, 'C');
+    $this->Cell(60,5,"", 0, 0, 'C');
+    $this->Cell(20,5,"", 0, 0, 'C');
+    $this->Cell(0,5,"", "R", 1, 'C');
 
-    $this->Cell(80,6,utf8_decode("CONSTAT"), 0, 0, 'C');
-    $this->Cell(60,6,utf8_decode("DECISION"), 0, 0, 'C');
-    $this->Cell(0,6,utf8_decode("REALISATION"), 0, 1, 'C');
+    $this->Cell(60,5,utf8_decode("Présence de résidus"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À nettoyer"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
+
+    $this->Cell(60,5,utf8_decode("Sec"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À sécher"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
+
+    $this->Cell(60,5,utf8_decode("Revêtement"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(40,5,"", 1, 0, 'L');
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
+
+    $this->Cell(60,5,utf8_decode("Opaque"), 1, 0, 'R');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À éliminer"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
+
+    $this->Cell(60,5,utf8_decode("Transparent adhérent"), 1, 0, 'R');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À éliminer"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
+
+
+    $this->SetFont('Helvetica', 'B', 11);
+    $this->Cell(0,5,"", 0, 1, 'C');
+
+    $this->Cell(80,5,utf8_decode("CONSTAT"), 0, 0, 'C');
+    $this->Cell(60,5,utf8_decode("DECISION"), 0, 0, 'C');
+    $this->Cell(0,5,utf8_decode("REALISATION"), 0, 1, 'C');
     $this->Cell(0,2,"", "B", 1, 'C');
-    $this->Cell(80,6,utf8_decode("BOUTEILLE"), "RTL", 0, 'C');
-    $this->Cell(60,6,"", "RTL", 0, 'C');
-    $this->Cell(0,6,"", "RTL", 1, 'C');
-    $this->Cell(80, 6, "", "RL", 0, "C");
-    $this->Cell(60, 6, "", "RL", 0, "C");
-    $this->Cell(35, 6, "", "RBL", 0, "C");
+    $this->Cell(80,5,utf8_decode("BOUTEILLE"), "RTL", 0, 'C');
+    $this->Cell(60,5,"", "RTL", 0, 'C');
+    $this->Cell(0,5,"", "RTL", 1, 'C');
+    $this->Cell(80, 5, "", "RL", 0, "C");
+    $this->Cell(60, 5, "", "RL", 0, "C");
+    $this->Cell(35, 5, "", "RBL", 0, "C");
     $this->SetFont('Helvetica', '', 9);
-    $this->Cell(0, 6,utf8_decode("Mesure"), "RTL",1, 'C');
+    $this->Cell(0, 5,utf8_decode("Mesure"), "RTL",1, 'C');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(60,6,utf8_decode("Paroi"), "LB", 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(10,6,utf8_decode("oui"), 1, 0, 'C');
-    $this->Cell(10,6,utf8_decode("non"), 1, 0, 'C');
-    $this->Cell(60,6,"", "B", 0, 'C');
-    $this->Cell(20,6,"Date", 1, 0, 'C');
-    $this->Cell(15, 6,"Par", 1, 0, 'C');
+    $this->Cell(60,5,utf8_decode("Paroi"), "LB", 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(10,5,utf8_decode("oui"), 1, 0, 'C');
+    $this->Cell(10,5,utf8_decode("non"), 1, 0, 'C');
+    $this->Cell(60,5,"", "B", 0, 'C');
+    $this->Cell(20,5,"Date", 1, 0, 'C');
+    $this->Cell(15, 5,"Par", 1, 0, 'C');
     $this->SetFont('Helvetica', '', 9);
-    $this->Cell(0, 6,utf8_decode("UT (mm)"), "RBL",1, 'C');
+    $this->Cell(0, 5,utf8_decode("UT (mm)"), "RBL",1, 'C');
 
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(60,6,utf8_decode("Oxydation"), 1, 0, 'L');
+    $this->Cell(60,5,utf8_decode("Oxydation"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->SetFont('Helvetica', '', 11);
-    $this->Cell(30,6,"Grenaillage", 1, 0, 'C');
-    $this->Cell(30,6,"Ultrasons", 1, 0, 'C');
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(30,5,"Grenaillage", 1, 0, 'C');
+    $this->Cell(30,5,"Ultrasons", 1, 0, 'C');
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
     $this->SetFont('Helvetica', '', 8);
-    $this->Cell(60,6,utf8_decode("Superficielle uniforme (Critère 1)"), 1, 0, 'R');
+    $this->Cell(60,5,utf8_decode("Superficielle uniforme (Critère 1)"), 1, 0, 'R');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(30,6,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(30,5,"o", 1, 0, 'C');
     $this->SetFillColor(100,100,100);
-    $this->Cell(30,6,"", 1, 0, 'C',1);
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(15,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C',1);
+    $this->Cell(30,5,"", 1, 0, 'C',1);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(15,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C',1);
 
     $this->SetFont('Helvetica', '', 8);
-    $this->Cell(60,6,utf8_decode("Petites piqures réparties (Critère 2)"), 1, 0, 'R');
+    $this->Cell(60,5,utf8_decode("Petites piqures réparties (Critère 2)"), 1, 0, 'R');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(30,6,"o", 1, 0, 'C');
-    $this->Cell(30,6,"", 1, 0, 'C');
-    $this->Cell(20,6,"", 1, 0, 'C');
-    $this->Cell(15,6,"", 1, 0, 'C');
-    $this->Cell(0,6,"", 1, 1, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(30,5,"o", 1, 0, 'C');
+    $this->Cell(30,5,"", 1, 0, 'C');
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(15,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
     $this->SetFont('Helvetica', '', 8);
-    $this->Cell(60,6,utf8_decode("Piqures en ligne ou en zone (Critère 3)"), 1, 0, 'R');
+    $this->Cell(60,5,utf8_decode("Piqures en ligne ou en zone (Critère 3)"), 1, 0, 'R');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(30,6,"o", 1, 0, 'C');
-    $this->Cell(30,6,"", "T", 0, 'C');
-    $this->Cell(20,6,"", "RL", 0, 'C');
-    $this->Cell(15,6,"", "RL", 0, 'C');
-    $this->Cell(0,6,"", "RL", 1, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(30,5,"o", 1, 0, 'C');
+    $this->Cell(30,5,"", "T", 0, 'C');
+    $this->Cell(20,5,"", "RL", 0, 'C');
+    $this->Cell(15,5,"", "RL", 0, 'C');
+    $this->Cell(0,5,"", "RL", 1, 'C');
 
     $this->SetFont('Helvetica', '', 8);
-    $this->Cell(60,6,utf8_decode("Corrosion feuilletante localisée (Critère 4)"), 1, 0, 'R');
+    $this->Cell(60,5,utf8_decode("Corrosion feuilletante localisée (Critère 4)"), 1, 0, 'R');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(30,6,"REJET", 1, 0, 'C');
-    $this->Cell(30,6,"", 0, 0, 'C');
-    $this->Cell(20,6,"", "RL", 0, 'C');
-    $this->Cell(15,6,"", "RL", 0, 'C');
-    $this->Cell(0,6,"", "RL", 1, 'C');
+    $this->Cell(30,5,"REJET", 1, 0, 'C');
+    $this->Cell(30,5,"", 0, 0, 'C');
+    $this->Cell(20,5,"", "RL", 0, 'C');
+    $this->Cell(15,5,"", "RL", 0, 'C');
+    $this->Cell(0,5,"", "RL", 1, 'C');
 
     $this->SetFont('Helvetica', '', 8);
-    $this->Cell(60,6,utf8_decode("Corrosion feuillante généralisée (Critère 5)"), 1, 0, 'R');
+    $this->Cell(60,5,utf8_decode("Corrosion feuillante généralisée (Critère 5)"), 1, 0, 'R');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(30,6,"REJET", 1, 0, 'C');
-    $this->Cell(30,6,"", 0, 0, 'C');
-    $this->Cell(20,6,"", "RL", 0, 'C');
-    $this->Cell(15,6,"", "RL", 0, 'C');
-    $this->Cell(0,6,"", "RL", 1, 'C');
+    $this->Cell(30,5,"REJET", 1, 0, 'C');
+    $this->Cell(30,5,"", 0, 0, 'C');
+    $this->Cell(20,5,"", "RL", 0, 'C');
+    $this->Cell(15,5,"", "RL", 0, 'C');
+    $this->Cell(0,5,"", "RL", 1, 'C');
 
     $this->SetFont('Helvetica', '', 8);
-    $this->Cell(60,6,utf8_decode("Corrosion pulvérulente (Critère 6"), 1, 0, 'R');
+    $this->Cell(60,5,utf8_decode("Corrosion pulvérulente (Critère 6"), 1, 0, 'R');
     $this->SetFont('ZapfDingbats', '', 14);
-    $this->Cell(10,6,"o", 1, 0, 'C');
-    $this->Cell(10,6,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(30,6,"REJET", 1, 0, 'C');
-    $this->Cell(30,6,"", "B", 0, 'C');
-    $this->Cell(20,6,"", "RLB", 0, 'C');
-    $this->Cell(15,6,"", "RLB", 0, 'C');
-    $this->Cell(0,6,"", "RLB", 1, 'C');
+    $this->Cell(30,5,"REJET", 1, 0, 'C');
+    $this->Cell(30,5,"", "B", 0, 'C');
+    $this->Cell(20,5,"", "RLB", 0, 'C');
+    $this->Cell(15,5,"", "RLB", 0, 'C');
+    $this->Cell(0,5,"", "RLB", 1, 'C');
 
     // FIN BLOC DONNEES BOUTEILLES
+  }
+
+  function addBlocRobinet($id_bloc){
+
+    global $bloc_filetage;
+    global $robinet_filetage_sortie;
+
+    $db_query = "SELECT bloc.id, bloc.id_club, bloc.nom_proprietaire, bloc.numero, bloc.constructeur, bloc.marque, bloc.capacite, bloc.date_premiere_epreuve, bloc.date_derniere_epreuve, bloc.date_dernier_tiv, bloc.pression_service, bloc.pression_epreuve, bloc.id_robinet, bloc.filetage, robinet.id, robinet.marque AS r_marque, robinet.serial_number AS r_serial_number, robinet.filetage AS r_filetage, robinet.filetage_sortie AS r_filetage_sortie ".
+                "FROM bloc, robinet ".
+                "WHERE bloc.id ='$id_bloc' AND robinet.id=bloc.id_robinet";
+    $db_result = $this->_db_con->query($db_query);
+    $bloc = $db_result->fetch_array();
 
 
-    // BLOC FILETAGE
+    
+    // FILETAGES BLOC ET ROBINET
+    $this->Cell(0, 5, "", 0, 1);
+    $this->SetFont('Helvetica', 'B', 11);
+    $this->Cell(60,5,utf8_decode("Filetage"), "LT", 0, 'C');
+    $this->Cell(0, 5, "", "TR", 1);
+
     $this->SetFont('Helvetica', 'B', 8);
-    $this->Cell(40, 12, "", "RTL", 0);
-    $this->Cell(20, 12, "BLOC", 1, 0);
-    foreach(array_keys($this->bloc_filetage) as $option) {
-      $this->Cell(20,12, $option,1,0);
+    $this->Cell(20, 10, "BLOC", 1, 0);
+    $count_bloc_filetage = count($bloc_filetage);
+    $width_cell_bloc_filetage = floor(170 / ($count_bloc_filetage + 1));
+    foreach($bloc_filetage as $option) {
+      $this->SetFont('ZapfDingbats', '', 14);
+      if($bloc["filetage"] == $option){
+        $this->Cell(5,10,"8", "LTB", 0, 'C');
+      }
+      else{
+        $this->Cell(5,10,"o", "LTB", 0, 'C');
+      }
+      $this->SetFont('Helvetica', '', 8);
+      $this->Cell($width_cell_bloc_filetage - 5 ,10, $option,"TBR",0);
     }
-    //$this->Cell(0,12, $this->bloc_filetage,1,0);
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(5,10,"o", "LTB", 0, 'C');
+    $this->SetFont('Helvetica', '', 8);
 
+    $this->Cell(190 - (20 + ($count_bloc_filetage * $width_cell_bloc_filetage)) - 5 ,10, "Autre","TBR",1);
 
+    $this->SetFont('Helvetica', 'B', 8);
+    $this->Cell(40, 10, "Sortie ROBINET", 1, 0);
+    $count_robinet_filetage_sortie = count($robinet_filetage_sortie);
+    $width_cell_robinet_filetage_sortie = floor(150 / ($count_robinet_filetage_sortie + 1));
+    foreach($robinet_filetage_sortie as $option) {
+      $this->SetFont('ZapfDingbats', '', 14);
+      if($bloc["r_filetage_sortie"] == $option){
+        $this->Cell(5,10,"8", "LTB", 0, 'C');
+      }
+      else{
+        $this->Cell(5,10,"o", "LTB", 0, 'C');
+      }
+      $this->SetFont('Helvetica', '', 8);
+      $this->Cell($width_cell_robinet_filetage_sortie - 5 ,10, $option,"TBR",0);
+    }
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(5,10,"o", "LTB", 0, 'C');
+    $this->SetFont('Helvetica', '', 8);
+    
+    $this->Cell(190 - (40 + ($count_robinet_filetage_sortie * $width_cell_robinet_filetage_sortie)) - 5 ,10, "Autre","TBR",1);
 
-    // FIN BLOC FILETAGE
+    // FIN FILETAGES BLOC ET ROBINET
+  }
 
+  function addRobinetterie($id_bloc){
 
+    $db_query = "SELECT bloc.id, bloc.id_club, bloc.nom_proprietaire, bloc.numero, bloc.constructeur, bloc.marque, bloc.capacite, bloc.date_premiere_epreuve, bloc.date_derniere_epreuve, bloc.date_dernier_tiv, bloc.pression_service, bloc.pression_epreuve, bloc.id_robinet, bloc.filetage, robinet.id, robinet.marque AS r_marque, robinet.serial_number AS r_serial_number, robinet.filetage AS r_filetage, robinet.filetage_sortie AS r_filetage_sortie ".
+                "FROM bloc, robinet ".
+                "WHERE bloc.id ='$id_bloc' AND robinet.id=bloc.id_robinet";
+    $db_result = $this->_db_con->query($db_query);
+    $bloc = $db_result->fetch_array();
 
+    // ROBINETTERIE
+    $this->SetFont('Helvetica', 'B', 11);
+    $this->Cell(0,5,"", 0, 1, 'C');
+    $this->Cell(80,5,utf8_decode("CONSTAT"), 0, 0, 'C');
+    $this->Cell(60,5,utf8_decode("DECISION"), 0, 0, 'C');
+    $this->Cell(0,5,utf8_decode("REALISATION"), 0, 1, 'C');    
+    $this->Cell(0,2,"", "B", 1, 'C');
+    $this->Cell(80,5,utf8_decode("ROBINETTERIE"), "RTL", 0, 'C');
+    $this->Cell(60,5,"", "RTL", 0, 'C');
+    $this->Cell(0,5,"", "RTL", 1, 'C');
 
+    $this->Cell(60,5,utf8_decode(""), "L", 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(10,5,utf8_decode("oui"), 1, 0, 'C');
+    $this->Cell(10,5,utf8_decode("non"), 1, 0, 'C');
+    $this->Cell(60,5,"", 0, 0, 'C');
+    $this->Cell(20,5,"Date", 1, 0, 'C');
+    $this->Cell(0,5,"Par", 1, 1, 'C');
 
+    $this->SetFontSize(9);
+    $this->Cell(60,5,utf8_decode("Le robinet se démonte facilement"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À nettoyer"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
+    $this->SetFontSize(9);
+    $this->Cell(60,5,utf8_decode("Dépôt de rouille sur les filets"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À nettoyer"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
+    $this->SetFontSize(9);
+    $this->Cell(60,5,utf8_decode("Dépôt de rouille sur le fond"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À nettoyer"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
+    $this->SetFontSize(9);
+    $this->Cell(60,5,utf8_decode("Filets entrées en bon état"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À changer"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
+    $this->SetFontSize(9);
+    $this->Cell(60,5,utf8_decode("Filets de sortie du robinet en bon état"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À changer"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
+    $this->SetFont('Helvetica', 'B', 11);
+    $this->Cell(60,5,utf8_decode("À faire"), 1, 0, 'C');
+    //$this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"OK", 1, 0, 'C');
+    $this->Cell(10,5,"NOK", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(60,5,"", "R", 0, 'L');
+    $this->Cell(0,5,"", "R", 1, 'C');
 
-// ancien code
-    /*$this->AddPage();
-    $this->Cell(30,10,utf8_decode("Bloc n° club "), 0, 0);
-    $this->SetFont('Helvetica',  '', 10);
-    $this->Cell(8,8,$bloc["id_club"], 1, 0);
-    $this->Cell(5);
+    $this->SetFontSize(9);
+    $this->Cell(60,5,utf8_decode("Bague lisse passe (entrée du robinet)"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À changer"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
+
+    $this->SetFontSize(9);
+    $this->Cell(60,5,utf8_decode("Bague filetée passe (entrée du robinet)"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À changer"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
+    // FIN ROBINETTERIE
+  }
+
+  function addCommentaireRobinetterie($id_inspection) {
+    
+    $db_query = "SELECT id, remarque_robineterie ".
+                "FROM inspection_tiv ".
+                "WHERE id ='$id_inspection'";
+    $db_result = $this->_db_con->query($db_query);
+    $inspection = $db_result->fetch_array();
+    //$status = inspection_tivElement::getPossibleStatus($element == "interieur");
+    //$this->SetFont('Helvetica', 'BU', 12);
+    //$this->Ln(8);
+    //$this->Cell(33, 8, utf8_decode("État $label :"), 0, 0);
     $this->SetFont('Helvetica', 'B', 12);
-    $this->Cell(50,10,utf8_decode("Numéro du constructeur"), 0, 0);
-    $this->SetFont('Helvetica',  '', 10);
-    $this->Cell(25,8,$bloc["numero"], 1, 1);
-    $this->SetFont('Helvetica',  '', 12);
-    $this->Cell(25,8,utf8_decode("Capacité (litres) : ".$bloc["capacite"]." - Pression service : ".$bloc["pression_service"]." bars - ".
-                                "Pression épreuve : ".$bloc["pression_epreuve"]." bars"), 0, 1);
-    $this->Cell(25,8,utf8_decode("Première épreuve : ".$bloc["date_premiere_epreuve"]), 0, 0);
-    $this->Cell(32);
-    $this->Cell(25,8,utf8_decode("Dernière épreuve : ".$bloc["date_derniere_epreuve"]), 0, 0);
-    $this->Cell(32);
-    $prochaine_epreuve = date("Y-m-d", strtotime("+5 years", strtotime($bloc["date_derniere_epreuve"])));
-    $this->Cell(25,8,utf8_decode("Prochaine épreuve : ".$prochaine_epreuve), 0, 1);
-    */
+    /*foreach($status as $state) {
+      if(strlen($state) == 0) continue;
+      $len = $this->GetStringWidth($state) + 2;
+      $this->Cell($len, 8, utf8_decode($state), 0, 0);
+      $this->Cell(5, 5, ($inspection["etat_$element"] == $state ? "X" : ""), 1, 0);
+      $this->Cell(5);
+    }*/
+    //$this->Cell(5, 7, "", 0, 1);
+    
+    if($inspection["remarque_robineterie"]){
+      $this->Cell(40,19,utf8_decode("Commentaires robinetterie :"), "LT", 0, "L");
+      $this->Cell(0, 19, utf8_decode($inspection["remarque_robineterie"]), "TR", 1);
+      $this->Cell(40,19,"", "LB", 0);
+      $this->Cell(0, 19, "", "RB", 1);
+    }
+    else{
+      $this->Cell(40,8,utf8_decode("Commentaires robinetterie :"), "LT", 0, "L");
+      $this->Cell(0, 8, "", "TR", 1);
+      $this->Cell(40,30,"", "LB", 0);
+      $this->Cell(0, 30, "", "RB", 1);
+    }
+    
+  }
+
+  function addCommentaire($id_inspection) {
+    
+    $db_query = "SELECT id, remarque ".
+                "FROM inspection_tiv ".
+                "WHERE id ='$id_inspection'";
+    $db_result = $this->_db_con->query($db_query);
+    $inspection = $db_result->fetch_array();
+    //$status = inspection_tivElement::getPossibleStatus($element == "interieur");
+    //$this->SetFont('Helvetica', 'BU', 12);
+    //$this->Ln(8);
+    //$this->Cell(33, 8, utf8_decode("État $label :"), 0, 0);
+    $this->SetFont('Helvetica', 'B', 12);
+    /*foreach($status as $state) {
+      if(strlen($state) == 0) continue;
+      $len = $this->GetStringWidth($state) + 2;
+      $this->Cell($len, 8, utf8_decode($state), 0, 0);
+      $this->Cell(5, 5, ($inspection["etat_$element"] == $state ? "X" : ""), 1, 0);
+      $this->Cell(5);
+    }*/
+    //$this->Cell(5, 7, "", 0, 1);
+    if($inspection["remarque"]){
+      $this->Cell(40,19,utf8_decode("Commentaires général:"), "LT", 0, "L");
+      $this->Cell(0, 19, utf8_decode($inspection["remarque"]), "TR", 1);
+      $this->Cell(40,19,"", "LB", 0);
+      $this->Cell(0, 19, "", "RB", 1);
+    }
+    else{
+      $this->Cell(40,8,utf8_decode("Commentaires général:"), "LT", 0, "L");
+      $this->Cell(0, 8, "", "TR", 1);
+      $this->Cell(40,30,"", "LB", 0);
+      $this->Cell(0, 30, "", "RB", 1);
+    }
+    
+  }
+
+  function addAspectBlocInformation($id_inspection, $element, $label='') {
+    $labels = array("interieur" => "intérieur", "exterieur" => "extérieur", "filetage"=>"filetage", "robineterie"=>"robinetterie");
+    $label = $element;
+    if(array_key_exists($element, $labels)) $label = $labels[$element];
+
+    $db_query = "SELECT id, etat_$element, remarque_$element ".
+                "FROM inspection_tiv ".
+                "WHERE id ='$id_inspection'";
+    $db_result = $this->_db_con->query($db_query);
+    $inspection = $db_result->fetch_array();
+    //$status = inspection_tivElement::getPossibleStatus($element == "interieur");
+    
+    $this->SetFont('Helvetica', 'BU', 12);
+    //$this->Ln(8);
+    //$this->Cell(33, 8, utf8_decode("État $label :"), 0, 0);
+    //$this->SetFont('Helvetica', 'B', 12);
+    /*foreach($status as $state) {
+      if(strlen($state) == 0) continue;
+      $len = $this->GetStringWidth($state) + 2;
+      $this->Cell($len, 8, utf8_decode($state), 0, 0);
+      $this->Cell(5, 5, ($inspection["etat_$element"] == $state ? "X" : ""), 1, 0);
+      $this->Cell(5);
+    }*/
+    //$this->Cell(5, 7, "", 0, 1);
+    $this->Cell(0,8,utf8_decode("Commentaire $label :"), "LTR", 1);
+    $this->MultiCell(0, 16, ($inspection["remarque_$element"] ? utf8_decode($inspection["remarque_$element"]) : ""), "LBR", 1);
   }
   
   function addAspectInformation($id_inspection, $element) {
@@ -811,6 +1085,7 @@ class PdfTIV extends FPDF {
     $db_result = $this->_db_con->query($db_query);
     $inspection = $db_result->fetch_array();
     $status = inspection_tivElement::getPossibleStatus($element == "interieur");
+    
     $this->SetFont('Helvetica', 'BU', 12);
     $this->Ln(8);
     $this->Cell(33, 8, utf8_decode("État $label :"), 0, 0);
