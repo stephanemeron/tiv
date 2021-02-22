@@ -83,7 +83,7 @@ class TIVElement {
     $this->_hidden_column = array();
     $this->_hidden_column_sm = array();
     $this->_readonly_column = array();
-    $this->bloc_filetage = array("M 25 x 2 ISO", "25 x 200 SI", "G 3/4 DIN 259", "E17 Conique", "M18X1.5 ISO");
+    //$this->bloc_filetage = array("M 25 x 2 ISO", "25 x 200 SI", "G 3/4 DIN 259", "E17 Conique", "M18X1.5 ISO");
   }
   function getTableName() {
     global $db_table_prefix;
