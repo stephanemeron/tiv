@@ -17,7 +17,7 @@ print "<p>".$inspection_tiv->getParentUrl()."</p>";
 
 ?>
 <h2>Date TIV</h2>
-<p><img src='images/change-date.png' style="float: left; margin: 0 15px 0 0;" />
+<p><i class="fa fa-calendar" aria-hidden="true"></i>
 <form name="consultation_tiv" id="consultation_tiv" action="consultation_tiv.php" method="POST">
 <select id="date-tiv-consultation" name="date_tiv" onchange="submit()" >
   <option></option>
@@ -34,11 +34,11 @@ while($result = $db_result->fetch_array()) {
 print "<h2>Impression des fiches TIVs</h2>\n";
 $pdf_url = "impression_fiche_tiv.php?date=$date_tiv&show_resume=1&show_inspecteur=1&show_all_bloc=1";
 print "<p><a href='$pdf_url' title='Récupérer les fiches TIV de cette séance au format PDF'>".
-      "<img src='images/impression.png' /> Imprimer les fiches TIV (PDF)</a> ".
+      '<i class="fa fa-print" aria-hidden="true"></i> Imprimer les fiches TIV (PDF)</a> '.
       "<a href='$pdf_url&save_as' title='Sauvegarder le PDF des fiches TIV'>".
-      "<img src='images/pdf.png' /> Sauvegarder le fichier PDF en local</a></p>\n";
+      '<i class="fa fa-file-pdf-o" aria-hidden="true"></i> Sauvegarder le fichier PDF en local</a></p>';
 
-print "<h2>Informations relatives à l'inspection TIV du $date_tiv</h2>\n";
+print "<h2>Informations relatives à l'inspection TIV du $date_tiv</h2>";
 
 $db_query = "SELECT inspection_tiv.id, bloc.date_derniere_epreuve FROM inspection_tiv,bloc ".
             "WHERE date = '$date_tiv' AND bloc.id = inspection_tiv.id_bloc" ;
