@@ -3,7 +3,7 @@ class journal_tivElement extends TIVElement {
   function journal_tivElement($db_con = false) {
     parent::__construct($db_con);
     $this->_parent_url       = "./#admin";
-    $this->_parent_url_label = "<img src='images/admin.png' /> Administration";
+    $this->_parent_url_label = "<i class='fa fa-sliders'></i> Administration";
     $this->_read_only = true;
     $this->_update_label = "";
     $this->_elements =  array("id" => "Réf.", "date" => "Date", "element" => "Élément", "id_element" => "Réf. élément", "message" => "Message");
