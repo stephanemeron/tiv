@@ -7,7 +7,7 @@ class pretElement extends TIVElement {
   function pretElement($db_con = false) {
     parent::__construct($db_con);
     $this->_parent_url       = "./#personne";
-    $this->_parent_url_label = "<img src='images/personne.png' /> Plongeurs/inspecteurs TIV";
+    $this->_parent_url_label = "<i class='fa fa-user-circle-o'></i> Plongeurs/inspecteurs TIV";
     $this->_creation_label = "Création d'un nouveau prêt";
     $this->_update_label = "Mettre à jour le prêt";
     $this->_field_to_retrieve = array(

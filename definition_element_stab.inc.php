@@ -3,7 +3,7 @@ class stabElement extends TIVElement {
   function stabElement($db_con = false) {
     parent::__construct($db_con);
     $this->_parent_url       = "./#materiel";
-    $this->_parent_url_label = "<img src='images/materiel.png' /> Matériel";
+    $this->_parent_url_label = "<i class='fa fa-wrench'></i> Matériel";
     $this->_show_delete_form = true;
     $this->_creation_label = "Création d'un gilet";
     $this->_update_label = "Mettre à jour la stab";
