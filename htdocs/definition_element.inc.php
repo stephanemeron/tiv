@@ -235,7 +235,7 @@ class TIVElement {
       $( \"#$label\" ).datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat: 'yy-mm-dd',
+        dateFormat: 'yyyy-mm-dd',
         appendText: '(dd-mm-yyyy)',
         language: 'fr',
         altFormat: 'dd-mm-yyyy'
@@ -301,7 +301,7 @@ class TIVElement {
   }
   function getAdditionalControl() {
     if($this->_read_only || !$this->_show_create_form) return "";
-    return '<form name="ajout_form" id="ajout_form" action="ajout_element.php" method="POST">
+    return '<form name="ajout_form" id="ajout_form" action="ajout_element.php" method="POST" class="my-3">
 <input type="hidden" name="element" value="'.$this->_name.'" />
 <input type="submit" name="submit" onclick=\'return(confirm("Procéder à la création ?"));\' value="'.$this->_creation_label.'" />
 </form>
@@ -408,7 +408,7 @@ class TIVElement {
   function getExtraOperation($id) {
   }
   function getURLReference($id) {
-    return "id=$id&element=".$this->_name;
+    return "id=$id&element=".$this->_name."&returnurl=".$this->_back_url;
   }
   function getEditUrl($id) {
     $element_to_manage = $this->getURLReference($id);
@@ -420,7 +420,7 @@ class TIVElement {
   }
   function getParentUrl() {
     return "Navigation : <a href='./'><i class='fa fa-home'></i> Accueil</a> > \n".
-           "<a href='".$this->_parent_url."'>".$this->_parent_url_label."</a>";
+           "<a href='".$this->_parent_url."'> ".$this->_parent_url_label."</a>";
   }
   function getQuickNavigationFormInput() {
     $input  = " > Navigation rapide : <select name='id' onchange='this.form.submit()'>\n".
@@ -440,7 +440,7 @@ class TIVElement {
                 "<form action='edit.php' method='GET'>".
                   "<input type='hidden' name='element' value='".$this->_name."' />".
                   "<div class=\"my-3\">".$this->getParentUrl()." >".
-                    "<a href='".$this->getBackUrl()."'>".$this->getUrlTitle()."</a>$input_form".
+                    "<a href='".$this->getBackUrl()."'> ".$this->getUrlTitle()."</a>$input_form".
                   "</div>".
                 "</form>".
               "</div>".

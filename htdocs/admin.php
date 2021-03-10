@@ -101,7 +101,7 @@
       $( "#admin-date-tiv-selector" ).datepicker({
         changeMonth: true,
         changeYear: true,
-        dateFormat: 'yy-mm-dd',
+        dateFormat: 'yyyy-mm-dd',
         appendText: '(dd-mm-yyyy)',
         language: 'fr',
         altFormat: 'dd-mm-yyyy'
