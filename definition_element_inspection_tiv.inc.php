@@ -13,7 +13,7 @@ class inspection_tivElement extends TIVElement {
       "remarque_interieur", "etat_filetage", "remarque_filetage", "etat_robineterie", "remarque_robineterie",
       "decision", "remarque",);
     $this->_columns = array("Réf.", "Numéro du bloc", "Constructeur bloc", "Marque bloc", "Capacité bloc",
-                            "Nom de l'inspecteur TIV", "Date dernière épreuve", "Date dernier TIV", "Décision", "Remarque");
+                            "Réf robinet", "Date dernière épreuve", "Date dernier TIV", "Décision", "Remarque");
     $this->_forms = array(
       "id_bloc"              => array("required", "text", "Numéro du bloc associé"),
       //"id_robinet"           => array("required", "text", "Numéro du robinet du bloc"),
@@ -62,8 +62,11 @@ class inspection_tivElement extends TIVElement {
     return parent::getURLReference($id)."&date=".$this->_date;
   }
   function getExtraInformation($id) {
-    $db_result = $this->_db_con->query("SELECT id_bloc,id_inspecteur_tiv, id_club FROM inspection_tiv, bloc WHERE inspection_tiv.id = $id AND bloc.id=id_bloc");
+    $db_result = $this->_db_con->query("SELECT id_bloc,id_inspecteur_tiv,date, id_club FROM inspection_tiv, bloc WHERE inspection_tiv.id = $id AND bloc.id=id_bloc");
     $result = $db_result->fetch_array();
+    if(!$this->_date){
+        $this->_date = $result["date"];
+    }
     /*$extra_info = "<p>Navigation rapide : <a href='edit.php?id=".$result[0]."&element=bloc'>".
                   "<img src='images/edit.png' style='vertical-align:middle;' /> fiche du bloc</a> - ".
                   "<a href='edit.php?id=".$result[1]."&element=inspecteur_tiv'>".
@@ -73,9 +76,12 @@ class inspection_tivElement extends TIVElement {
                   */
 
     $extra_info = "<a href='edit.php?id=".$result["id_bloc"]."&element=bloc' title='Éditer la fiche TIV'>".
-                      "<i class='fa fa-eye' aria-hidden='true'></i> fiche de bloc N° ".$result["id_club"]."</a> - ".
-                      "<a href='edit.php?id=".$result["id_inspecteur_tiv"]."&element=inspecteur_tiv'>".
-                      "<i class='fa fa-graduation-cap' aria-hidden='true'></i> fiche de l'inspecteur TIV</a> - ".
+                      "<i class='fa fa-eye' aria-hidden='true'></i> fiche de bloc N° ".$result["id_club"]."</a> - ";
+                      if($result["id_inspecteur_tiv"]){
+                          $extra_info.="<a href='edit.php?id=".$result["id_inspecteur_tiv"]."&element=inspecteur_tiv'>";
+                      }
+
+                      $extra_info.="<i class='fa fa-graduation-cap' aria-hidden='true'></i> fiche de l'inspecteur TIV</a> - ".
                       "<a href='impression_fiche_tiv.php?id_bloc=".$result["id_bloc"]."&date=".$this->_date."'>".
                       "<i class='fa fa-file-pdf-o' aria-hidden='true'></i> fiche au format PDF</a>";
 
@@ -110,12 +116,53 @@ class inspection_tivElement extends TIVElement {
     $this->_date = $date;
   }
   function getDBQuery() {
-    return "SELECT inspection_tiv.id, CONCAT('Réf :', bloc.id, ' / n° club : ', bloc.id_club), bloc.constructeur, bloc.marque, bloc.capacite, robinet.serial_number, ".
-           "inspecteur_tiv.nom, bloc.date_derniere_epreuve, bloc.date_dernier_tiv,decision,remarque ".
-           "FROM inspection_tiv, bloc, inspecteur_tiv, robinet ".
-           "WHERE inspection_tiv.date = '".$this->_date."' AND id_bloc = bloc.id AND id_inspecteur_tiv = inspecteur_tiv.id AND robinet.id = bloc.id_robinet ".
-           "ORDER BY inspecteur_tiv.nom";
+      // $db_query = "SELECT inspection_tiv.id FROM inspection_tiv WHERE inspection_tiv.date = '".$this->_date."'";
+      // $db_result = $this->_db_con->query($db_query);
+      // while($result = $db_result->fetch_array()) {
+      //   $total++;
+      //   $time = strtotime($result[1]);
+      //   if($time > $max_time_tiv) $count_tiv++;
+      //   else $reepreuve++;
+      // }
+      return "SELECT inspection_tiv.id, CONCAT('Réf :', bloc.id, ' / n° club : ', bloc.id_club), bloc.constructeur, bloc.marque, bloc.capacite, robinet.serial_number, ".
+             "bloc.date_derniere_epreuve, bloc.date_dernier_tiv,decision,remarque ".
+             "FROM inspection_tiv, bloc, robinet ".
+             "WHERE inspection_tiv.date = '".$this->_date."' AND id_bloc = bloc.id AND robinet.id = bloc.id_robinet ".
+             "ORDER BY inspection_tiv.date";
+
+      //return "SELECT inspection_tiv.id, CONCAT('Réf :', bloc.id, ' / n° club : ', bloc.id_club), bloc.constructeur, bloc.marque, bloc.capacite, robinet.serial_number, ".
+           // "inspecteur_tiv.nom, bloc.date_derniere_epreuve, bloc.date_dernier_tiv,decision,remarque ".
+           // "FROM inspection_tiv, bloc, inspecteur_tiv, robinet ".
+           // "WHERE inspection_tiv.date = '".$this->_date."' AND id_bloc = bloc.id AND id_inspecteur_tiv = inspecteur_tiv.id AND robinet.id = bloc.id_robinet ".
+           // "ORDER BY inspection_tiv.date";
   }
+
+  function getHTMLTable($id, $label, $db_query = false, $show_additional_control = true) {
+    $table = $this->getJSOptions($id, $label);
+    if($show_additional_control)
+      $table .= $this->getAdditionalControl($id);
+    $table .= "<div class='table-responsive'><table class='table table-striped table-bordered nowrap def-obj' id='$id'>\n";
+    $table .= "  <thead>".$this->getHTMLHeaderTable()."</thead>\n";
+    $table .= "  <tbody>\n";
+    if(!$db_query) $db_query = $this->getDBQuery();
+    $db_result =  $this->_db_con->query($db_query);
+    $this->_record_count = 0;
+    while($line = $db_result->fetch_array()) {
+      if(!$this->isDisplayed($line) && !$this->_force_display) continue;
+      $current_class = $this->_tr_class[$this->_record_count++ % count($this->_tr_class)];
+      // Met à jour l'état de la ligne courante afin de rajouter des informations
+      // et renvoie une classe d'affichage css en cas de modification
+      // pour mettre en avant un bloc ayant passé sa date de TIV par exemple.
+      $table .= $this->getHTMLLineTable($line, $current_class);
+    }
+
+    $table .= "  </tbody>\n";
+    $table .= "  <tfoot>".$this->getHTMLHeaderTable()."</tfoot>\n";
+    $table .= "</table></div>\n";
+    return $table;
+  }
+
+
   function getHTMLHeaderTable() {
     $header = "    <tr>\n      <th>";
     $header .= join("</th><th>", $this->_columns);
@@ -148,12 +195,12 @@ class inspection_tivElement extends TIVElement {
       }
       return $this->constructSelectInputLabels($label, $options, $value);
     } else if($label === "id_bloc") {
-      $db_query = "SELECT id,id_club,constructeur,marque,capacite,numero FROM bloc";
+      $db_query = "SELECT bloc.id,bloc.id_club,bloc.constructeur,bloc.marque,bloc.capacite,bloc.numero,robinet.serial_number FROM bloc, robinet WHERE robinet.id = bloc.id_robinet";
       $db_result = $this->_db_con->query($db_query);
       $options = array("" => "");
       while($result = $db_result->fetch_array()) {
         $options[$result["id"]] = "n° ".$result["id_club"]. " (id=".$result["id"].") - ".
-                                $result["constructeur"]." (".$result["marque"].") - capacité (litres) : ".$result["capacite"]." - n° série : ".$result["numero"];
+                                $result["constructeur"]." (".$result["marque"].") - capacité : ".$result["capacite"]."l - n° série : ".$result["numero"]." - robinet : ".$result["serial_number"];
       }
       return $this->constructSelectInputLabels($label, $options, $value);
     }
@@ -162,14 +209,14 @@ class inspection_tivElement extends TIVElement {
   function getEditUrl($id) {
     $element_to_manage = "id=$id&element=".$this->_name."&date=".$this->_date."&returnurl=".$this->_back_url;
     $delete_confirmation = "return(confirm(\"Suppression élément ".$this->_name." (id = $id) ?\"));";
-    
+
     return "<a href='edit.php?$element_to_manage' title=\"Éditer cet élément\" class='btn btn-info mr-3'>".
            "<i class='fa fa-pencil-square-o' aria-hidden='rue'></i></a> / ".
            "<a onclick='$delete_confirmation' title='Supprimer cet élément (confirmation nécessaire)' href='delete.php?$element_to_manage' class='btn btn-danger ml-3'>".
            "<i class='fa fa-times' aria-hidden='true'></i></a>";
   }
 
-  
+
 
   function getPossibleStatus($grenaillage = false) {
     $etat_bloc = array("", "Bon", "A suivre", "Mauvais");
