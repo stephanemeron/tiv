@@ -304,14 +304,14 @@ document.getElementById('$div_label_to_update').className='$error_class';
     $( '#admin-date-tiv-selector' ).datepicker({
       changeMonth: true,
       changeYear: true,
-      dateFormat: 'yyyy-mm-dd',
+      dateFormat: 'yy-mm-dd',
       appendText: '(dd-mm-yyyy)',
       language: 'fr',
       altFormat: 'dd-mm-yyyy'
     });
   });
   </script>
-  <p>Date de l'inspection TIV : <input type='text' name='date_tiv' id='admin-date-tiv-selector' size='10' value=''/>
+  <p>Date de l'inspection TIV :<input type='text' name='date_tiv' id='admin-date-tiv-selector' size='10' value=''/>
   - Nom de l'inspecteur TIV : <select id='tivs' name='tivs[]'>
     <option></option>\n";
       $db_result = $this->_db_con->query("SELECT id,nom,actif FROM inspecteur_tiv WHERE actif = 'oui' ORDER BY nom");
@@ -419,10 +419,10 @@ document.getElementById('$div_label_to_update').className='$error_class';
     $extra_info = array();
     while($result = $db_result->fetch_array()) {
       $extra_info []= "<a href='edit.php?id=".$result[0]."&element=inspection_tiv&date=".$result[1]."' ".
-                      "title='Éditer la fiche TIV'><i class='fa fa-eye' aria-hidden='true'></i> ".
+                      "title='Éditer la fiche TIV'><img src='images/admin.png' style='vertical-align:middle;' />".
                       "Inspection TIV du ".$result[1]."</a> ".
                       "<a href='impression_fiche_tiv.php?id_bloc=$id&date=".$result[1]."' title='Accéder à la fiche au format PDF'>".
-                      '( <i class="fa fa-file-pdf-o" aria-hidden="true"></i> fiche PDF )</a>';
+                      "(<img src='images/pdf.png' style='vertical-align:middle;' /> fiche PDF)</a>";
     }
     // Composition des messages
     $message = "";
