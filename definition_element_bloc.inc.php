@@ -166,7 +166,7 @@ class blocElement extends TIVElement {
     $line = "    <tr class=\"$current_class\">\n ";
     $id = $record[0];
     $to_display = array();
-    
+
 
     foreach($this->getElements() as $elt) {
       if(preg_match("/id_(.*)/", $elt, $tmp)) {
@@ -197,9 +197,9 @@ class blocElement extends TIVElement {
       $to_display [] = $this->getEditUrl($id);
     }
     //echo'<pre>'; print_r($to_display);echo'</pre>';
-    
+
     foreach ($to_display as $key => $value) {
-      
+
       if (is_array($value)){
         $line .= '<td class="'.$value[0].'">'.$value[1].'</td>';
       }
@@ -221,7 +221,7 @@ class blocElement extends TIVElement {
       $db_result = $this->_db_con->query($db_query);
       $options = array("" => "");
       while($result = $db_result->fetch_array()) {
-        $options[$result["id"]] = $result["id"]."-".$result["marque"]."-".$result["nb_sortie"];
+        $options[$result["id"]] = $result["id"]."-".$result["marque"]."-".$result["nb_sortie"]." sortie(s)";
       }
       return $this->constructSelectInputLabels($label, $options, $value);
     }
@@ -248,7 +248,7 @@ document.getElementById('$div_label_to_update').className='$error_class';
   }
   function getAdditionalControl() {
     $additional_element = parent::getAdditionalControl();
-    if(!array_key_exists("force_bloc_display", $_GET)) 
+    if(!array_key_exists("force_bloc_display", $_GET))
       return "<p>$additional_element</p>\n<p><a href='affichage_element.php?element=bloc&force_bloc_display=1'>".
              "Forcer l'affichage de tous les blocs (y compris rebuté)</a></p>\n";
     else
@@ -267,7 +267,7 @@ document.getElementById('$div_label_to_update').className='$error_class';
       return "critical-etat";
     }
     foreach(array("date_dernier_tiv","date_derniere_epreuve") as $field) {
-      
+
         if($tmp = $this->getDateDivClass($field, $record[$field], $comment, $next_date, $class_status)) {
           $record[$field] = "<div class='$class_status $tmp'>".$record[$field]."</div>";
         }
@@ -276,7 +276,7 @@ document.getElementById('$div_label_to_update').className='$error_class';
     if($tmp != "ok"){
       return $tmp."-epreuve";
     }
-    
+
   }
   function getTIVForm($id) {
     $form = "<script>
@@ -338,7 +338,7 @@ document.getElementById('$div_label_to_update').className='$error_class';
         $next_epreuve_warn  = strtotime("+".$this->_epreuve_month_count_warn." months", $time_value);
         $next_date = date("Y-m-d", $next_epreuve);
         if($next_epreuve < $this->_current_time and $next_epreuve != "") {
-          $status       = "critical";          
+          $status       = "critical";
           $class_status = "text-danger";
           $comment      = "DATE DE RÉ-ÉPREUVE DÉPASSÉE !!! ";
         } else if($next_epreuve_warn < $this->_current_time) {
@@ -398,13 +398,13 @@ document.getElementById('$div_label_to_update').className='$error_class';
       $bg_color = "danger";
       $message_expiration = "<div class='error'><i class='fa fa-calendar-times-o fa-2x text-danger mx-3' aria-hidden='true'/></i> ".
                             "ATTENTION !!! CE BLOC A DÉPASSÉ SA DATE DE RÉÉPREUVE (le ".date("d/m/Y", $next_epreuve).") !!!</div>\n";
-    } else if($next_epreuve_minus_one < $this->_current_time) {      
+    } else if($next_epreuve_minus_one < $this->_current_time) {
       $bg_color = "warning";
       $message_expiration = "<div class='warning'><i class='fa fa-calendar fa-2x text-warning mx-3' aria-hidden='true'/></i> ".
                             "Attention, ce bloc va bientôt dépasser sa date de réépreuve ".
                             "(dans moins de ".$this->getEpreuveWarnMonthCount()." mois, le ".date("d/m/Y", $next_epreuve).")</div>\n";
     }
-    if($next_tiv < $this->_current_time) {      
+    if($next_tiv < $this->_current_time) {
       $bg_color = "danger";
       $message_expiration = "<div class='error'><i class='fa fa-calendar-times-o fa-2x text-danger mx-3' aria-hidden='true'/></i> ".
                             "Attention !!! ce bloc a dépassé sa date de TIV (le ".date("d/m/Y", $next_tiv).")</div>\n";
