@@ -13,21 +13,100 @@ class PdfTIV extends FPDF {
     self::AliasNbPages();
   }
 
-  
-  function Header() {
+  function AddPage($orientation='', $size='', $rotation=0, $result=false)
+  {
+  	// Start a new page
+  	if($this->state==3)
+  		$this->Error('The document is closed');
+  	$family = $this->FontFamily;
+  	$style = $this->FontStyle.($this->underline ? 'U' : '');
+  	$fontsize = $this->FontSizePt;
+  	$lw = $this->LineWidth;
+  	$dc = $this->DrawColor;
+  	$fc = $this->FillColor;
+  	$tc = $this->TextColor;
+  	$cf = $this->ColorFlag;
+  	if($this->page>0)
+  	{
+  		// Page footer
+  		$this->InFooter = true;
+  		$this->Footer();
+  		$this->InFooter = false;
+  		// Close page
+  		$this->_endpage();
+  	}
+  	// Start new page
+  	$this->_beginpage($orientation,$size,$rotation);
+  	// Set line cap style to square
+  	$this->_out('2 J');
+  	// Set line width
+  	$this->LineWidth = $lw;
+  	$this->_out(sprintf('%.2F w',$lw*$this->k));
+  	// Set font
+  	if($family)
+  		$this->SetFont($family,$style,$fontsize);
+  	// Set colors
+  	$this->DrawColor = $dc;
+  	if($dc!='0 G')
+  		$this->_out($dc);
+  	$this->FillColor = $fc;
+  	if($fc!='0 g')
+  		$this->_out($fc);
+  	$this->TextColor = $tc;
+  	$this->ColorFlag = $cf;
+  	// Page header
+  	$this->InHeader = true;
+  	$this->Header($result);
+  	$this->InHeader = false;
+  	// Restore line width
+  	if($this->LineWidth!=$lw)
+  	{
+  		$this->LineWidth = $lw;
+  		$this->_out(sprintf('%.2F w',$lw*$this->k));
+  	}
+  	// Restore font
+  	if($family)
+  		$this->SetFont($family,$style,$fontsize);
+  	// Restore colors
+  	if($this->DrawColor!=$dc)
+  	{
+  		$this->DrawColor = $dc;
+  		$this->_out($dc);
+  	}
+  	if($this->FillColor!=$fc)
+  	{
+  		$this->FillColor = $fc;
+  		$this->_out($fc);
+  	}
+  	$this->TextColor = $tc;
+  	$this->ColorFlag = $cf;
+  }
+
+
+  function Header($result_id_bloc=false) {
     global $logo_club;
     global $nom_club;
-    
+
     //$this->Image("/images/portrait_femme01.jpg",10,5,30,"jpg");
     $this->SetFont('Arial','B',10);
-    if(array_key_exists("id_bloc", $_GET)){
-      $id_bloc = $_GET['id_bloc'];
+    if(array_key_exists("id_bloc", $_GET) || $result_id_bloc){
+        if(array_key_exists("id_bloc", $_GET)){
+            $id_bloc = $_GET['id_bloc'];
+        }
+        else{
+            $id_bloc = $result_id_bloc;
+        }
 
-      $bloc_condition = "id_bloc = $id_bloc";
-      $db_query = "SELECT  id_bloc, inspection_tiv.id AS i_t_id, bloc.id_club AS bloc_id_club ".
-                  "FROM inspection_tiv, bloc ".
-                  "WHERE inspection_tiv.date = '".$this->_date."' ".
-                  "AND $bloc_condition ";
+      $bloc_condition = "bloc.id = $id_bloc";
+      $db_query = "SELECT  inspection_tiv.id_bloc AS id_bloc, inspection_tiv.id AS i_t_id, bloc.id_club AS bloc_id_club ".
+                  "FROM inspection_tiv, bloc ";
+      if(array_key_exists("date", $_GET)){
+          $db_query .= "WHERE inspection_tiv.date = '".$_GET['date']."' AND ".$bloc_condition;
+      }
+      else{
+          $db_query .= "WHERE ".$bloc_condition;
+      }
+
       $db_result = $this->_db_con->query($db_query);
       $result = $db_result->fetch_array();
 
@@ -42,7 +121,7 @@ class PdfTIV extends FPDF {
       //$this->Cell(0, 8, utf8_decode('Fiche TIV du '.$this->_date." - club $nom_club"), 'B', 0, 'C');
       $this->Cell(142, 18, utf8_decode('Numéro du bloc : '),0, 0, 'R');
       $this->SetFont('Helvetica','' ,40);
-      
+
       $this->Cell(0,12,$result["bloc_id_club"],0, 1, 'R');
     }
     //$this->Cell(0, 8, utf8_decode('Fiche TIV du '.$this->_date." - club $nom_club".$logo_club), 'B', 0, 'C');
@@ -50,7 +129,7 @@ class PdfTIV extends FPDF {
   }
 
 
-  
+
   function Footer() {
     global $nom_club;
     $this->SetY(-10);
@@ -65,14 +144,13 @@ class PdfTIV extends FPDF {
     $this->Cell(0,8,utf8_decode("FICHE D'ÉVALUATION ET DE SUIVI D'UNE BOUTEILLE DE PLONGÉE"),0, 1, 'C');
   }
 
-  
+
   function addInspecteurResume() {
     //$this->AddPage();
     $this->SetFont('Helvetica','B',16);
 
     $this->Cell(0, 10, utf8_decode("Informations relatives aux inspecteurs TIV du ".$this->_date.""),0,1);
     $this->Ln(6);
-
     $db_query = "SELECT inspection_tiv.id_inspecteur_tiv, inspecteur_tiv.nom, inspecteur_tiv.numero_tiv, COUNT(inspection_tiv.id_inspecteur_tiv) \n".
                 "FROM inspection_tiv,inspecteur_tiv \n".
                 "WHERE date = '".$this->_date."' AND inspecteur_tiv.id = inspection_tiv.id_inspecteur_tiv \n".
@@ -95,7 +173,7 @@ class PdfTIV extends FPDF {
     $this->Ln(5);
     $this->Cell(0, 5,utf8_decode("Vous trouverez les fiches récapitulatives de chaque inspecteur TIV dans les pages suivantes."), 0, 1);
   }
-  
+
   function addInspectionResume() {
     $this->SetFont('Helvetica','B',16);
     $this->Cell(0, 10, utf8_decode("Informations relatives à l'inspection TIV du ".$this->_date.""),0,1);
@@ -118,13 +196,13 @@ class PdfTIV extends FPDF {
     $this->Cell(0,10,utf8_decode("Il est prévu d'inspecter $total blocs au total dont $reepreuve réépreuve(s) et ".$count_tiv." inspection(s) TIV."), 0, 1);
     $this->Cell(0,10,utf8_decode("Vous trouverez l'ensemble des fiches TIV dans les pages suivantes."), 0, 1);
   }
-  
+
   function addResume() {
     $this->addInspecteurResume();
     $this->Ln(10);
     $this->addInspectionResume();
   }
-  
+
   function addInspecteurFile() {
     global $nom_club;
     global $adresse_club;
@@ -191,7 +269,7 @@ class PdfTIV extends FPDF {
       $this->addInspecteurFileBlocsInformations($result[0]);
     }
   }
-  
+
   function addInspecteurFileBlocsInformationsTableHeader() {
     $bloc_header = array("Fabricant" => 27, "Marque" => 37, "Numéro bouteille" => 27,
       "Date première épreuve" => 24, "Date dernière épreuve" => 24, "Date dernière visite" => 24,
@@ -242,7 +320,7 @@ class PdfTIV extends FPDF {
       }
     }
   }
-  
+
   function addBlocAlert($id_bloc) {
     $this->SetFont('Helvetica', 'B', 14);
     $this->SetTextColor(255, 0, 0);
@@ -265,25 +343,25 @@ class PdfTIV extends FPDF {
     $this->SetLineWidth(.567/$this->k);
     $this->Ln();
   }
-  
+
   function addBlocFile($id_bloc = false) {
     $bloc_condition = "1";
     if($id_bloc) $bloc_condition = "id_bloc = $id_bloc";
-    $db_query = "SELECT inspection_tiv.id, id_bloc, inspecteur_tiv.numero_tiv, decision, inspecteur_tiv.nom ".
-                "FROM inspection_tiv, inspecteur_tiv ".
-                "WHERE inspection_tiv.date = '".$this->_date."' AND id_inspecteur_tiv = inspecteur_tiv.id ".
-                "AND $bloc_condition ".
-                "ORDER BY inspecteur_tiv.nom DESC";
+    $db_query = "SELECT inspection_tiv.id, id_bloc, id_inspecteur_tiv, decision ".
+                "FROM inspection_tiv ".
+                "WHERE inspection_tiv.date = '".$this->_date."'".
+                "AND $bloc_condition ";
+
     $db_result = $this->_db_con->query($db_query);
     while($result = $db_result->fetch_array()) {
       // Affichage de l'entête de la fiche (capacité du bloc, date des réépreuves etc.)
       //$this->AddPage();
-      $this->AddPage();
+      $this->AddPage('','',0,$result["id_bloc"]);
       //$this->Ln(8);
       $this->SetFont('Helvetica', 'B',12);
       $this->Cell(0,8,utf8_decode("FICHE D'ÉVALUATION ET DE SUIVI D'UNE BOUTEILLE DE PLONGÉE"),0, 1, 'C');
       $this->addBlocInformation($result[1]);
-      
+
       // Affichage d'un message d'alerte en cas de dépassement de la date d'épreuve/tiv sur le bloc
       $this->addBlocAlert($result[1]);
 
@@ -304,7 +382,20 @@ class PdfTIV extends FPDF {
       $this->addCommentaire($result[0]);
 
       $this->Ln(6);
-      $this->addResultatInspection($result);
+      if($result["id_inspecteur_tiv"] != NULL){
+          $db_query_inspecteur = "SELECT id, numero_tiv, nom ".
+                          "FROM inspecteur_tiv ".
+                          "WHERE  ".$result["id_inspecteur_tiv"]." = inspecteur_tiv.id ".
+                          "ORDER BY inspecteur_tiv.nom DESC";
+          $db_result_inspecteur = $this->_db_con->query($db_query_inspecteur);
+          while($result_inspecteur = $db_result_inspecteur->fetch_array()) {
+
+              $this->addResultatInspection($result_inspecteur);
+          }
+      }
+      else{
+          $this->addResultatInspection();
+      }
       // Information concernant l'inspection TIV
       /*$this->SetFont('Helvetica', 'B', 14);
       $this->Cell(45,10,utf8_decode("Vérificateur TIV n° "), 0, 0);
@@ -343,7 +434,7 @@ class PdfTIV extends FPDF {
     $arrayDate = explode('-',$newDate);
     return $arrayDate[2]."/".$arrayDate[1]."/".$arrayDate[0];
   }
-  
+
   function addBlocInformation($id_bloc) {
 
     //global $bloc_filetage;
@@ -408,7 +499,7 @@ class PdfTIV extends FPDF {
     $this->SetFont('Helvetica', 'I', 9);
     $this->Cell(15,5,utf8_decode("N° série"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(0,5,$bloc["r_serial_number"], 1, 1, 'L');    
+    $this->Cell(0,5,$bloc["r_serial_number"], 1, 1, 'L');
 
     $this->SetFont('Helvetica', 'I', 9);
     $this->Cell(25,5,utf8_decode("PE (bar)"), 1, 0, 'L');
@@ -453,7 +544,7 @@ class PdfTIV extends FPDF {
     $this->Cell(0,5,"", 0, 1, 'C');
     $this->Cell(80,5,utf8_decode("CONSTAT"), 0, 0, 'C');
     $this->Cell(60,5,utf8_decode("DECISION"), 0, 0, 'C');
-    $this->Cell(0,5,utf8_decode("REALISATION"), 0, 1, 'C');    
+    $this->Cell(0,5,utf8_decode("REALISATION"), 0, 1, 'C');
     $this->Cell(0,2,"", "B", 1, 'C');
     $this->Cell(80,5,utf8_decode("BOUTEILLE"), "TL", 0, 'C');
     $this->Cell(60,5,"", "T", 0, 'C');
@@ -815,7 +906,7 @@ class PdfTIV extends FPDF {
     $bloc = $db_result->fetch_array();
 
 
-    
+
     // FILETAGES BLOC ET ROBINET
     $this->Cell(0, 5, "", 0, 1);
     $this->SetFont('Helvetica', 'B', 11);
@@ -861,7 +952,7 @@ class PdfTIV extends FPDF {
     $this->SetFont('ZapfDingbats', '', 14);
     $this->Cell(5,8,"o", "LTB", 0, 'C');
     $this->SetFont('Helvetica', '', 8);
-    
+
     $this->Cell(190 - (40 + ($count_robinet_filetage_sortie * $width_cell_robinet_filetage_sortie)) - 5 ,8, "Autre","TBR",1);
 
     // FIN FILETAGES BLOC ET ROBINET
@@ -880,7 +971,7 @@ class PdfTIV extends FPDF {
     $this->Cell(0,5,"", 0, 1, 'C');
     $this->Cell(80,5,utf8_decode("CONSTAT"), 0, 0, 'C');
     $this->Cell(60,5,utf8_decode("DECISION"), 0, 0, 'C');
-    $this->Cell(0,5,utf8_decode("REALISATION"), 0, 1, 'C');    
+    $this->Cell(0,5,utf8_decode("REALISATION"), 0, 1, 'C');
     $this->Cell(0,2,"", "B", 1, 'C');
     $this->Cell(80,5,utf8_decode("ROBINETTERIE"), "RTL", 0, 'C');
     $this->Cell(60,5,"", "RTL", 0, 'C');
@@ -997,7 +1088,7 @@ class PdfTIV extends FPDF {
   }
 
   function addCommentaireRobinetterie($id_inspection) {
-    
+
     $db_query = "SELECT id, remarque_robineterie ".
                 "FROM inspection_tiv ".
                 "WHERE id ='$id_inspection'";
@@ -1016,7 +1107,7 @@ class PdfTIV extends FPDF {
       $this->Cell(5);
     }*/
     //$this->Cell(5, 7, "", 0, 1);
-    
+
     if($inspection["remarque_robineterie"]){
       $this->Cell(40,19,utf8_decode("Commentaires robinetterie :"), "LT", 0, "L");
       $this->Cell(0, 19, utf8_decode($inspection["remarque_robineterie"]), "TR", 1);
@@ -1029,11 +1120,11 @@ class PdfTIV extends FPDF {
       $this->Cell(40,30,"", "LB", 0);
       $this->Cell(0, 30, "", "RB", 1);
     }
-    
+
   }
 
   function addCommentaire($id_inspection) {
-    
+
     $db_query = "SELECT id, remarque ".
                 "FROM inspection_tiv ".
                 "WHERE id ='$id_inspection'";
@@ -1064,10 +1155,10 @@ class PdfTIV extends FPDF {
       $this->Cell(40,16,"", "LB", 0);
       $this->Cell(0, 16, "", "RB", 1);
     }
-    
+
   }
 
-  function addResultatInspection($result){
+  function addResultatInspection($result=false){
     $this->SetFont('Helvetica', 'B', 12);
     $this->Cell(60, 6, utf8_decode("Résultat de l'inspection"), "RTL",0, "L");
     $this->Cell(5, 6, "", 0, 0,"L");
@@ -1082,7 +1173,12 @@ class PdfTIV extends FPDF {
     $this->Cell(10,6,"o", "R", 0, 'C');
     $this->SetFont('Helvetica', "", 10);
     $this->Cell(5, 6, "", 0, 0,"L");
-    $this->Cell(55, 6, utf8_decode($result[4]), "RBL", 0,"L");
+    if($result){
+        $this->Cell(55, 6, utf8_decode($result["nom"]), "RBL", 0,"L");
+    }
+    else{
+        $this->Cell(55, 6, "", "RBL", 0,"L");
+    }
     $this->Cell(5, 6, "", 0, 0,"L");
     $this->Cell(0, 6, "", "RL",1,"L");
 
@@ -1115,7 +1211,12 @@ class PdfTIV extends FPDF {
     $this->Cell(10,6,"o", "RB", 0, 'C');
     $this->SetFont('Helvetica', "", 10);
     $this->Cell(5, 6, "", 0, 0,"L");
-    $this->Cell(55, 6, utf8_decode($result[2]), "RBL",0,"L");
+    if($result){
+        $this->Cell(55, 6, utf8_decode($result["numero_tiv"]), "RBL",0,"L");
+    }
+    else{
+        $this->Cell(55, 6, "", "RBL",0,"L");
+    }
     $this->Cell(5, 6, "", 0, 0,"L");
     $this->Cell(0, 6, "", "RBL",1,"L");
 
@@ -1134,7 +1235,7 @@ class PdfTIV extends FPDF {
     $db_result = $this->_db_con->query($db_query);
     $inspection = $db_result->fetch_array();
     //$status = inspection_tivElement::getPossibleStatus($element == "interieur");
-    
+
     $this->SetFont('Helvetica', 'BU', 12);
     //$this->Ln(8);
     //$this->Cell(33, 8, utf8_decode("État $label :"), 0, 0);
@@ -1150,7 +1251,7 @@ class PdfTIV extends FPDF {
     $this->Cell(0,8,utf8_decode("Commentaire $label :"), "LTR", 1);
     $this->MultiCell(0, 16, ($inspection["remarque_$element"] ? utf8_decode($inspection["remarque_$element"]) : ""), "LBR", 1);
   }
-  
+
   function addAspectInformation($id_inspection, $element) {
     $labels = array("interieur" => "intérieur", "exterieur" => "extérieur");
     $label = $element;
@@ -1162,7 +1263,7 @@ class PdfTIV extends FPDF {
     $db_result = $this->_db_con->query($db_query);
     $inspection = $db_result->fetch_array();
     $status = inspection_tivElement::getPossibleStatus($element == "interieur");
-    
+
     $this->SetFont('Helvetica', 'BU', 12);
     $this->Ln(8);
     $this->Cell(33, 8, utf8_decode("État $label :"), 0, 0);
