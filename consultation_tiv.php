@@ -4,11 +4,14 @@ include_once('head.inc.php');
 include_once('connect_db.inc.php');
 include_once('definition_element.inc.php');
 
-if(array_key_exists("date_tiv", $_GET)) {
+if(array_key_exists("date_tiv", $_POST)) {
+  $date_tiv = $_POST['date_tiv'];
+} else if(array_key_exists("date_tiv", $_GET)) {
   $date_tiv = $_GET['date_tiv'];
 } else {
   $date_tiv = $_POST['date_tiv'];
 }
+
 
 $element = "inspection_tiv";
 $inspection_tiv = new inspection_tivElement($db_con, $date_tiv);
@@ -16,29 +19,37 @@ $inspection_tiv = new inspection_tivElement($db_con, $date_tiv);
 print "<p>".$inspection_tiv->getParentUrl()."</p>";
 
 ?>
-<h2>Date TIV</h2>
-<p><i class="fa fa-calendar" aria-hidden="true"></i>
-<form name="consultation_tiv" id="consultation_tiv" action="consultation_tiv.php" method="POST">
-<select id="date-tiv-consultation" name="date_tiv" onchange="submit()" >
-  <option></option>
-<?php
-$db_result = $db_con->query("SELECT date, count(id_bloc) FROM inspection_tiv GROUP BY date");
-while($result = $db_result->fetch_array()) {
-  print "  <option value='".$result["date"]."'>".$result["date"]." (".$result[1]." blocs contrôlé(s))</option>\n";
-}
-?>
-</select>
-</form>
-</p>
+<div class="mb-3">
+    <h2>Date TIV</h2>
+    <div class="d-flex align-items-center"><i class="fa fa-2x fa-calendar mr-3" aria-hidden="true"></i>
+    <form name="consultation_tiv" id="consultation_tiv" action="consultation_tiv.php" method="POST">
+    <select id="date-tiv-consultation" name="date_tiv" onchange="submit()" >
+    <?php
+    $db_result = $db_con->query("SELECT date, count(id_bloc) FROM inspection_tiv GROUP BY date");
+    while($result = $db_result->fetch_array()) {
+        if($result["date"] == $date_tiv){
+            $is_selected = ' selected="selected"';
+        }
+        else{
+            $is_selected = '';
+        }
+      print "  <option value='".$result["date"]."'.$is_selected.>".$result["date"]." (".$result[1]." bloc(s) à contrôler)</option>\n";
+    }
+    ?>
+    </select>
+    </form>
+    </div>
+</div>
 <?php
 print "<h2>Impression des fiches TIVs</h2>\n";
 $pdf_url = "impression_fiche_tiv.php?date=$date_tiv&show_resume=1&show_inspecteur=1&show_all_bloc=1";
-print "<p><a href='$pdf_url' title='Récupérer les fiches TIV de cette séance au format PDF'>".
-      '<i class="fa fa-print" aria-hidden="true"></i> Imprimer les fiches TIV (PDF)</a> '.
-      "<a href='$pdf_url&save_as' title='Sauvegarder le PDF des fiches TIV'>".
-      '<i class="fa fa-file-pdf-o" aria-hidden="true"></i> Sauvegarder le fichier PDF en local</a></p>';
+print "<div class='d-flex my-3'><a class='btn btn-primary d-flex align-items-self' href='$pdf_url' title='Récupérer les fiches TIV de cette séance au format PDF'>".
+      '<i class="fa fa-print fa-2x mr-3" aria-hidden="true"></i> <p class="mb-0">Imprimer les fiches TIV (PDF)</p></a> '.
+      " <a class='btn btn-primary d-flex align-items-self ml-md-5' href='$pdf_url&save_as' title='Sauvegarder le PDF des fiches TIV'>".
+      '<i class="fa fa-file-pdf-o fa-2x mr-3" aria-hidden="true"></i> <p class="mb-0">Sauvegarder le fichier PDF en local</p></a></div>';
 
-print "<h2>Informations relatives à l'inspection TIV du $date_tiv</h2>";
+print "<div class='alert alert-info' role='alert'>
+            <h4 class='alert-heading'>Informations relatives à l'inspection TIV du $date_tiv</h4>";
 
 $db_query = "SELECT inspection_tiv.id, bloc.date_derniere_epreuve FROM inspection_tiv,bloc ".
             "WHERE date = '$date_tiv' AND bloc.id = inspection_tiv.id_bloc" ;
@@ -55,7 +66,7 @@ while($result = $db_result->fetch_array()) {
 }
 
 print "Il est prévu d'inspecter $total blocs au total dont $reepreuve réépreuve(s) et ".$count_tiv." inspections TIV.";
-
+print "</div>";
 print "<h2>Liste des inspections prévues pour le $date_tiv</h2>\n";
 
 print $inspection_tiv->getHTMLTable("liste-inspection-tiv", $element);
