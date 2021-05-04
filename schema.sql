@@ -57,8 +57,8 @@ CREATE TABLE `detendeur` (
   `id` int(15) NOT NULL,
   `id_club` varchar(16) NULL,
   `marque` varchar(128) NULL,
-  `etat_1ier_etage` varchar(16) NULL,  
-  `id_1ier_etage` varchar(64) NULL,  
+  `etat_1ier_etage` varchar(16) NULL,
+  `id_1ier_etage` varchar(64) NULL,
   `etat_2e_etage` varchar(16) NULL,
   `id_2e_etage` varchar(64) NULL,
   `etat_octopus` varchar(16) NULL,
@@ -184,6 +184,7 @@ CREATE TABLE `personne` (
   `type_assurance` varchar(32) NULL,
   `date_derniere_maj` date NULL,
   `qualifications` varchar(255) NULL,
+  `is_admin` int(1) NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Personne du club';
 /*!40101 SET character_set_client = @saved_cs_client */;
