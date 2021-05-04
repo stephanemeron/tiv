@@ -1,7 +1,7 @@
 <h1 class="title mb-5"><i class='fa fa-sliders fa-2x'></i> Administration</h1>
 <div class="my-5">
   <h2 class="title">Déclaration d'un nouvel élément dans la base</h2>
-  
+
   <form name="ajout_form" id="ajout_form" action="ajout_element.php" method="POST">
     <div class="row align-items-center">
       <div class="col-auto">
@@ -43,12 +43,11 @@
       </div>
       <div class="col-12 col-md-3">
         <select class="custom-select" id="date-tiv-consultation" name="date_tiv" onselect="submit()">
-          <option></option>
           <?php
             include_once("connect_db.inc.php");
             $db_result = $db_con->query("SELECT date, count(id_bloc) FROM inspection_tiv GROUP BY date");
             while($result = $db_result->fetch_array()) {
-              print "  <option value='".$result["date"]."'>".$result["date"]." (".$result[1]." blocs contrôlé(s))</option>\n";
+              print "  <option value='".$result["date"]."'>".$result["date"]." (".$result[1]." bloc(s) à contrôler)</option>\n";
             }
           ?>
         </select>
