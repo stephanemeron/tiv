@@ -1,7 +1,7 @@
 ./
 branches/
-/htdocs/connect_db.inc.php
-/htdocs/configuration.inc.php
-/htdocs/old_fpdf
-/conf/
-/csv/
+/htdocs/tiv/connect_db.inc.php
+/htdocs/tiv/configuration.inc.php
+/htdocs/tiv/old_fpdf
+/htdocs/conf/
+/htdocs/csv/
