@@ -75,14 +75,14 @@ class inspection_tivElement extends TIVElement {
                   "<img src='images/pdf.png' style='vertical-align:middle;' /> fiche au format PDF</a>";
                   */
 
-    $extra_info = "<a href='edit.php?id=".$result["id_bloc"]."&element=bloc' title='Éditer la fiche TIV'>".
-                      "<i class='fa fa-eye' aria-hidden='true'></i> fiche de bloc N° ".$result["id_club"]."</a> - ";
+    $extra_info = "<a class='btn btn-info mr-3' href='edit.php?id=".$result["id_bloc"]."&element=bloc' title='Éditer la fiche TIV'>".
+                      "<i class='fa fa-eye' aria-hidden='true'></i> fiche de bloc N° ".$result["id_club"]."</a>";
                       if($result["id_inspecteur_tiv"]){
-                          $extra_info.="<a href='edit.php?id=".$result["id_inspecteur_tiv"]."&element=inspecteur_tiv'>";
+                          $extra_info.="<a class='btn btn-info mr-3' href='edit.php?id=".$result["id_inspecteur_tiv"]."&element=inspecteur_tiv'>";
+                          $extra_info.="<i class='fa fa-graduation-cap' aria-hidden='true'></i> fiche de l'inspecteur TIV</a>";
                       }
 
-                      $extra_info.="<i class='fa fa-graduation-cap' aria-hidden='true'></i> fiche de l'inspecteur TIV</a> - ".
-                      "<a href='impression_fiche_tiv.php?id_bloc=".$result["id_bloc"]."&date=".$this->_date."'>".
+                      $extra_info.="<a class='btn btn-info' href='impression_fiche_tiv.php?id_bloc=".$result["id_bloc"]."&date=".$this->_date."'>".
                       "<i class='fa fa-file-pdf-o' aria-hidden='true'></i> fiche au format PDF</a>";
 
 
