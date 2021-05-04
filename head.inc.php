@@ -1,3 +1,7 @@
+<?php
+   ob_start();
+   session_start();
+?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
@@ -18,6 +22,7 @@
           @import "css/magicsuggest.css";
           @import "font-awesome-4.7.0/css/font-awesome.css";
           @import "bootstrap-datepicker-master/dist/css/bootstrap-datepicker3.css";
+          @import "css/signin.css";
         </style>
 
           <!--<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />-->
