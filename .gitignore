@@ -5,3 +5,4 @@ branches/
 /htdocs/tiv/old_fpdf
 /htdocs/conf/
 /htdocs/csv/
+.DS_Store
