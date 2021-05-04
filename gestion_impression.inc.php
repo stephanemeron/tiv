@@ -37,6 +37,7 @@ class PdfTIV extends FPDF {
   	}
   	// Start new page
   	$this->_beginpage($orientation,$size,$rotation);
+    $this->tMargin = 10;
   	// Set line cap style to square
   	$this->_out('2 J');
   	// Set line width
@@ -86,8 +87,11 @@ class PdfTIV extends FPDF {
   function Header($result_id_bloc=false) {
     global $logo_club;
     global $nom_club;
+    //$this->SetY(5);
+    //$this->Image('logo_club.png',10,6,30);
 
-    //$this->Image("/images/portrait_femme01.jpg",10,5,30,"jpg");
+    //$this->Image("images/portrait_femme01.jpg",10,5,30,"jpg");
+    //$this->Image('http://chart.googleapis.com/chart?cht=p3&chd=t:60,40&chs=250x100&chl=Hello|World',60,30,90,0,'PNG');
     $this->SetFont('Arial','B',10);
     if(array_key_exists("id_bloc", $_GET) || $result_id_bloc){
         if(array_key_exists("id_bloc", $_GET)){
@@ -114,9 +118,10 @@ class PdfTIV extends FPDF {
       // Affichage numéro fiche tiv
       $this->SetFont('Helvetica', 'B', 10);
       $this->Cell(22,18,utf8_decode("Fiche TIV n° "), 0, 0);
-      $this->SetFont('Helvetica',  '', 20);
+      $this->SetFont('Helvetica', '', 20);
       $this->Cell(10,16,$result["i_t_id"], 0, 0);
-
+      $this->Image("images/logo-nemo.png",48,10,18,"png");
+      $this->Image("images/logo-tiv.png",90,12,null,10,"png");
       $this->SetFont('Helvetica', 'I',10);
       //$this->Cell(0, 8, utf8_decode('Fiche TIV du '.$this->_date." - club $nom_club"), 'B', 0, 'C');
       $this->Cell(142, 18, utf8_decode('Numéro du bloc : '),0, 0, 'R');
@@ -127,8 +132,6 @@ class PdfTIV extends FPDF {
     //$this->Cell(0, 8, utf8_decode('Fiche TIV du '.$this->_date." - club $nom_club".$logo_club), 'B', 0, 'C');
     //$this->Ln(11);
   }
-
-
 
   function Footer() {
     global $nom_club;
@@ -358,8 +361,8 @@ class PdfTIV extends FPDF {
       //$this->AddPage();
       $this->AddPage('','',0,$result["id_bloc"]);
       //$this->Ln(8);
-      $this->SetFont('Helvetica', 'B',12);
-      $this->Cell(0,8,utf8_decode("FICHE D'ÉVALUATION ET DE SUIVI D'UNE BOUTEILLE DE PLONGÉE"),0, 1, 'C');
+      $this->SetFont('Helvetica', 'B',11);
+      $this->Cell(0,8,utf8_decode("FICHE D'ÉVALUATION ET DE SUIVI D'UNE BOUTEILLE DE PLONGÉE"),0, 1, 'R');
       $this->addBlocInformation($result[1]);
 
       // Affichage d'un message d'alerte en cas de dépassement de la date d'épreuve/tiv sur le bloc
@@ -367,6 +370,7 @@ class PdfTIV extends FPDF {
 
       $this->addBlocDonnees($result[1]);
       $this->AddPage();
+      $this->Cell(0,8,"",0, 1, 0);
       foreach(array("exterieur", "interieur") as $element)
         $this->addAspectBlocInformation($result[0], $element);
       $this->addBlocRobinet($result[1]);
@@ -463,7 +467,7 @@ class PdfTIV extends FPDF {
 
     $this->Cell(140,5,utf8_decode("BLOC"), 1, 0, 'C');
     $this->Cell(0,5,utf8_decode("ROBINET"), 1, 1, 'C');
-// largeur 190
+    // largeur 190
     $this->SetFont('Helvetica', 'I', 9);
     $this->Cell(25,5,utf8_decode("Constructeur"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
@@ -1249,7 +1253,7 @@ class PdfTIV extends FPDF {
     }*/
     //$this->Cell(5, 7, "", 0, 1);
     $this->Cell(0,8,utf8_decode("Commentaire $label :"), "LTR", 1);
-    $this->MultiCell(0, 16, ($inspection["remarque_$element"] ? utf8_decode($inspection["remarque_$element"]) : ""), "LBR", 1);
+    $this->MultiCell(0, 14, ($inspection["remarque_$element"] ? utf8_decode($inspection["remarque_$element"]) : ""), "LBR", 1);
   }
 
   function addAspectInformation($id_inspection, $element) {
