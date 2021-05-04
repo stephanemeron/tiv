@@ -172,7 +172,7 @@ class TIVElement {
       $form_input .=  "<input class=\"form-check-input\" type=\"radio\" name=\"$label\" id=\"$label.$inc\" value=\"$option\"$checked $input_readonly>";
       $form_input .=  "<label class=\"form-check-label\" for=\"$label.$inc\">".$labels[$option]."</label>";
       $form_input .= "</div>\n";
-      
+
       //$form_input .= "<option value='$option'$selected>".$labels[$option]."</option>\n";
       $inc++;
     }
@@ -342,7 +342,7 @@ class TIVElement {
     $header = "    <tr>\n"; //      <th>";
     //$header .= join("</th><th>", $this->getHeaderElements());
     foreach ($this->getHeaderElementsArray() as $key => $value) {
-      
+
       if (in_array($key, $this->_hidden_column)){
         $header .= '<th class="d-none">'.$value.'</th>';
       }
@@ -355,7 +355,7 @@ class TIVElement {
         }
       }
     }
-    
+
     if(!$this->_read_only) $header .= "<th>Opérations</th>";
     $header .= "</tr>\n";
     return $header;
@@ -368,7 +368,7 @@ class TIVElement {
     $line = "    <tr class=\"$current_class\">\n ";
     $id = $record[0];
     $to_display = array();
-    
+
 
     foreach($this->getElements() as $elt) {
       if (in_array($elt, $this->_hidden_column)){
@@ -388,9 +388,9 @@ class TIVElement {
       $to_display [] = $this->getEditUrl($id);
     }
     //echo'<pre>'; print_r($to_display);echo'</pre>';
-    
+
     foreach ($to_display as $key => $value) {
-      
+
       if (is_array($value)){
         $line .= '<td class="'.$value[0].'">'.$value[1].'</td>';
       }
@@ -465,7 +465,7 @@ class TIVElement {
   function getFormInput($label, $value) {
     $forms_definition = $this->getForms();
     $form_input = "";
-    if(is_array($forms_definition[$label][1])) {      
+    if(is_array($forms_definition[$label][1])) {
       $form_input = $this->constructSelectInput($label, $forms_definition[$label][1], $value);
     } elseif($forms_definition[$label][1] === "select") {
       $form_input = $this->constructSelectInput($label, $forms_definition[$label][3], $value);
@@ -524,7 +524,7 @@ class TIVElement {
       }
       // if($this->_form_split_count && $i > $this->_form_split_count) $i = 0;
     }
-      
+
       //$form .= "<div class='form-group col-md-6'>".join("</div>\n<div class='form-group col-md-6'>", $columns)."</div>";
       // $form .= '<pre>'.print_r($columns).'</pre>';
       //$form .= "  </div>\n";
