@@ -217,7 +217,7 @@ class blocElement extends TIVElement {
 
   function getFormInput($label, $value) {
     if($label === "id_robinet") {
-      $db_query = "SELECT id,marque,nb_sortie FROM robinet";
+      $db_query = "SELECT id,marque,nb_sortie, filetage FROM robinet";
       $db_result = $this->_db_con->query($db_query);
       $options = array("" => "");
       while($result = $db_result->fetch_array()) {
@@ -418,17 +418,17 @@ document.getElementById('$div_label_to_update').className='$error_class';
     $db_result = $this->_db_con->query("SELECT id,date FROM inspection_tiv WHERE id_bloc = $id ORDER BY date DESC");
     $extra_info = array();
     while($result = $db_result->fetch_array()) {
-      $extra_info []= "<a href='edit.php?id=".$result[0]."&element=inspection_tiv&date=".$result[1]."' ".
-                      "title='Éditer la fiche TIV'><img src='images/admin.png' style='vertical-align:middle;' />".
-                      "Inspection TIV du ".$result[1]."</a> ".
-                      "<a href='impression_fiche_tiv.php?id_bloc=$id&date=".$result[1]."' title='Accéder à la fiche au format PDF'>".
-                      "(<img src='images/pdf.png' style='vertical-align:middle;' /> fiche PDF)</a>";
+      $extra_info []= "<a class='btn btn-info mr-3' href='edit.php?id=".$result[0]."&element=inspection_tiv&date=".$result[1]."' ".
+                      "title='Éditer la fiche TIV'><i class='fa fa-eye' aria-hidden='true'/></i> ".
+                      "Inspection TIV du ".$result[1]."</a>".
+                      "<a class='btn btn-info' href='impression_fiche_tiv.php?id_bloc=$id&date=".$result[1]."' title='Accéder à la fiche au format PDF'>".
+                      "<i class='fa fa-file-pdf-o' aria-hidden='true'/></i>  fiche PDF</a>";
     }
     // Composition des messages
     $message = "";
     $message = "<p>$message_expiration</p>\n";
     if(count($extra_info) > 0) {
-      $message .= "<h3>Liste des fiches d'inspection TIV associées au bloc :</h3>\n<ul>\n<li>".implode("</li>\n<li>", $extra_info)."</li>\n</ul>\n";
+      $message .= "<h3>Liste des fiches d'inspection TIV associées au bloc :</h3>\n<dl>\n<dd>".implode("</dd>\n<dd>", $extra_info)."</dd>\n</dl>\n";
     } else {
       $message .= "<p>Pas de fiche d'inspection TIV associée au bloc.</p>";
     }
