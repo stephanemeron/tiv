@@ -5,24 +5,26 @@ class pretElement extends TIVElement {
   var $_stabs;
   var $_field_to_retrieve;
   function pretElement($db_con = false) {
+
+    global $etat_possible;
     parent::__construct($db_con);
-    $this->_parent_url       = "./#personne";
-    $this->_parent_url_label = "<i class='fa fa-user-circle-o'></i> Plongeurs/inspecteurs TIV";
+    $this->_parent_url       = "./affichage_element.php?element=pret";
+    $this->_parent_url_label = "<i class='fa fa-user-circle-o'></i> Prêt";
     $this->_creation_label = "Création d'un nouveau prêt";
     $this->_update_label = "Mettre à jour le prêt";
     $this->_field_to_retrieve = array(
       "personne"  => "nom",
       "stab"      => "CONCAT('Réf: ', id, ' - ', modele, ' - taille : ', taille)",
-      "detendeur" => "CONCAT('Réf: ', id, ' - ', modele)",
+      "detendeur" => "CONCAT('Réf: ', id, ' - ', marque)",
       "bloc"      => "CONCAT('Réf: ', id, ' (n° club : ', id_club, ') capacité : ', ".
                      "capacite, ' - ', constructeur, ' ', marque, ' - ', numero)");
     $this->_elements = array("id" => "Réf.", "id_personne" => "Nom de l'emprunteur", "debut_pret" => "Date de début du prêt",
                              "fin_prevu" => "Fin prévu du prêt", "fin_reel" => "Fin réel du prêt", "etat" => "Status du prêt");
-    $etat_possible = array("", "Sortie", "Rentré");
+
     $this->_forms = array(
       "id_personne"  => array("required", "text", "Nom de l'emprunteur"),
       "id_bloc"      => array("required", "text", "Référence du bloc"),
-      "id_stab"      => array("required", "text", "Référence de la jaquette"),
+      "id_stab"      => array("required", "text", "Référence du gilet"),
       "id_detendeur" => array("required", "text", "Référence du détendeur"),
       "debut_pret"   => array("required", "date", "Date de début du prêt"),
       "fin_prevu"    => array("required", "date", "Date de fin prévu du prêt"),
@@ -79,6 +81,6 @@ class pretElement extends TIVElement {
       return $this->constructSelectInputLabels($label, $options, $value);
     }
     return parent::getFormInput($label, $value);
-  }
+}
 }
 ?>

@@ -1,6 +1,11 @@
 <?php
 class personneElement extends TIVElement {
   function personneElement($db_con = false) {
+
+    global $qualifications_label;
+    global $niveau;
+    global $assurance;
+
     parent::__construct($db_con);
     $this->_parent_url       = "./#personne";
     $this->_parent_url_label = "<i class='fa fa-user-circle-o'></i>  Plongeurs/inspecteurs TIV";
@@ -12,11 +17,8 @@ class personneElement extends TIVElement {
                                      CONCAT(IF(telephone_domicile,' domicile : ', ''), telephone_domicile,
                                             IF(telephone_portable,' portable : ', ''), telephone_portable),
                                      IF(telephone_bureau, ' bureau : ', ''), telephone_bureau)" =>
-                             "Téléphone domicile/portable/bureau",);
-    $qualifications_label = array("", "Nitrox", "Nitrox confirmé", "BIO AFBS", "BIO IFBS",
-                                  "Bio 1", "Bio 2", "MFB1", "TIV", "RIFAP");
-    $niveau = array("", "Débutant", "Niveau 1", "Niveau 2", "Niveau 2 Initiateur", "Niveau 3", "Niveau 4");
-    $assurance = array("", "1", "2", "3");
+                             "Téléphone domicile/portable/bureau", "is_admin" => "Est admin");
+    
     $this->_forms = array(
       "groupe"                => array("required", "text", "Groupe"),
       "licence"               => array("required", "text", "n° de licence"),
@@ -37,6 +39,7 @@ class personneElement extends TIVElement {
       "date_derniere_plongee" => array("required", "date", "Date dernière plongée"),
       "type_assurance"        => array("required", "select", "Type d'assurance", $assurance),
       "qualifications"        => array("required", "tags", "Qualifications supplémentaires", $qualifications_label),
+      "is_admin"              => array("required",  "boolean", "Est admin")
     );
     $this->_form_split_count = 6;
     $this->_forms_rules = '

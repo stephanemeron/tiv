@@ -1,6 +1,9 @@
 <?php
 class stabElement extends TIVElement {
   function stabElement($db_con = false) {
+
+    global $stab_taille;
+
     parent::__construct($db_con);
     $this->_parent_url       = "./#materiel";
     $this->_parent_url_label = "<i class='fa fa-wrench'></i> Matériel";
@@ -9,7 +12,7 @@ class stabElement extends TIVElement {
     $this->_update_label = "Mettre à jour la stab";
     $this->_elements =  array("id" => "Réf.", "modele" => "Modèle", "taille" => "Taille",
                               "date_achat" => "Date d'achat", "observation" => "Observations/Remarques");
-    $stab_taille = array("junior", "XS", "S", "M", "M/L", "L", "XL", "XXL");
+    
     $this->_forms = array(
       "modele"       => array("required", "number",      "Modèle de stab"),
       "taille"       => array("required", $stab_taille , "Taille de la stab"),
