@@ -7,7 +7,7 @@ if(array_key_exists("element", $_GET)) {
   $element = $_POST['element'];
   $id = $_POST['id'];
 }
-$return_url = $GET['return_url'];
+$return_url = $_GET['returnurl'];
 
 $embedded = array_key_exists("embedded", $_POST) || array_key_exists("embedded", $_GET);
 
@@ -29,7 +29,7 @@ if(!$edit_class->deleteDBRecord($id)) {
     print "<script>
 setTimeout('window.location.href = \"$return_url\"', 1000);
 </script>
-<p>Vous allez être redirigé automatiquement dans une seconde. Si ce n'est pas le cas, 
+<p>Vous allez être redirigé automatiquement dans une seconde. Si ce n'est pas le cas,
 cliquer sur le lien suivant : <a href='$return_url'>Retour à la liste des ".$element."s</a></p>\n";
   }
 }
