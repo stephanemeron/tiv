@@ -19,3 +19,5 @@ csv/old_detendeurs.csv
 csv/old_inspecteur_tiv.csv
 csv/old_robinets.csv
 csv/robinets.csv
+configuration.inc.php
+connect_db.inc.php
