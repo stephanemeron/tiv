@@ -1,5 +1,7 @@
 ./
 branches/
+configuration.inc.php
+connect_db.inc.php
 /htdocs/connect_db.inc.php
 /htdocs/tiv/old_fpdf
 /htdocs/conf/
