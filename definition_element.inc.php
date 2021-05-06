@@ -497,8 +497,23 @@ class TIVElement {
     $db_result =  $this->_db_con->query($db_query);
     return $db_result->fetch_array();
   }
+
+  function checkIsRequired($elt,$json_rules){
+      $is_required = "";
+      if (array_key_exists($elt,$json_rules["rules"])){
+          if (array_key_exists("required",$json_rules["rules"][$elt])){
+              if($json_rules["rules"][$elt]["required"]){
+                  $is_required = "is-required";
+              }
+          }
+      }
+      return $is_required;
+  }
+
   function constructEditForm($id, $form_name, $action = "") {
     $this->_values = $this->retrieveValues($id);
+    // json des champs required
+    $json_rules = json_decode("{" . trim($this->_forms_rules) . "}",true);
     if(!$this->_values) return false;
     $form  = "<form name='$form_name' id='$form_name' action='$action' method='POST'>\n";
     $form .= "<input type='hidden' name='id' value='$id' />\n";
@@ -510,14 +525,18 @@ class TIVElement {
     $columns = array();
     foreach($this->getFormsKey() as $elt) {
       $value = $this->_values[$elt];
+
+      // recherche si champ est required
+      $is_required = $this->checkIsRequired($elt,$json_rules);
+
       if(substr($elt,0,5) != "date_"){
         $form .= "<div class='form-group col-md-6'>";
           if(in_array($forms_definition[$elt][1] ,array("radio", "boolean"))){
-            $form .= "<label for=\"".$elt."\">".$this->getElementLabel($elt, $value)."</label><br/>".
+            $form .= "<label for=\"".$elt."\" class=\"".$is_required."\">".$this->getElementLabel($elt, $value)."</label><br/>".
                           $this->getFormInput($elt, stripcslashes($value));
           }
           else{
-            $form .= "<label for=\"".$elt."\">".$this->getElementLabel($elt, $value)."</label>".
+            $form .= "<label for=\"".$elt."\" class=\"".$is_required."\">".$this->getElementLabel($elt, $value)."</label>".
                           $this->getFormInput($elt, stripcslashes($value));
           }
         $form .= "</div>";
@@ -532,8 +551,12 @@ class TIVElement {
     $formDate = false;
     foreach($this->getFormsKey() as $elt) {
         $value = $this->_values[$elt];
+
+        // recherche si champ est required
+        $is_required = $this->checkIsRequired($elt,$json_rules);
+
         if(substr($elt,0,5) == "date_"){
-          $formDate .= "<div class='form-group col-md-4'><label for=\"".$elt."\">".$this->getElementLabel($elt, $value)."</label>".
+          $formDate .= "<div class='form-group col-md-4'><label for=\"".$elt."\" class=\"".$is_required."\">".$this->getElementLabel($elt, $value)."</label>".
                           $this->getFormInput($elt, stripcslashes($value))."</div>";
         }
         // if($this->_form_split_count && $i > $this->_form_split_count) $i = 0;
