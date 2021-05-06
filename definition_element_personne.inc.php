@@ -18,7 +18,7 @@ class personneElement extends TIVElement {
                                             IF(telephone_portable,' portable : ', ''), telephone_portable),
                                      IF(telephone_bureau, ' bureau : ', ''), telephone_bureau)" =>
                              "Téléphone domicile/portable/bureau", "is_admin" => "Est admin");
-    
+
     $this->_forms = array(
       "groupe"                => array("required", "text", "Groupe"),
       "licence"               => array("required", "text", "n° de licence"),
@@ -38,29 +38,29 @@ class personneElement extends TIVElement {
       "nombre_plongee"        => array("required", "integer", "Nombre de plongée"),
       "date_derniere_plongee" => array("required", "date", "Date dernière plongée"),
       "type_assurance"        => array("required", "select", "Type d'assurance", $assurance),
-      "qualifications"        => array("required", "tags", "Qualifications supplémentaires", $qualifications_label),
+      "qualifications"        => array("required", "select", "Qualifications supplémentaires", $qualifications_label),
       "is_admin"              => array("required",  "boolean", "Est admin")
     );
     $this->_form_split_count = 6;
     $this->_forms_rules = '
-  debug: false,
-  rules: {
-    nom: {
-        required: true,
-    },
-    prenom: {
-        required: true,
-    },
-    adresse: {
-        required: true,
-    },
-    code_postal: {
-        required: true,
-    },
-    ville: {
-        required: true,
-    },
-  }';
+      "debug": false,
+      "rules": {
+        "nom": {
+            "required": true
+        },
+        "prenom": {
+            "required": true
+        },
+        "adresse": {
+            "required": true
+        },
+        "code_postal": {
+            "required": true
+        },
+        "ville": {
+            "required": true
+        }
+      }';
   }
   function getQuickNavigationFormInput() {
     $input  = " > Navigation rapide : <select name='id' onchange='this.form.submit()'>\n".

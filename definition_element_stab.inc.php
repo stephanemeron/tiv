@@ -12,7 +12,7 @@ class stabElement extends TIVElement {
     $this->_update_label = "Mettre à jour la stab";
     $this->_elements =  array("id" => "Réf.", "modele" => "Modèle", "taille" => "Taille",
                               "date_achat" => "Date d'achat", "observation" => "Observations/Remarques");
-    
+
     $this->_forms = array(
       "modele"       => array("required", "number",      "Modèle de stab"),
       "taille"       => array("required", $stab_taille , "Taille de la stab"),
@@ -20,18 +20,18 @@ class stabElement extends TIVElement {
       "observation"  => array("required", "text" , "Observations/Remarques"),
     );
     $this->_forms_rules = '
-  debug: false,
-  rules: {
-    modele: {
-        required: true,
+  "debug": false,
+  "rules": {
+    "modele": {
+        "required": true
     },
-    taille: {
-        required: true,
+    "taille": {
+        "required": true
     },
-    date_achat: {
-        required: true,
-        date: true
-    },
+    "date_achat": {
+        "required": true,
+        "date": true
+    }
   }';
   }
 }

@@ -68,67 +68,67 @@ class blocElement extends TIVElement {
     );
     $this->_form_split_count = 6;
     $this->_forms_rules = '
-  debug: true,
-  rules: {
-    club_id: {
-        required: true,
+  "debug": true,
+  "rules": {
+    "club_id": {
+        "required": true
     },
-    nom_proprietaire: {
-        required: true,
+    "nom_proprietaire": {
+        "required": true
     },
-    is_club: {
-        required: true,
+    "is_club": {
+        "required": true
     },
-    adresse: {
-        required: false,
+    "adresse": {
+        "required": false
     },
-    constructeur: {
-        required: true,
+    "constructeur": {
+        "required": true
     },
-    marque: {
-        required: true,
+    "marque": {
+        "required": true
     },
-    numero: {
-        required: true,
+    "numero": {
+        "required": true
     },
-    capacite: {
-        required: true,
+    "capacite": {
+        "required": true
     },
-    filetage: {
-        required: true,
+    "filetage": {
+        "required": true
     },
-    id_robinet: {
-        required: false,
+    "id_robinet": {
+        "required": false
     },
-    date_premiere_epreuve: {
-        required: true,
-        date: true
+    "date_premiere_epreuve": {
+        "required": true,
+        "date": true
     },
-    date_derniere_epreuve: {
-        required: true,
-        date: true
+    "date_derniere_epreuve": {
+        "required": true,
+        "date": true
     },
-    date_dernier_tiv: {
-        required: true,
-        date: true
+    "date_dernier_tiv": {
+        "required": true,
+        "date": true
     },
-    pression_service: {
-        required: true,
-        number: true
+    "pression_service": {
+        "required": true,
+        "number": true
     },
-    pression_epreuve: {
-        required: true,
-        number: true
+    "pression_epreuve": {
+        "required": true,
+        "number": true
     },
-    gaz: {
-        required: true,
+    "gaz": {
+        "required": true
     },
-    etat: {
-        required: true,
+    "etat": {
+        "required": true
     },
-    etat_int: {
-        required: true,
-    },
+    "etat_int": {
+        "required": true
+    }
   }';
     global $epreuve_month_count;
     global $epreuve_month_count_warn;

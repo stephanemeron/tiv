@@ -31,21 +31,21 @@ class inspection_tivElement extends TIVElement {
       "remarque"             => array("required", "text", "Commentaire sur l'inspection."),
     );
     $this->_forms_rules = '
-  debug: false,
-  rules: {
-    id: {
-        required: true,
+  "debug": false,
+  "rules": {
+    "id": {
+        "required": true
     },
-    id_bloc: {
-        required: true,
+    "id_bloc": {
+        "required": true
     },
-    id_inspecteur_tiv: {
-        required: true,
+    "id_inspecteur_tiv": {
+        "required": true
     },
-    date: {
-        required: true,
-        date: true,
-    },
+    "date": {
+        "required": true,
+        "date": true,
+    }
   }';
     if(!$date) {
       if(array_key_exists("date", $_GET)) {

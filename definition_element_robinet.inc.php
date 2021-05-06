@@ -28,23 +28,23 @@ class robinetElement extends TIVElement {
       "observation"   => array("required", "text" , "Observations/Remarques"),
     );
     $this->_forms_rules = '
-  debug: false,
-  rules: {
-    marque: {
-        required: true,
+  "debug": false,
+  "rules": {
+    "marque": {
+        "required": true
     },
-    serial_number: {
-        required: true,
+    "serial_number": {
+        "required": true
     },
-    filetage: {
-        required: true
+    "filetage": {
+        "required": true
     },
-    nb_sortie: {
-        required: true
+    "nb_sortie": {
+        "required": true
     },
-    filetage_sortie: {
-        required: true
-    },
+    "filetage_sortie": {
+        "required": true
+    }
   }';
   }
 }

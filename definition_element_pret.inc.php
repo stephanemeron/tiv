@@ -32,22 +32,22 @@ class pretElement extends TIVElement {
       "etat"         => array("required", $etat_possible, "Status du prêt"),
     );
     $this->_forms_rules = '
-  debug: false,
-  rules: {
-    id_personne: {
-        required: true,
+  "debug": false,
+  "rule"s: {
+    "id_personne": {
+        "required": true
     },
-    debut_pret: {
-        date: true,
-        required: true,
+    "debut_pret": {
+        "date": true,
+        "required": true,
     },
-    fin_prevu: {
-        date: true,
-        required: true,
+    "fin_prevu": {
+        "date": true,
+        "required": true,
     },
-    etat: {
-        required: true,
-    },
+    "etat": {
+        "required": true
+    }
   }';
   }
   function updateRecord(&$record) {

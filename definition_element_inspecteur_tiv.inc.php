@@ -18,29 +18,29 @@ class inspecteur_tivElement extends TIVElement {
       "actif"         => array("required", array("oui", "non"), "Le TIV est-il actif ?"),
     );
     $this->_forms_rules = '
-  debug: false,
-  rules: {
-    nom: {
-        required: true,
+  "debug": false,
+  "rules": {
+    "nom": {
+        "required": true
     },
-    numero_tiv: {
-        required: true,
+    "numero_tiv": {
+        "required": true
     },
-    adresse_tiv: {
-        required: false,
+    "adresse_tiv": {
+        "required": false
     },
-    telephone_tiv: {
-        required: false,
+    "telephone_tiv": {
+        "required": false
     },
-    date_dernier_tiv: {
-        required: true,
+    "date_dernier_tiv": {
+        "required": true
     },
-    date_prochain_recyclage: {
-        required: true,
+    "date_prochain_recyclage": {
+        "required": true
     },
-    actif: {
-        required: true,
-    },
+    "actif": {
+        "required": true
+    }
   }';
   }
   function getQuickNavigationFormInput() {
@@ -85,6 +85,6 @@ class inspecteur_tivElement extends TIVElement {
     }
   }
 
-  
+
 }
 ?>

@@ -27,47 +27,47 @@ class detendeurElement extends TIVElement {
       "observation"         => array("required", "text",   "Observation/Remarques")
     );
     $this->_forms_rules = '
-  debug: true,
-  rules: {
-    id_club: {
-        required: true,
+  "debug": true,
+  "rules": {
+    "id_club": {
+        "required": true
     },
-    marque: {
-        required: true,
+    "marque": {
+        "required": true
     },
-    etat_1ier_etage: {
-        required: true,
+    "etat_1ier_etage": {
+        "required": true
     },
-    id_1ier_etage: {
-        required: true,
+    "id_1ier_etage": {
+        "required": true
     },
-    etat_2e_etage: {
-        required: true,
+    "etat_2e_etage": {
+        "required": true
     },
-    id_2e_etage: {
-        required: true,
+    "id_2e_etage": {
+        "required": true
     },
-    etat_octopus: {
-        required: true,
+    "etat_octopus": {
+        "required": true
     },
-    id_octopus: {
-        required: true,
+    "id_octopus": {
+        "required": true
     },
-    etat_direct_system: {
-        required: true,
+    "etat_direct_system": {
+        "required": true
     },
-    etat_mano: {
-        required: true,
+    "etat_mano": {
+        "required": true
     },
-    embout_enfant: {
-        required: true,
+    "embout_enfant": {
+        "required": true
     },
-    eaux_froides: {
-        required: true,
+    "eaux_froides": {
+        "required": true
     },
-    date_achat: {
-        required: true,
-        date: true
+    "date_achat": {
+        "required": true,
+        "date": true
     }
   }';
   }
