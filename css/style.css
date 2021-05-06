@@ -28,3 +28,18 @@
     height: 30px;
     width: auto;
 }
+.is-required{
+    display: flex;
+}
+.is-required:after{
+    content:"*";
+    color: red;
+    display: block;
+    margin-left: 15px;
+}
+.form-control.error{
+    border-color: red;
+}
+label.error{
+    color: red;
+}
