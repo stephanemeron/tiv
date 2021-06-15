@@ -7,6 +7,7 @@
     <head>
         <title><?php print $title?></title>
         <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <meta name="robots" content="noindex,nofollow" />
         <style type="text/css" title="currentStyle">
           /*@import "css/page.css";
           @import "css/table.css";
