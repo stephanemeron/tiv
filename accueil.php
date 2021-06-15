@@ -3,9 +3,9 @@
 		<div class="col-12 col-md-3">
 			<img class="img-fluid" src='<?php print $logo_club; ?>' />
 		</div>
-		
+
 		<div class="col-12 col-md-9 pt-3 pt-md-0">
-			<h1 class="title">Bienvenue sur le site de gestion du matériel du club <?php print $nom_club; ?></h1>
+			<h1 class="main title">Bienvenue sur le site de gestion du matériel du club <?php print $nom_club; ?></h1>
 			<p>
 			Vous êtes à la racine du site permettant de gérer le matériel du club <?php print $nom_club; ?>.
 			</p>
@@ -17,7 +17,7 @@
 			<p>Bonne inspection de bloc !</p>
 		</div>
 	</div>
-	
+
 </div>
 <div class="jumbotron my-3">
 	<h2 class="title">Messages importants</h2>

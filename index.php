@@ -51,6 +51,7 @@ include_once('head.inc.php');
                     <?php include("personne.php");?>
                 </div>
                 <div class="tab-pane" role="tabpanel" aria-labelledby="bloc-rev-tab" id="bloc-rev">
+                    <h1 class="main title mb-5"><i class='fa fa-fire-extinguisher fa-2x'></i>  Status des blocs (TIV/ré-épreuve)</h1>
                     <?php include("affichage_bloc_tiv.php"); ?>
                 </div>
             </div>
