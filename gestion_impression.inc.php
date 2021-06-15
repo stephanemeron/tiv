@@ -154,11 +154,11 @@ class PdfTIV extends FPDF {
 
     $this->Cell(0, 10, utf8_decode("Informations relatives aux inspecteurs TIV du ".$this->_date.""),0,1);
     $this->Ln(6);
-    $db_query = "SELECT inspection_tiv.id_inspecteur_tiv, inspecteur_tiv.nom, inspecteur_tiv.numero_tiv, COUNT(inspection_tiv.id_inspecteur_tiv) \n".
-                "FROM inspection_tiv,inspecteur_tiv \n".
-                "WHERE date = '".$this->_date."' AND inspecteur_tiv.id = inspection_tiv.id_inspecteur_tiv \n".
-                "GROUP BY inspection_tiv.id_inspecteur_tiv \n".
-                "ORDER BY inspecteur_tiv.nom\n";
+    $db_query = "SELECT inspection_tiv.id_inspecteur_tiv, inspecteur_tiv.nom, inspecteur_tiv.numero_tiv, COUNT(inspection_tiv.id_inspecteur_tiv) ".
+                "FROM inspection_tiv,inspecteur_tiv ".
+                "WHERE date = '".$this->_date."' AND inspecteur_tiv.id = inspection_tiv.id_inspecteur_tiv ".
+                "GROUP BY inspection_tiv.id_inspecteur_tiv ".
+                "ORDER BY inspecteur_tiv.nom";
     $db_result = $this->_db_con->query($db_query);
     $header = array("id", "Nom inspecteur", "numéro TIV", "Nombre de bouteille à inspecter");
     $w = array(10, 55, 40, 0);
@@ -371,14 +371,14 @@ class PdfTIV extends FPDF {
       $this->addBlocDonnees($result[1]);
       $this->AddPage();
       $this->Cell(0,8,"",0, 1, 0);
-      foreach(array("exterieur", "interieur") as $element)
-        $this->addAspectBlocInformation($result[0], $element);
-      $this->addBlocRobinet($result[1]);
-      foreach(array("filetage") as $element)
-        $this->addAspectBlocInformation($result[0], $element);
+      /*foreach(array("exterieur", "interieur") as $element)
+        $this->addAspectBlocInformation($result[0], $element);*/
+      //$this->addBlocRobinet($result[1]);
+      /*foreach(array("filetage") as $element)
+        $this->addAspectBlocInformation($result[0], $element);*/
       $this->addRobinetterie($result[1]);
-      foreach(array("robineterie") as $element)
-        $this->addAspectBlocInformation($result[0], $element);
+      /*foreach(array("robineterie") as $element)
+        $this->addAspectBlocInformation($result[0], $element);*/
       //$this->addCommentaireRobinetterie($result[0]);
       // Ligne de séparation
       //$this->Cell(0,3,"", 'B', 1, 1);
@@ -422,7 +422,7 @@ class PdfTIV extends FPDF {
       $this->Cell(17,10,utf8_decode($result[3]), 1, 0);
       $this->Cell(10);
       $this->Cell(30,8,"Signatures : ", 0, 0);
-      $this->MultiCell(60,10,utf8_decode($result[4])."\n\n ", 1, 'C');*/
+      $this->MultiCell(60,10,utf8_decode($result[4])." ", 1, 'C');*/
       // Affichage d'un message d'alerte en cas de dépassement de la date d'épreuve/tiv sur le bloc
       //$this->addBlocAlert($result[1]);
     }
@@ -477,7 +477,10 @@ class PdfTIV extends FPDF {
     $this->SetFont('Helvetica', 'B', 11);
     $this->Cell(45,5,$this->resetDate($bloc["date_premiere_epreuve"]), 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(0,5,'', 1, 1, 'L');
+    $this->SetFont('Helvetica', 'I', 9);
+    $this->Cell(16,5,utf8_decode("Marque"), 1, 0, 'L');
+    $this->SetFont('Helvetica', 'B', 11);
+    $this->Cell(0,5,$bloc["r_marque"], 1, 1, 'L');
 
     $this->SetFont('Helvetica', 'I', 9);
     $this->Cell(25,5,utf8_decode("Marque"), 1, 0, 'L');
@@ -488,9 +491,9 @@ class PdfTIV extends FPDF {
     $this->SetFont('Helvetica', 'B', 11);
     $this->Cell(45,5,$this->resetDate($bloc["date_derniere_epreuve"]), 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(15,5,utf8_decode("Marque"), 1, 0, 'L');
+    $this->Cell(16,5,utf8_decode("N° série"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(0,5,$bloc["r_marque"], 1, 1, 'L');
+    $this->Cell(0,5,$bloc["r_serial_number"], 1, 1, 'L');
 
     $this->SetFont('Helvetica', 'I', 9);
     $this->Cell(25,5,utf8_decode("N° de série"), 1, 0, 'L');
@@ -501,26 +504,32 @@ class PdfTIV extends FPDF {
     $this->SetFont('Helvetica', 'B', 11);
     $this->Cell(45,5,$bloc["capacite"], 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(15,5,utf8_decode("N° série"), 1, 0, 'L');
+    $this->Cell(16,5,utf8_decode("Fil. entrée"), 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(0,5,$bloc["r_serial_number"], 1, 1, 'L');
+    $this->Cell(0,5,$bloc["r_filetage"], 1, 1, 'L');
 
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(25,5,utf8_decode("PE (bar)"), 1, 0, 'L');
+    $this->Cell(15,5,"PE (bar)", 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(35,5,'', 1, 0, 'L');
+    $this->Cell(15,5,$bloc["pression_epreuve"], 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(35,5,utf8_decode("PS (bar)"), 1, 0, 'L');
+    $this->Cell(15,5,"PS (bar)", 1, 0, 'L');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(45,5,'', 1, 0, 'L');
+    $this->Cell(15,5,$bloc["pression_service"], 1, 0, 'L');
     $this->SetFont('Helvetica', 'I', 9);
-    $this->Cell(0,5,'', 1, 1, 'L');
+    $this->Cell(35,5,"Filetage bloc", 1, 0, 'L');
+    $this->SetFont('Helvetica', 'B', 11);
+    $this->Cell(45,5,$bloc["filetage"], 1, 0, 'L');
+    $this->SetFont('Helvetica', 'I', 9);
+    $this->Cell(16,5,utf8_decode("Fil. sortie"), 1, 0, 'L');
+    $this->SetFont('Helvetica', 'B', 11);
+    $this->Cell(0,5,$bloc["r_filetage_sortie"], 1, 1, 'L');
 
     //$this->addBlocAlert($id_bloc);
 
     $this->SetTextColor(255,0,0);
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(95,7,utf8_decode("REQUALIFICATION AVANT LE : "), 0, 0, 'R');
+    $this->Cell(95,7,utf8_decode("PROCHAINE I.V. AVANT LE : "), 0, 0, 'R');
 
     $this->SetDrawColor(255,0,0);
     $this->SetLineWidth(0.6);
@@ -554,7 +563,7 @@ class PdfTIV extends FPDF {
     $this->Cell(60,5,"", "T", 0, 'C');
     $this->Cell(0,5,"", "RT", 1, 'C');
 
-    $this->Cell(60,5,utf8_decode("Filetage"), "L", 0, 'C');
+    $this->Cell(60,5,utf8_decode("Filetage : ").$bloc["filetage"], "L", 0, 'C');
     $this->SetFont('Helvetica', '', 10);
     $this->Cell(10,5,utf8_decode("oui"), 1, 0, 'C');
     $this->Cell(10,5,utf8_decode("non"), 1, 0, 'C');
@@ -568,11 +577,14 @@ class PdfTIV extends FPDF {
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', '', 10);
-    $this->Cell(60,5,utf8_decode("À vérifier avec tampon"), 1, 0, 'L');
+    $this->Cell(40,5,utf8_decode("À vérifier avec tampon"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
     $this->Cell(20,5,"", 1, 0, 'C');
     $this->Cell(0,5,"", 1, 1, 'C');
 
-    $this->Cell(60,5,utf8_decode("Filetage col en légèrement oxydé"), 1, 0, 'L');
+    $this->Cell(60,5,utf8_decode("Filetage col légèrement oxydé"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->Cell(10,5,"o", 1, 0, 'C');
@@ -589,7 +601,7 @@ class PdfTIV extends FPDF {
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(40,5,utf8_decode("REJET"), 1, 0, 'C');
+    $this->Cell(40,5,utf8_decode("BLOC REBUTÉ"), 1, 0, 'C');
     $this->SetFont('ZapfDingbats', '', 14);
     $this->Cell(20,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', '', 10);
@@ -605,12 +617,24 @@ class PdfTIV extends FPDF {
     $this->Cell(60,5,"", "R", 0, 'L');
     $this->Cell(0,5,"", "R", 1, 'C');
 
-    $this->Cell(60,5,utf8_decode("Tampons filetés entre/entre pas"), 1, 0, 'L');
+    $this->Cell(60,5,utf8_decode("Tampon fileté entre pas (NEP)"), 1, 0, 'L');
     $this->SetFont('ZapfDingbats', '', 14);
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(40,5,utf8_decode("REJET"), 1, 0, 'C');
+    $this->Cell(40,5,utf8_decode("BLOC REBUTÉ"), 1, 0, 'C');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
+
+    $this->Cell(60,5,utf8_decode("Tampon lisse entre pas (NEP)"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', 'B', 11);
+    $this->Cell(40,5,utf8_decode("BLOC REBUTÉ"), 1, 0, 'C');
     $this->SetFont('ZapfDingbats', '', 14);
     $this->Cell(20,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', '', 10);
@@ -635,8 +659,8 @@ class PdfTIV extends FPDF {
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
-    $this->Cell(40,5,utf8_decode("REJET"), 1, 0, 'C');
-    $this->Cell(20,5,"", 0, 0, 'C');
+    $this->Cell(40,5,utf8_decode("REFUSÉ"), 1, 0, 'C');
+    $this->Cell(20,5,"", 1, 0, 'C');
     $this->SetFont('Helvetica', '', 10);
     $this->Cell(20,5,"", 1, 0, 'C');
     $this->Cell(0,5,"", 1, 1, 'C');
@@ -802,7 +826,7 @@ class PdfTIV extends FPDF {
     $this->Cell(60, 5, "", 0, 0, "C");
     $this->Cell(35, 5, "", 0, 0, "C");
     $this->SetFont('Helvetica', '', 9);
-    $this->Cell(0, 5,utf8_decode("Mesure"), "RTL",1, 'C');
+    $this->Cell(0, 5,utf8_decode("Valeur"), "RTL",1, 'C');
     $this->SetFont('Helvetica', 'B', 11);
     $this->Cell(60,5,utf8_decode("Paroi"), "LB", 0, 'C');
     $this->SetFont('Helvetica', '', 10);
@@ -812,7 +836,7 @@ class PdfTIV extends FPDF {
     $this->Cell(20,5,"Date", 1, 0, 'C');
     $this->Cell(15, 5,"Par", 1, 0, 'C');
     $this->SetFont('Helvetica', '', 9);
-    $this->Cell(0, 5,utf8_decode("UT (mm)"), "RBL",1, 'C');
+    $this->Cell(0, 5,utf8_decode("(mm)"), "RBL",1, 'C');
 
     $this->SetFont('Helvetica', 'B', 11);
     $this->Cell(60,5,utf8_decode("Oxydation"), 1, 0, 'L');
@@ -821,7 +845,7 @@ class PdfTIV extends FPDF {
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', '', 10);
     $this->Cell(30,5,"Grenaillage", 1, 0, 'C');
-    $this->Cell(30,5,"Ultrasons", 1, 0, 'C');
+    $this->Cell(30,5,"Mesure US", 1, 0, 'C');
     $this->Cell(20,5,"", 1, 0, 'C');
     $this->Cell(0,5,"", 1, 1, 'C');
 
@@ -854,10 +878,10 @@ class PdfTIV extends FPDF {
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->Cell(30,5,"o", 1, 0, 'C');
-    $this->Cell(30,5,"", "T", 0, 'C');
-    $this->Cell(20,5,"", "RL", 0, 'C');
-    $this->Cell(15,5,"", "RL", 0, 'C');
-    $this->Cell(0,5,"", "RL", 1, 'C');
+    $this->Cell(30,5,"", 1, 0, 'C');
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(15,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
 
     $this->SetFont('Helvetica', '', 8);
     $this->Cell(60,5,utf8_decode("Corrosion feuilletante localisée (Critère 4)"), 1, 0, 'R');
@@ -866,10 +890,11 @@ class PdfTIV extends FPDF {
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
     $this->Cell(30,5,"REJET", 1, 0, 'C');
-    $this->Cell(30,5,"", 0, 0, 'C');
+    $this->SetFillColor(100,100,100);
+    $this->Cell(30,5,"", 0, 0, 'C', 1);
     $this->Cell(20,5,"", "RL", 0, 'C');
     $this->Cell(15,5,"", "RL", 0, 'C');
-    $this->Cell(0,5,"", "RL", 1, 'C');
+    $this->Cell(0,5,"", "RL", 1, 'C', 1);
 
     $this->SetFont('Helvetica', '', 8);
     $this->Cell(60,5,utf8_decode("Corrosion feuillante généralisée (Critère 5)"), 1, 0, 'R');
@@ -878,10 +903,11 @@ class PdfTIV extends FPDF {
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
     $this->Cell(30,5,"REJET", 1, 0, 'C');
-    $this->Cell(30,5,"", 0, 0, 'C');
+    $this->SetFillColor(100,100,100);
+    $this->Cell(30,5,"", 0, 0, 'C', 1);
     $this->Cell(20,5,"", "RL", 0, 'C');
     $this->Cell(15,5,"", "RL", 0, 'C');
-    $this->Cell(0,5,"", "RL", 1, 'C');
+    $this->Cell(0,5,"", "RL", 1, 'C', 1);
 
     $this->SetFont('Helvetica', '', 8);
     $this->Cell(60,5,utf8_decode("Corrosion pulvérulente (Critère 6"), 1, 0, 'R');
@@ -890,10 +916,11 @@ class PdfTIV extends FPDF {
     $this->Cell(10,5,"o", 1, 0, 'C');
     $this->SetFont('Helvetica', 'B', 11);
     $this->Cell(30,5,"REJET", 1, 0, 'C');
-    $this->Cell(30,5,"", "B", 0, 'C');
+    $this->SetFillColor(100,100,100);
+    $this->Cell(30,5,"", "B", 0, 'C', 1);
     $this->Cell(20,5,"", "RLB", 0, 'C');
     $this->Cell(15,5,"", "RLB", 0, 'C');
-    $this->Cell(0,5,"", "RLB", 1, 'C');
+    $this->Cell(0,5,"", "RLB", 1, 'C', 1);
 
     // FIN BLOC DONNEES BOUTEILLES
   }
@@ -1054,6 +1081,55 @@ class PdfTIV extends FPDF {
     $this->Cell(20,5,"", 1, 0, 'C');
     $this->Cell(0,5,"", 1, 1, 'C');
 
+    $this->SetFontSize(9);
+    $this->Cell(60,5,utf8_decode("Manoeuvre des volants facile"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(60,5,"", 1, 0, 'L');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", "LTB", 0, 'C');
+    $this->Cell(0,5,"", "TRB", 1, 'C');
+
+    $this->SetFontSize(9);
+    $this->Cell(60,5,utf8_decode("Démontage, nettoyage, graissage"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("Nettoyage US"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
+
+    $this->SetFontSize(9);
+    $this->Cell(60,5,utf8_decode("Changement Kit robinet"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 9);
+    $this->Cell(40,5,utf8_decode("Quantité changée (1 ou 2)"), 1, 0, 'L');
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
+
+    $this->SetFontSize(9);
+    $this->Cell(60,5,utf8_decode("Volant bakélite en bon état"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->Cell(10,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(40,5,utf8_decode("À changer"), 1, 0, 'L');
+    $this->SetFont('ZapfDingbats', '', 14);
+    $this->Cell(20,5,"o", 1, 0, 'C');
+    $this->SetFont('Helvetica', '', 10);
+    $this->Cell(20,5,"", 1, 0, 'C');
+    $this->Cell(0,5,"", 1, 1, 'C');
+
     $this->SetFont('Helvetica', 'B', 11);
     $this->Cell(60,5,utf8_decode("À faire"), 1, 0, 'C');
     //$this->SetFont('ZapfDingbats', '', 14);
@@ -1088,6 +1164,7 @@ class PdfTIV extends FPDF {
     $this->SetFont('Helvetica', '', 10);
     $this->Cell(20,5,"", 1, 0, 'C');
     $this->Cell(0,5,"", 1, 1, 'C');
+
     // FIN ROBINETTERIE
   }
 
@@ -1172,7 +1249,7 @@ class PdfTIV extends FPDF {
 
     $this->SetFont('Helvetica', "", 10);
     $this->Cell(20, 6, "", "L",0, "L");
-    $this->Cell(30, 6, utf8_decode("Non conforme"), 0,0, "L");
+    $this->Cell(30, 6, utf8_decode("Validée"), 0,0, "L");
     $this->SetFont('ZapfDingbats', '', 14);
     $this->Cell(10,6,"o", "R", 0, 'C');
     $this->SetFont('Helvetica', "", 10);
@@ -1188,7 +1265,7 @@ class PdfTIV extends FPDF {
 
     $this->SetFontSize(10);
     $this->Cell(20, 6, "", "L",0, "L");
-    $this->Cell(30, 6, utf8_decode("Rebutée"), 0,0, "L");
+    $this->Cell(30, 6, utf8_decode("Non conforme"), 0,0, "L");
     $this->SetFont('ZapfDingbats', '', 14);
     $this->Cell(10,6,"o", "R", 0, 'C');
     $this->SetFont('Helvetica', "", 10);
@@ -1210,7 +1287,7 @@ class PdfTIV extends FPDF {
 
     $this->SetFont('Helvetica', "", 10);
     $this->Cell(20, 6, "", "LB",0, "L");
-    $this->Cell(30, 6, utf8_decode("Validée"), "B",0, "L");
+    $this->Cell(30, 6, utf8_decode("Rebutée"), "B",0, "L");
     $this->SetFont('ZapfDingbats', '', 14);
     $this->Cell(10,6,"o", "RB", 0, 'C');
     $this->SetFont('Helvetica', "", 10);
@@ -1281,7 +1358,7 @@ class PdfTIV extends FPDF {
     }
     $this->Cell(5, 7, "", 0, 1);
     $this->Cell(0,8,utf8_decode("Commentaire et action si état autre que bon :"), 0, 1);
-    $this->MultiCell(0, 8, ($inspection["remarque_$element"] ? utf8_decode($inspection["remarque_$element"]) : "\n "), 1, 1);
+    $this->MultiCell(0, 8, ($inspection["remarque_$element"] ? utf8_decode($inspection["remarque_$element"]) : " "), 1, 1);
   }
 }
 
