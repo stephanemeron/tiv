@@ -62,7 +62,7 @@ class TIVElement {
     $this->_url_title_label  = "<i class='fa fa-list' aria-hidden='true'></i> Liste des ".$this->_name."s";
     $this->_legend_label     = "Édition du ".$this->_name." __ID__";
     $this->_back_url         = "affichage_element.php?element=".$this->_name;
-    $this->_parent_url       = "./";
+    $this->_parent_url       = "/";
     $this->_parent_url_label = "<i class='fa fa-home'></i> Accueil";
     $this->_form_dependency  = array();
     $this->_form_split_count = 0;
@@ -110,35 +110,42 @@ class TIVElement {
       $input_readonly="";
     }
 
-    $form_input = "<input type=\"text\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\"$input_readonly/>\n";
+    $form_input = "<input type=\"text\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\"$input_readonly/>";
     return $form_input;
   }
   function constructSelectInputLabels($label, $labels, $value) {
     if(in_array($label, $this->_readonly_column) && $value && $value!=""){
-      $input_readonly = " disabled=true data-tt=\"labels\" data=\"value\"";
+      $form_input = "<select id=\"$label-disabled\" name=\"$label\" class=\"form-control my-custom-select\" disabled=true data-tt=\"labels\" data=\"value\">";
+      foreach(array_keys($labels) as $option) {
+        $selected = ($option == $value ? " selected='selected'" : "");
+        $form_input .= "<option value='$option'$selected>".$labels[$option]."</option>";
+      }
+      $form_input .= "</select>";
+      $form_input .= "<input type=\"hidden\" name=\"$label\" id=\"$label\"  value=\"$value\"/>";
     }
     else{
-      $input_readonly="";
+        $form_input = "<select id=\"$label\" name=\"$label\" class=\"form-control my-custom-select\">";
+        foreach(array_keys($labels) as $option) {
+          $selected = ($option == $value ? " selected='selected'" : "");
+          $form_input .= "<option value='$option'$selected>".$labels[$option]."</option>";
+        }
+        $form_input .= "</select>";
     }
-    $form_input = "<select id=\"$label\" name=\"$label\" class=\"form-control my-custom-select\"$input_readonly>\n";
-    foreach(array_keys($labels) as $option) {
-      $selected = ($option == $value ? " selected='selected'" : "");
-      $form_input .= "<option value='$option'$selected>".$labels[$option]."</option>\n";
-    }
-    $form_input .= "</select>\n";
+
+
     // Gestion de la dépendance entre élément du formulaire.
     if(array_key_exists($label, $this->_form_dependency)) {
-      $form_input .= "<script>\n$('#$label').change(function() {\n";
+      $form_input .= "<script>$('#$label').change(function() {";
       $tmp = $this->_form_dependency[$label];
       $dependency = array_keys($tmp);
       $link = $dependency[0];
       $linked_values = $tmp[$link];
       foreach($linked_values as $key=>$value) {
-        $form_input .= "if($('#$label').val() == '$key') {\n";
-        $form_input .= "  $('#$link').val($value);\n";
-        $form_input .= "}\n";
+        $form_input .= "if($('#$label').val() == '$key') {";
+        $form_input .= "  $('#$link').val($value);";
+        $form_input .= "}";
       }
-      $form_input .= "});\n</script>";
+      $form_input .= "});</script>";
     }
     return $form_input;
   }
@@ -162,34 +169,41 @@ class TIVElement {
     $inc=1;
     foreach(array_keys($labels) as $option) {
       if(in_array($label, $this->_readonly_column) && $value && $value!=""){
-        $input_readonly = " disabled=true";
+          $checked = ($option == $value ? " checked='checked'" : "");
+          $form_input .= "<div class=\"form-check form-check-inline\">";
+          $form_input .=  "<input class=\"form-check-input\" type=\"radio\" name=\"$label\" id=\"$label.-disabled-.$inc\" value=\"$option\"$checked disabled=true>";
+          $form_input .=  "<label class=\"form-check-label\" for=\"$label.$inc\">".$labels[$option]."</label>";
+          $form_input .= "</div>";
+
+          $form_input .= "<input type=\"hidden\" name=\"$label\" id=\"$label\"  value=\"$value\"/>";
       }
       else{
-        $input_readonly="";
+          $checked = ($option == $value ? " checked='checked'" : "");
+          $form_input .= "<div class=\"form-check form-check-inline\">";
+          $form_input .=  "<input class=\"form-check-input\" type=\"radio\" name=\"$label\" id=\"$label.$inc\" value=\"$option\"$checked>";
+          $form_input .=  "<label class=\"form-check-label\" for=\"$label.$inc\">".$labels[$option]."</label>";
+          $form_input .= "</div>";
       }
-      $checked = ($option == $value ? " checked='checked'" : "");
-      $form_input .= "<div class=\"form-check form-check-inline\">";
-      $form_input .=  "<input class=\"form-check-input\" type=\"radio\" name=\"$label\" id=\"$label.$inc\" value=\"$option\"$checked $input_readonly>";
-      $form_input .=  "<label class=\"form-check-label\" for=\"$label.$inc\">".$labels[$option]."</label>";
-      $form_input .= "</div>\n";
 
-      //$form_input .= "<option value='$option'$selected>".$labels[$option]."</option>\n";
+
+
+      //$form_input .= "<option value='$option'$selected>".$labels[$option]."</option>";
       $inc++;
     }
-    //$form_input .= "</select>\n";
+    //$form_input .= "</select>";
     // Gestion de la dépendance entre élément du formulaire.
     if(array_key_exists($label, $this->_form_dependency)) {
-      $form_input .= "<script>\n$('#$label').change(function() {\n";
+      $form_input .= "<script>$('#$label').change(function() {";
       $tmp = $this->_form_dependency[$label];
       $dependency = array_keys($tmp);
       $link = $dependency[0];
       $linked_values = $tmp[$link];
       foreach($linked_values as $key=>$value) {
-        $form_input .= "if($('#$label').val() == '$key') {\n";
-        $form_input .= "  $('#$link').val($value);\n";
-        $form_input .= "}\n";
+        $form_input .= "if($('#$label').val() == '$key') {";
+        $form_input .= "  $('#$link').val($value);";
+        $form_input .= "}";
       }
-      $form_input .= "});\n</script>";
+      $form_input .= "});</script>";
     }
     return $form_input;
   }
@@ -201,7 +215,7 @@ class TIVElement {
 
 
   function constructBoolInputLabels($label, $value) {
-    //$form_input = "<input type=\"checkbox\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\" />\n";
+    //$form_input = "<input type=\"checkbox\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\" />";
     $form_input = "<div class=\"form-check form-check-inline\">
                     <input class=\"form-check-input\" type=\"radio\" name=\"$label\" id=\"$label-true\"  value=\"1\"";
     if($value == '1'){ $form_input .= " checked";}
@@ -242,7 +256,7 @@ class TIVElement {
 
       });
     });
-    </script>\n";
+    </script>";
     $form_input .= $this->constructTextInput($label, 10, $value);
     return $form_input;
   }
@@ -289,6 +303,7 @@ class TIVElement {
         $to_set[]= "$field = '".$this->_db_con->escape_string($values[$field])."'";
       }
     }
+    echo "<pre>";print_r($to_set); echo "</pre>";
     if(count($to_set) > 0) {
       add_journal_entry($this->_db_con, $id, $this->_name, "Lancement d'une mise à jour (".implode(",", $to_set).")");
       $result = $this->_db_con->query("UPDATE ".$this->getTableName()." SET ".implode(",", $to_set)." WHERE id = '$id'");
@@ -311,9 +326,9 @@ class TIVElement {
     $table = $this->getJSOptions($id, $label);
     if($show_additional_control)
       $table .= $this->getAdditionalControl($id);
-    $table .= "<div class='table-responsive'><table class='table table-striped table-bordered nowrap def-obj' id='$id'>\n";
-    $table .= "  <thead>".$this->getHTMLHeaderTable()."</thead>\n";
-    $table .= "  <tbody>\n";
+    $table .= "<div class='table-responsive'><table class='table table-striped table-bordered nowrap def-obj' id='$id'>";
+    $table .= "  <thead>".$this->getHTMLHeaderTable()."</thead>";
+    $table .= "  <tbody>";
     if(!$db_query) $db_query = $this->getDBQuery();
     $db_result =  $this->_db_con->query($db_query);
     $this->_record_count = 0;
@@ -326,9 +341,9 @@ class TIVElement {
       $table .= $this->getHTMLLineTable($line, $current_class);
     }
 
-    $table .= "  </tbody>\n";
-    $table .= "  <tfoot>".$this->getHTMLHeaderTable()."</tfoot>\n";
-    $table .= "</table></div>\n";
+    $table .= "  </tbody>";
+    $table .= "  <tfoot>".$this->getHTMLHeaderTable()."</tfoot>";
+    $table .= "</table></div>";
     return $table;
   }
   function getJSOptions($id, $label, $display = 25) {
@@ -336,10 +351,10 @@ class TIVElement {
   $(document).ready(function() {
     $('#$id').dataTable();
   } );
-</script>\n";
+</script>";
   }
   function getHTMLHeaderTable() {
-    $header = "    <tr>\n"; //      <th>";
+    $header = "    <tr>"; //      <th>";
     //$header .= join("</th><th>", $this->getHeaderElements());
     foreach ($this->getHeaderElementsArray() as $key => $value) {
 
@@ -357,7 +372,7 @@ class TIVElement {
     }
 
     if(!$this->_read_only) $header .= "<th>Opérations</th>";
-    $header .= "</tr>\n";
+    $header .= "</tr>";
     return $header;
   }
   function getHTMLLineTable(&$record, $default_class) {
@@ -365,7 +380,7 @@ class TIVElement {
     if($tmp = $this->updateRecord($record)) {
       $current_class = $tmp;
     }
-    $line = "    <tr class=\"$current_class\">\n ";
+    $line = "    <tr class=\"$current_class\"> ";
     $id = $record[0];
     $to_display = array();
 
@@ -399,8 +414,8 @@ class TIVElement {
       }
     }
     //$line .= implode("</td><td>", $to_display);
-    //$line .= "</td>\n    </tr>\n";
-    $line .= "</tr>\n";
+    //$line .= "</td>    </tr>";
+    $line .= "</tr>";
     return $line;
   }
   function getExtraInformation($id) {
@@ -419,16 +434,16 @@ class TIVElement {
            "<i class='fa fa-times' aria-hidden='true'></i></a>";
   }
   function getParentUrl() {
-    return "Navigation : <a href='./'><i class='fa fa-home'></i> Accueil</a> > \n".
+    return "Navigation : <a href='./'><i class='fa fa-home'></i> Accueil</a> > ".
            "<a href='".$this->_parent_url."'> ".$this->_parent_url_label."</a>";
   }
   function getQuickNavigationFormInput() {
-    $input  = " > Navigation rapide : <select name='id' onchange='this.form.submit()'>\n".
-              "<option></option>\n";
+    $input  = " > Navigation rapide : <select name='id' onchange='this.form.submit()'>".
+              "<option></option>";
     $db_result = $this->_db_con->query("SELECT id FROM ".$this->getTableName()." ORDER BY id");
     while($result = $db_result->fetch_array()) {
       $selected = ($result['id'] == $_GET['id'] ? " selected" : "");
-      $input .= "<option value='".$result['id']."'$selected>".$this->_name." ".$result['id']."</option>\n";
+      $input .= "<option value='".$result['id']."'$selected>".$this->_name." ".$result['id']."</option>";
     }
     $input .= "</select></p>";
     return $input;
@@ -477,13 +492,13 @@ class TIVElement {
       $form_input = $this->constructDateInput($label, $value);
     } elseif($forms_definition[$label][1] === "tags") {
       $tags = join(",", $forms_definition[$label][3]);
-      $form_input = "<script type=\"text/javascript\">\n".
+      $form_input = "<script type=\"text/javascript\">".
                     "\$(document).ready(function() { \$('#$label').magicSuggest({
                 data: '$tags',allowFreeEntries:false,maxDropHeightinteger:'100px',maxSuggestions:10
             });
          });
      </script>".
-     "<input id=\"$label\" class=\"form-control\" type=\"text\" name='$label' value='$value' />\n";
+     "<input id=\"$label\" class=\"form-control\" type=\"text\" name='$label' value='$value' />";
     } else {
       $form_input = $this->constructTextInput($label, 30, $value);
     }
@@ -515,10 +530,10 @@ class TIVElement {
     // json des champs required
     $json_rules = json_decode("{" . trim($this->_forms_rules) . "}",true);
     if(!$this->_values) return false;
-    $form  = "<form name='$form_name' id='$form_name' action='$action' method='POST'>\n";
-    $form .= "<input type='hidden' name='id' value='$id' />\n";
-    $form .= "<input type='hidden' name='element' value='".$this->_name."' />\n";
-    $form .= "<div class='form-row'>\n";
+    $form  = "<form name='$form_name' id='$form_name' action='$action' method='POST'>";
+    $form .= "<input type='hidden' name='id' value='$id' />";
+    $form .= "<input type='hidden' name='element' value='".$this->_name."' />";
+    $form .= "<div class='form-row'>";
 
     $forms_definition = $this->getForms();
 
@@ -544,10 +559,10 @@ class TIVElement {
       // if($this->_form_split_count && $i > $this->_form_split_count) $i = 0;
     }
 
-      //$form .= "<div class='form-group col-md-6'>".join("</div>\n<div class='form-group col-md-6'>", $columns)."</div>";
+      //$form .= "<div class='form-group col-md-6'>".join("</div><div class='form-group col-md-6'>", $columns)."</div>";
       // $form .= '<pre>'.print_r($columns).'</pre>';
-      //$form .= "  </div>\n";
-    $form .= "</div>\n";
+      //$form .= "  </div>";
+    $form .= "</div>";
     $formDate = false;
     foreach($this->getFormsKey() as $elt) {
         $value = $this->_values[$elt];
@@ -562,32 +577,32 @@ class TIVElement {
         // if($this->_form_split_count && $i > $this->_form_split_count) $i = 0;
     }
     if($formDate){
-      $form .= "<div class='form-row d-flex align-items-end'>\n";
+      $form .= "<div class='form-row d-flex align-items-end'>";
         $form .= $formDate;
-      $form .= "</div>\n";
+      $form .= "</div>";
     }
-    /*$form .= "<span style='height:0; width:0; overflow: hidden;'>\n";
-    $form .= "  <button type='submit'class='toto' value='default action' />\n";
-    $form .= "</span>\n";*/
+    /*$form .= "<span style='height:0; width:0; overflow: hidden;'>";
+    $form .= "  <button type='submit'class='toto' value='default action' />";
+    $form .= "</span>";*/
 
     if($this->_show_delete_form) {
-      $form .= "<input type='hidden' name='embedded' value='1' />\n"; // Utilisé pour détecter une suppression depuis le formulaire
+      $form .= "<input type='hidden' name='embedded' value='1' />"; // Utilisé pour détecter une suppression depuis le formulaire
       $form .= "<button type='submit' style='background: red;' name='delete' class='btn btn-danger' ".
-               "value='".$this->_delete_label."'>".$this->_delete_label."</button>\n";
+               "value='".$this->_delete_label."'>".$this->_delete_label."</button>";
     }
-    $form .= "<button type='submit' name='lancer' class='btn btn-lg btn-outline-primary' value='".$this->getUpdateLabel()."'>".$this->getUpdateLabel()."</button>\n";
-    $form .= "</form>\n";
+    $form .= "<button type='submit' name='lancer' class='btn btn-lg btn-outline-primary' value='".$this->getUpdateLabel()."'>".$this->getUpdateLabel()."</button>";
+    $form .= "</form>";
     return $form;
   }
 
   // function constructEditForm($id, $form_name, $action = "") {
   //   $this->_values = $this->retrieveValues($id);
   //   if(!$this->_values) return false;
-  //   $form  = "<form name='$form_name' id='$form_name' action='$action' method='POST'>\n";
-  //   $form .= "<input type='hidden' name='id' value='$id' />\n";
-  //   $form .= "<input type='hidden' name='element' value='".$this->_name."' />\n";
-  //   $form .= "<div class='form-row'>\n";
-  //   $form .= "  <div class='form-group col-md-6'>\n";
+  //   $form  = "<form name='$form_name' id='$form_name' action='$action' method='POST'>";
+  //   $form .= "<input type='hidden' name='id' value='$id' />";
+  //   $form .= "<input type='hidden' name='element' value='".$this->_name."' />";
+  //   $form .= "<div class='form-row'>";
+  //   $form .= "  <div class='form-group col-md-6'>";
   //   $i = 0;
   //   $columns = array();
   //   foreach($this->getFormsKey() as $elt) {
@@ -597,21 +612,21 @@ class TIVElement {
   //                       $this->getFormInput($elt, stripcslashes($value));
   //     if($this->_form_split_count && $i > $this->_form_split_count) $i = 0;
   //   }
-  //   // $form .= "<tr>".join("</tr>\n<tr>", $columns)."</tr>";
-  //   // $form .= "  </tbody>\n";
-  //   // $form .= "</table>\n";
+  //   // $form .= "<tr>".join("</tr><tr>", $columns)."</tr>";
+  //   // $form .= "  </tbody>";
+  //   // $form .= "</table>";
   //   $form .= "</div></div>";
-  //   $form .= "<span style='height:0; width:0; overflow: hidden;'>\n";
-  //   $form .= "  <button type='submit' value='default action' />\n";
-  //   $form .= "</span>\n";
+  //   $form .= "<span style='height:0; width:0; overflow: hidden;'>";
+  //   $form .= "  <button type='submit' value='default action' />";
+  //   $form .= "</span>";
 
   //   if($this->_show_delete_form) {
-  //     $form .= "<input type='hidden' name='embedded' value='1' />\n"; // Utilisé pour détecter une suppression depuis le formulaire
+  //     $form .= "<input type='hidden' name='embedded' value='1' />"; // Utilisé pour détecter une suppression depuis le formulaire
   //     $form .= "<input type='submit' style='background: red;' name='delete' ".
-  //              "value='".$this->_delete_label."' />\n";
+  //              "value='".$this->_delete_label."' />";
   //   }
-  //   $form .= "<input type='submit' name='lancer' value='".$this->getUpdateLabel()."' />\n";
-  //   $form .= "</form>\n";
+  //   $form .= "<input type='submit' name='lancer' value='".$this->getUpdateLabel()."' />";
+  //   $form .= "</form>";
   //   return $form;
   // }
 

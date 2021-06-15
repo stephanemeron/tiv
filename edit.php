@@ -21,7 +21,7 @@ if($show_additional_information && $extra_info = $edit_class->getExtraInformatio
     $bg_alert = $extra_info["bg_color"];
   }
   print "<div class=\"alert alert-".$bg_alert."\" role=\"alert\">";
-    print "<h1 class='title'>Informations supplémentaires</h1>\n";
+    print "<h1 class='title'>Informations supplémentaires</h1>";
     print $extra_info["extra_info"];
   print "</div>";
 }
@@ -40,35 +40,34 @@ print "<h2 class='title'>".$edit_class->getEditLabel()."</h2>
         }
         return false;
       } else {
-        console.log($('#edit_form').serialize());
         $('#edit_form').validate({
     ".$edit_class->getFormsRules().",
           submitHandler: function(form) {
             $.post('process_element.php', $('#edit_form').serialize(), function(data) {
               $('#results').html(data);
-                setTimeout('window.location.href = \"edit.php?".$edit_class->getURLReference($id)."\";', 1000);
+                //setTimeout('window.location.href = \"edit.php?".$edit_class->getURLReference($id)."\";', 1000);
             });
           }
         });
       }
     });
   });
-</script>\n";
-print "<fieldset><legend>".$edit_class->getLegend($id)."</legend>\n";
-print "<p id=\"results\"></p>\n";
+</script>";
+print "<fieldset><legend>".$edit_class->getLegend($id)."</legend>";
+print "<p id=\"results\"></p>";
 $form_source = $edit_class->constructEditForm($id, "edit_form");
 if($form_source) {
   print $form_source;
 } else {
   print "<script type='text/javascript'>
 window.location.href='affichage_element.php?element=$element';
-</script>\n";
+</script>";
 }
-print "</fieldset>\n";
+print "</fieldset>";
 print get_journal_entry($db_con, $id, $element);
 
 if($extra_operation = $edit_class->getExtraOperation($id)) {
-  print "<h2>Opérations supplémentaires</h2>\n";
+  print "<h2>Opérations supplémentaires</h2>";
   print $extra_operation;
 }
 
