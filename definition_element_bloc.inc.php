@@ -21,7 +21,7 @@ class blocElement extends TIVElement {
     $this->_show_delete_form = true;
     $this->_creation_label = "Création d'un ".$this->_name;
     $this->_update_label = "Mettre à jour le bloc";
-    $this->_parent_url       = "/#materiel";
+    $this->_parent_url       = "/?pills=materiel";
     $this->_parent_url_label = "<i class='fa fa-wrench'></i> Matériel";
     $this->_force_display = array_key_exists("force_bloc_display", $_GET) || array_key_exists("force_bloc_display", $_POST);
     $this->_current_time = time();
@@ -33,9 +33,9 @@ class blocElement extends TIVElement {
     );
     $this->_hidden_column = array("constructeur","adresse", "pression_service", "gaz","filetage","is_club","etat", "etat_int");
     $this->_hidden_column_sm = array("constructeur", "nom_proprietaire","constructeur", "numero", "marque","capacite","id_robinet", "etat", "etat_int");
-    $this->_readonly_column = array("id_club", "constructeur", "marque", "capacite", "numero","filetage", "gaz","pression_service","pression_epreuve");
+    $this->_readonly_column = array("id_club", "constructeur", "marque", "numero","filetage", "capacite", "gaz","pression_service","pression_epreuve");
     $this->_field_to_retrieve = array(
-      "robinet" => "CONCAT('Réf: ', id, ' - ', marque, ' - ', nb_sortie,' sortie(s)')");
+      "robinet" => "CONCAT('Réf: ', serial_number, ' - ', marque, ' - ', nb_sortie,' sortie(s)')");
     //$bloc_capacite = array("6", "10", "12 long", "12 court", "15");
     //$array_constructeur = array("Eurocylinder ECS", "Faber", "IWKA", "Mannesmann", "Roth", "ANCIENS ETABLISSEMENTS POULET (AP)","APOLDAER","CATALINA","CTCO","EM ANZIN","HEISER", "ISER","LUXFER","MCS","MES ALUMINIUM","MILMET SA","OLAER","PRODUCTOS TUBULARES (PT)","SOCIETE DE FORGEAGE DE RIVE-DE-GIER (SFR)","SOCIETE METALLURGIQUE DE GERZAT (SMG)","TENARIS DALMINE (TDL)","VALLOUREC","VITKOVICE","WORTHINGTON");
     // Création d'une dépendance entre pression de service et d'épreuve
@@ -140,12 +140,12 @@ class blocElement extends TIVElement {
     $this->_tiv_month_count_warn = $tiv_month_count_warn;
   }
   function getQuickNavigationFormInput() {
-    $input  = " > Navigation rapide : <select name='id' onchange='this.form.submit()'>\n".
-              "<option></option>\n";
+    $input  = " > Navigation rapide : <select name='id' onchange='this.form.submit()'>".
+              "<option>Choisir un bloc</option>";
     $db_result = $this->_db_con->query("SELECT id,id_club FROM ".$this->getTableName()." WHERE etat = 'OK' ORDER BY id_club");
     while($result = $db_result->fetch_array()) {
       $selected = ($result['id'] == $_GET['id'] ? " selected" : "");
-      $input .= "<option value='".$result['id']."'$selected>n° bloc : ".$result['id_club']."</option>\n";
+      $input .= "<option value='".$result['id']."'$selected>n° bloc : ".$result['id_club']."</option>";
     }
     $input .= "</select></p>".
               "</form>";
@@ -163,7 +163,7 @@ class blocElement extends TIVElement {
     if($tmp = $this->updateRecord($record)) {
       $current_class = $tmp;
     }
-    $line = "    <tr class=\"$current_class\">\n ";
+    $line = "    <tr class=\"$current_class\"> ";
     $id = $record[0];
     $to_display = array();
 
@@ -208,8 +208,8 @@ class blocElement extends TIVElement {
       }
     }
     //$line .= implode("</td><td>", $to_display);
-    //$line .= "</td>\n    </tr>\n";
-    $line .= "</tr>\n";
+    //$line .= "</td>    </tr>";
+    $line .= "</tr>";
     return $line;
   }
 
@@ -217,11 +217,11 @@ class blocElement extends TIVElement {
 
   function getFormInput($label, $value) {
     if($label === "id_robinet") {
-      $db_query = "SELECT id,marque,nb_sortie, filetage FROM robinet";
+      $db_query = "SELECT id,serial_number,marque,nb_sortie, filetage FROM robinet";
       $db_result = $this->_db_con->query($db_query);
       $options = array("" => "");
       while($result = $db_result->fetch_array()) {
-        $options[$result["id"]] = $result["id"]."-".$result["marque"]."-".$result["nb_sortie"]." sortie(s)";
+        $options[$result["id"]] = $result["serial_number"]."-".$result["marque"]."-".$result["nb_sortie"]." sortie(s)";
       }
       return $this->constructSelectInputLabels($label, $options, $value);
     }
@@ -239,20 +239,20 @@ class blocElement extends TIVElement {
     } else {
       $error_class = 'ok d-flex align-items-center';
     }
-    $html_code = "<p><div class='$error_class'>$message_alerte</div></p>\n";
+    $html_code = "<p><div class='$error_class'>$message_alerte</div></p>";
     $html_code .= "<script>
 $('#$div_label_to_update').html(\"$message_alerte\");
 document.getElementById('$div_label_to_update').className='$error_class';
-</script>\n";
+</script>";
     return $html_code.$table_code;
   }
   function getAdditionalControl() {
     $additional_element = parent::getAdditionalControl();
     if(!array_key_exists("force_bloc_display", $_GET))
-      return "<p>$additional_element</p>\n<p><a href='affichage_element.php?element=bloc&force_bloc_display=1'>".
-             "Forcer l'affichage de tous les blocs (y compris rebuté)</a></p>\n";
+      return "<p>$additional_element</p><p><a href='affichage_element.php?element=bloc&force_bloc_display=1'>".
+             "Forcer l'affichage de tous les blocs (y compris rebuté)</a></p>";
     else
-      return "<p>$additional_element</p>\n";
+      return "<p>$additional_element</p>";
   }
   function isDisplayed(&$record) {
     return ($record["etat"] == "OK");
@@ -313,10 +313,10 @@ document.getElementById('$div_label_to_update').className='$error_class';
   </script>
   <p>Date de l'inspection TIV :<input type='text' name='date_tiv' id='admin-date-tiv-selector' size='10' value=''/>
   - Nom de l'inspecteur TIV : <select id='tivs' name='tivs[]'>
-    <option></option>\n";
+    <option></option>";
       $db_result = $this->_db_con->query("SELECT id,nom,actif FROM inspecteur_tiv WHERE actif = 'oui' ORDER BY nom");
       while($result = $db_result->fetch_array()) {
-        $form .= "  <option value='".$result["id"]."'>".$result["nom"]."</option>\n";
+        $form .= "  <option value='".$result["id"]."'>".$result["nom"]."</option>";
       }
       $form .= "</select>
   <input type='submit' name='lancer' value='Créer la fiche TIV' class='btn btn-outline-primary' /></p>
@@ -393,26 +393,26 @@ document.getElementById('$div_label_to_update').className='$error_class';
     $next_tiv_minus_one = strtotime("+".$this->_tiv_month_count_warn." months", $dernier_tiv);
     $message_expiration  = "<div><i class='fa fa-calendar-check-o fa-2x text-success mx-3' aria-hidden='true'/></i> ".
                            "Date prochaine réépreuve : <strong>".date("d/m/Y", $next_epreuve)."</strong> - ".
-                           "Date prochain TIV : <strong>".date("d/m/Y", $next_tiv)."</strong></div>\n";
+                           "Date prochain TIV : <strong>".date("d/m/Y", $next_tiv)."</strong></div>";
     if($next_epreuve < $this->_current_time) {
       $bg_color = "danger";
       $message_expiration = "<div class='error'><i class='fa fa-calendar-times-o fa-2x text-danger mx-3' aria-hidden='true'/></i> ".
-                            "ATTENTION !!! CE BLOC A DÉPASSÉ SA DATE DE RÉÉPREUVE (le ".date("d/m/Y", $next_epreuve).") !!!</div>\n";
+                            "ATTENTION !!! CE BLOC A DÉPASSÉ SA DATE DE RÉÉPREUVE (le ".date("d/m/Y", $next_epreuve).") !!!</div>";
     } else if($next_epreuve_minus_one < $this->_current_time) {
       $bg_color = "warning";
       $message_expiration = "<div class='warning'><i class='fa fa-calendar fa-2x text-warning mx-3' aria-hidden='true'/></i> ".
                             "Attention, ce bloc va bientôt dépasser sa date de réépreuve ".
-                            "(dans moins de ".$this->getEpreuveWarnMonthCount()." mois, le ".date("d/m/Y", $next_epreuve).")</div>\n";
+                            "(dans moins de ".$this->getEpreuveWarnMonthCount()." mois, le ".date("d/m/Y", $next_epreuve).")</div>";
     }
     if($next_tiv < $this->_current_time) {
       $bg_color = "danger";
       $message_expiration = "<div class='error'><i class='fa fa-calendar-times-o fa-2x text-danger mx-3' aria-hidden='true'/></i> ".
-                            "Attention !!! ce bloc a dépassé sa date de TIV (le ".date("d/m/Y", $next_tiv).")</div>\n";
+                            "Attention !!! ce bloc a dépassé sa date de TIV (le ".date("d/m/Y", $next_tiv).")</div>";
     } else if($next_tiv_minus_one < $this->_current_time) {
       $bg_color = "warning";
       $message_expiration = "<div class='warning'><i class='fa fa-calendar fa-2x text-warning mx-3' aria-hidden='true'/></i> ".
                             "Attention, ce bloc va bientôt dépasser sa date de TIV ".
-                            "(dans moins de ".$this->getTIVWarnMonthCount()." mois, le ".date("d/m/Y", $next_tiv).")</div>\n";
+                            "(dans moins de ".$this->getTIVWarnMonthCount()." mois, le ".date("d/m/Y", $next_tiv).")</div>";
     }
     // Récupération d'information sur les fiches TIV du bloc
     $db_result = $this->_db_con->query("SELECT id,date FROM inspection_tiv WHERE id_bloc = $id ORDER BY date DESC");
@@ -426,9 +426,9 @@ document.getElementById('$div_label_to_update').className='$error_class';
     }
     // Composition des messages
     $message = "";
-    $message = "<p>$message_expiration</p>\n";
+    $message = "<p>$message_expiration</p>";
     if(count($extra_info) > 0) {
-      $message .= "<h3>Liste des fiches d'inspection TIV associées au bloc :</h3>\n<dl>\n<dd>".implode("</dd>\n<dd>", $extra_info)."</dd>\n</dl>\n";
+      $message .= "<h3>Liste des fiches d'inspection TIV associées au bloc :</h3><dl><dd>".implode("</dd><dd>", $extra_info)."</dd></dl>";
     } else {
       $message .= "<p>Pas de fiche d'inspection TIV associée au bloc.</p>";
     }
