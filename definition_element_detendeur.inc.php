@@ -2,7 +2,7 @@
 class detendeurElement extends TIVElement {
   function detendeurElement($db_con = false) {
     parent::__construct($db_con);
-    $this->_parent_url       = "./#materiel";
+    $this->_parent_url       = "/?pills=materiel";
     $this->_parent_url_label = "<i class='fa fa-wrench'></i> Matériel";
     $this->_creation_label = "Création d'un détendeur";
     $this->_update_label = "Mettre à jour le détendeur";

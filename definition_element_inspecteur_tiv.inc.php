@@ -2,7 +2,7 @@
 class inspecteur_tivElement extends TIVElement {
   function inspecteur_tivElement($db_con = false) {
     parent::__construct($db_con);
-    $this->_parent_url       = "./#personne";
+    $this->_parent_url       = "/?pills=personne";
     $this->_parent_url_label = "<i class='fa fa-wrench'></i> Plongeurs/inspecteurs TIV";
     $this->_creation_label = "Création d'un nouvel inspecteur";
     $this->_update_label = "Mettre à jour l&#145;inspecteur TIV";

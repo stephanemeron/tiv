@@ -7,7 +7,7 @@ class personneElement extends TIVElement {
     global $assurance;
 
     parent::__construct($db_con);
-    $this->_parent_url       = "./#personne";
+    $this->_parent_url       = "/?pills=personne";
     $this->_parent_url_label = "<i class='fa fa-user-circle-o'></i>  Plongeurs/inspecteurs TIV";
     $this->_creation_label = "Création d'une nouvelle personne";
     $this->_update_label = "Mettre à jour la personne";

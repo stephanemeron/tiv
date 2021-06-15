@@ -8,7 +8,7 @@ class pretElement extends TIVElement {
 
     global $etat_possible;
     parent::__construct($db_con);
-    $this->_parent_url       = "./affichage_element.php?element=pret";
+    $this->_parent_url       = "/affichage_element.php?element=pret";
     $this->_parent_url_label = "<i class='fa fa-user-circle-o'></i> Prêt";
     $this->_creation_label = "Création d'un nouveau prêt";
     $this->_update_label = "Mettre à jour le prêt";

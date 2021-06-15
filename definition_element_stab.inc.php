@@ -5,7 +5,7 @@ class stabElement extends TIVElement {
     global $stab_taille;
 
     parent::__construct($db_con);
-    $this->_parent_url       = "./#materiel";
+    $this->_parent_url       = "/?pills=materiel";
     $this->_parent_url_label = "<i class='fa fa-wrench'></i> Matériel";
     $this->_show_delete_form = true;
     $this->_creation_label = "Création d'un gilet";

@@ -5,7 +5,7 @@ class inspection_tivElement extends TIVElement {
   function inspection_tivElement($db_con = false, $date = false) {
     parent::__construct($db_con);
     $this->_show_create_form = false;
-    $this->_parent_url       = "./#admin";
+    $this->_parent_url       = "/?pills=admin";
     $this->_parent_url_label = "<i class='fa fa-sliders'></i> Administration";
     $this->_update_label = "Mettre à jour les informations sur l&#145;inspection TIV";
     $this->_elements = array(
@@ -105,11 +105,11 @@ class inspection_tivElement extends TIVElement {
     }
     $id_bloc = $result[0];
     $date_tiv = $result[2];
-    $form  = "<form name='update_bloc' id='update_bloc' action='update_bloc_tiv.php' method='POST'>\n";
-    $form .= "<input type='hidden' name='date_tiv' value='$date_tiv' />\n";
-    $form .= "<input type='hidden' name='blocs_to_update[]' value='$id_bloc' />\n";
-    $form .= "<input type='submit' name='lancer' value='Lancer la mise à jour du bloc avec le contenu de cette fiche TIV'>\n";
-    $form .= "</form>\n";
+    $form  = "<form name='update_bloc' id='update_bloc' action='update_bloc_tiv.php' method='POST'>";
+    $form .= "<input type='hidden' name='date_tiv' value='$date_tiv' />";
+    $form .= "<input type='hidden' name='blocs_to_update[]' value='$id_bloc' />";
+    $form .= "<input type='submit' name='lancer' value='Lancer la mise à jour du bloc avec le contenu de cette fiche TIV'>";
+    $form .= "</form>";
     return $form;
   }
   function setDate($date) {
@@ -141,9 +141,9 @@ class inspection_tivElement extends TIVElement {
     $table = $this->getJSOptions($id, $label);
     if($show_additional_control)
       $table .= $this->getAdditionalControl($id);
-    $table .= "<div class='table-responsive'><table class='table table-striped table-bordered nowrap def-obj' id='$id'>\n";
-    $table .= "  <thead>".$this->getHTMLHeaderTable()."</thead>\n";
-    $table .= "  <tbody>\n";
+    $table .= "<div class='table-responsive'><table class='table table-striped table-bordered nowrap def-obj' id='$id'>";
+    $table .= "  <thead>".$this->getHTMLHeaderTable()."</thead>";
+    $table .= "  <tbody>";
     if(!$db_query) $db_query = $this->getDBQuery();
     $db_result =  $this->_db_con->query($db_query);
     $this->_record_count = 0;
@@ -156,23 +156,23 @@ class inspection_tivElement extends TIVElement {
       $table .= $this->getHTMLLineTable($line, $current_class);
     }
 
-    $table .= "  </tbody>\n";
-    $table .= "  <tfoot>".$this->getHTMLHeaderTable()."</tfoot>\n";
-    $table .= "</table></div>\n";
+    $table .= "  </tbody>";
+    $table .= "  <tfoot>".$this->getHTMLHeaderTable()."</tfoot>";
+    $table .= "</table></div>";
     return $table;
   }
 
 
   function getHTMLHeaderTable() {
-    $header = "    <tr>\n      <th>";
+    $header = "    <tr>      <th>";
     $header .= join("</th><th>", $this->_columns);
     if(!$this->_read_only) $header .= "</th><th>Opérations";
-    $header .= "</th>\n    </tr>\n";
+    $header .= "</th>    </tr>";
     return $header;
   }
   function getHTMLLineTable(&$record, $default_class) {
     $current_class = $default_class;
-    $line = "    <tr class=\"$current_class\">\n      <td>";
+    $line = "    <tr class=\"$current_class\">      <td>";
     $id = $record[0];
     $to_display = array();
     for($i = 0; $i < count($this->_columns); $i++) {
@@ -182,7 +182,7 @@ class inspection_tivElement extends TIVElement {
       $to_display [] = $this->getEditUrl($id);
     }
     $line .= implode("</td><td>", $to_display);
-    $line .= "</td>\n    </tr>\n";
+    $line .= "</td>    </tr>";
     return $line;
   }
   function getFormInput($label, $value) {
@@ -200,7 +200,7 @@ class inspection_tivElement extends TIVElement {
       $options = array("" => "");
       while($result = $db_result->fetch_array()) {
         $options[$result["id"]] = "n° ".$result["id_club"]. " (id=".$result["id"].") - ".
-                                $result["constructeur"]." (".$result["marque"].") - capacité : ".$result["capacite"]."l - n° série : ".$result["numero"]." - robinet : ".$result["serial_number"];
+                                $result["constructeur"]." (".$result["marque"].") - capacité : ".$result["capacite"]." - n° série : ".$result["numero"]." - robinet : ".$result["serial_number"];
       }
       return $this->constructSelectInputLabels($label, $options, $value);
     }
