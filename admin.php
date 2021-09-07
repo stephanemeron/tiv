@@ -5,10 +5,10 @@
 
       <form name="ajout_form" id="ajout_form" action="ajout_element.php" method="POST">
         <div class="row align-items-center">
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-5">
             <p class="mb-0"><i class="fa fa-cogs" aria-hidden="true"></i> Type d'élément à déclarer :</p>
           </div>
-          <div class="col-12 col-md-6">
+          <div class="col-12 col-md-7">
             <select class="custom-select" id="element" name="element">
               <option value='bloc'>Bloc</option>
               <option value='robinet'>Robinet</option>
@@ -44,10 +44,10 @@
       <h2 class="title">Consultation d'un TIV</h2>
       <form name="consultation_tiv" id="consultation_tiv" action="consultation_tiv.php" method="POST">
         <div class="row align-items-center">
-          <div class="col-12 col-md-4">
+          <div class="col-12 col-md-5">
             <p class="mb-0"><i class="fa fa-book" aria-hidden="true"></i> Choisissez votre TIV :</p>
           </div>
-          <div class="col-12 col-md-6">
+          <div class="col-12 col-md-7">
             <select class="custom-select" id="date-tiv-consultation" name="date_tiv" onselect="submit()">
               <?php
                 include_once("connect_db.inc.php");
@@ -111,10 +111,10 @@
                         <div class="col-12">
                             <p class="mb-0"><i class="fa fa-file-text-o" aria-hidden="true"></i> A noter que la préparation d'un TIV consiste à pré-affecter les blocs aux différentes personnes qui feront plus tard le TIV.</p>
                         </div>
-                        <div class="col-12 col-md-4">
+                        <div class="col-12 col-md-5">
                             <p class="mb-0"><i class="fa fa-calendar" aria-hidden="true"></i> Date de préparation du TIV :</p>
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-7">
                             <input type="text" name="date_tiv" id="admin-date-tiv-selector" value="" class="w-100"/>
                         </div>
                         <div class="col-12 pt-3 text-right">

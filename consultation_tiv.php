@@ -86,7 +86,7 @@ if($bloc_to_update > 0) {
   onclick='return(confirm(\"Lancer la MAJ des bloc(s) ?\"));' />
   </form>";
 } else {
-  print "<h2>Cette inspection n'a pas de bloc à l'état OK ou ne permet pas de mettre à jour les dates d'inspection des blocs</h2>\n";
+  print "<h2 class='py-5'>Cette inspection n'a pas de bloc à l'état OK ou ne permet pas de mettre à jour les dates d'inspection des blocs</h2>\n";
 }
 
 print "<p>".$inspection_tiv->getParentUrl()."</p>";
