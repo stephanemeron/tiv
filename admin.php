@@ -89,12 +89,56 @@
               if(confirm("Lancer la procédure ?")) form.submit();
             }
           });
+          $("#preparation_tiv_no_tech").validate({
+            debug: true,
+            rules: {
+              date_tiv: {
+                  required: true,
+                  date: true,
+              },
+            },
+            submitHandler: function(form) {
+              if(confirm("Lancer la procédure ?")) form.submit();
+            }
+          });
         });
         </script>
 
         <div class="row align-items-center">
+            <div class="col-12 mb-5">
+                <form name="preparation_tiv" id="preparation_tiv_no_tech" action="preparation_tiv.php" method="POST">
+                    <script>
+                    $(function() {
+                      $( "#admin-date-tiv-no-tech-selector" ).datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        dateFormat: 'yyyy-mm-dd',
+                        appendText: '(dd-mm-yyyy)',
+                        language: 'fr',
+                        altFormat: 'dd-mm-yyyy'
+                      });
+                    });
+                    </script>
+                    <div class="row align-items-center">
+                        <div class="col-12">
+                            <p class="mb-0"><i class="fa fa-file-text-o" aria-hidden="true"></i> Préparation d'un TIV sans affectation de technicien.</p>
+                        </div>
+                        <div class="col-12 col-md-5">
+                            <p class="mb-0"><i class="fa fa-calendar" aria-hidden="true"></i> Date de préparation du TIV :</p>
+                        </div>
+                        <div class="col-12 col-md-7">
+                            <input type="text" name="date_tiv" id="admin-date-tiv-no-tech-selector" value="" class="w-100"/>
+                        </div>
+                        <div class="col-12 pt-3 text-right">
+                            <input type="hidden" name="no-tech" value="1" />
+                            <input type="submit" name="lancer" value="Procéder à la génération des fiches" class="btn btn-lg btn-outline-primary ml-md-3" />
+                        </div>
+                    </div>
+                </form>
+            </div>
             <div class="col-12">
-                <form name="preparation_tiv" id="preparation_tiv" action="preparation_tiv.php" method="POST">
+                <hr/>
+                <form name="preparation_tiv" id="preparation_tiv" action="preparation_tiv.php" method="POST" class="mt-5">
                     <script>
                     $(function() {
                       $( "#admin-date-tiv-selector" ).datepicker({
