@@ -100,8 +100,7 @@ class PdfTIV extends FPDF {
         else{
             $id_bloc = $result_id_bloc;
         }
-
-      $bloc_condition = "bloc.id = $id_bloc";
+      $bloc_condition = "inspection_tiv.id_bloc = $id_bloc";
       $db_query = "SELECT  inspection_tiv.id_bloc AS id_bloc, inspection_tiv.id AS i_t_id, bloc.id_club AS bloc_id_club ".
                   "FROM inspection_tiv, bloc ";
       if(array_key_exists("date", $_GET)){
@@ -110,10 +109,8 @@ class PdfTIV extends FPDF {
       else{
           $db_query .= "WHERE ".$bloc_condition;
       }
-
       $db_result = $this->_db_con->query($db_query);
       $result = $db_result->fetch_array();
-
       //$this->Cell(145);
       // Affichage numéro fiche tiv
       $this->SetFont('Helvetica', 'B', 10);
@@ -124,7 +121,7 @@ class PdfTIV extends FPDF {
       $this->Image("images/logo-tiv.png",90,12,null,10,"png");
       $this->SetFont('Helvetica', 'I',10);
       //$this->Cell(0, 8, utf8_decode('Fiche TIV du '.$this->_date." - club $nom_club"), 'B', 0, 'C');
-      $this->Cell(142, 18, utf8_decode('Numéro du bloc : '),0, 0, 'R');
+      $this->Cell(132, 18, utf8_decode('Numéro du bloc : '),0, 0, 'R');
       $this->SetFont('Helvetica','' ,40);
 
       $this->Cell(0,12,$result["bloc_id_club"],0, 1, 'R');
@@ -140,12 +137,12 @@ class PdfTIV extends FPDF {
     $this->Cell(0,6,utf8_decode('Inspection TIV du '.$this->_date." - Club $nom_club - Page ".$this->PageNo().'/{nb}'),0,0,'C');
   }
 
-  function contentHeader( $id_bloc = false){
-    $this->AddPage();
-    //$this->Ln(8);
-    $this->SetFont('Helvetica', 'B',12);
-    $this->Cell(0,8,utf8_decode("FICHE D'ÉVALUATION ET DE SUIVI D'UNE BOUTEILLE DE PLONGÉE"),0, 1, 'C');
-  }
+  // function contentHeader( $id_bloc = false){
+  //   $this->AddPage();
+  //   //$this->Ln(8);
+  //   $this->SetFont('Helvetica', 'B',12);
+  //   $this->Cell(0,8,utf8_decode("FICHE D'ÉVALUATION ET DE SUIVI D'UNE BOUTEILLE DE PLONGÉE"),0, 1, 'C');
+  // }
 
 
   function addInspecteurResume() {
@@ -348,18 +345,18 @@ class PdfTIV extends FPDF {
   }
 
   function addBlocFile($id_bloc = false) {
-    $bloc_condition = "1";
-    if($id_bloc) $bloc_condition = "id_bloc = $id_bloc";
+    $bloc_condition = "";
+    if($id_bloc) $bloc_condition = "AND id_bloc = $id_bloc";
     $db_query = "SELECT inspection_tiv.id, id_bloc, id_inspecteur_tiv, decision ".
                 "FROM inspection_tiv ".
                 "WHERE inspection_tiv.date = '".$this->_date."'".
-                "AND $bloc_condition ";
+                $bloc_condition ;
 
     $db_result = $this->_db_con->query($db_query);
     while($result = $db_result->fetch_array()) {
       // Affichage de l'entête de la fiche (capacité du bloc, date des réépreuves etc.)
       //$this->AddPage();
-      $this->AddPage('','',0,$result["id_bloc"]);
+      $this->AddPage('','',0,$result[1]);
       //$this->Ln(8);
       $this->SetFont('Helvetica', 'B',11);
       $this->Cell(0,8,utf8_decode("FICHE D'ÉVALUATION ET DE SUIVI D'UNE BOUTEILLE DE PLONGÉE"),0, 1, 'R');
@@ -455,7 +452,7 @@ class PdfTIV extends FPDF {
     //$this->Rect(10,37, 190, 15,'D');
     $this->Cell(30,10,utf8_decode("Nom propriétaire "), "LTB", 0,'L');
     $this->SetFont('Helvetica', 'B', 15);
-    $this->Cell($this->GetPageWidth()-80,10, $bloc["nom_proprietaire"], "TB", 0, 'C');
+    $this->Cell($this->GetPageWidth()-80,10, utf8_decode($bloc["nom_proprietaire"]), "TB", 0, 'C');
     $this->SetFont('Helvetica', '', 10);
     $this->Cell(0,10,"", "TRB", 1, 'R');
     // FIN BLOC NOM PROPRIETAIRE
