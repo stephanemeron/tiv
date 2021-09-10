@@ -102,7 +102,7 @@ class TIVElement {
   function getFormsRules() { return $this->_forms_rules; }
   function getForms() { return $this->_forms; }
   function getFormsKey() { return array_keys($this->_forms); }
-  function constructTextInput($label, $size, $value, $class = false) {
+  function constructTextInput($label, $size, $value, $class = false, $type = 'text') {
     if(in_array($label, $this->_readonly_column) && $value && $value!=""){
       $input_readonly = " readonly";
     }
@@ -110,7 +110,7 @@ class TIVElement {
       $input_readonly="";
     }
 
-    $form_input = "<input type=\"text\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\"$input_readonly/>";
+    $form_input = "<input type=\"$type\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\"$input_readonly/>";
     return $form_input;
   }
   function constructSelectInputLabels($label, $labels, $value) {
@@ -214,17 +214,22 @@ class TIVElement {
   }
 
 
-  function constructBoolInputLabels($label, $value) {
+  function constructBoolInputLabels($label, $default, $value) {
     //$form_input = "<input type=\"checkbox\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\" />";
     $form_input = "<div class=\"form-check form-check-inline\">
                     <input class=\"form-check-input\" type=\"radio\" name=\"$label\" id=\"$label-true\"  value=\"1\"";
-    if($value == '1'){ $form_input .= " checked";}
+    if($value == '1' || (empty($value) && $default == 1)){
+        $form_input .= " checked";
+    }
+
     $form_input .=  ">
                     <label class=\"form-check-label\" for=\"$label-true\">Oui</label>
                   </div>
                   <div class=\"form-check form-check-inline\">
                     <input class=\"form-check-input\" type=\"radio\" name=\"$label\" id=\"$label-false\" value=\"0\"";
-    if($value == '0'){ $form_input .= " checked";}
+    if($value == '0' || (empty($value) && $default == 0)){
+        $form_input .= " checked";
+    }
     $form_input .=  ">
                     <label class=\"form-check-label\" for=\"$label-false\">Non</label>
                   </div>";
@@ -238,8 +243,8 @@ class TIVElement {
 
 
 
-  function constructBoolInput($label, $value) {
-    return $this->constructBoolInputLabels($label, $value);
+  function constructBoolInput($label, $default, $value) {
+    return $this->constructBoolInputLabels($label, $default, $value);
   }
 
   function constructDateInput($label, $value) {
@@ -303,7 +308,6 @@ class TIVElement {
         $to_set[]= "$field = '".$this->_db_con->escape_string($values[$field])."'";
       }
     }
-    echo "<pre>";print_r($to_set); echo "</pre>";
     if(count($to_set) > 0) {
       add_journal_entry($this->_db_con, $id, $this->_name, "Lancement d'une mise à jour (".implode(",", $to_set).")");
       $result = $this->_db_con->query("UPDATE ".$this->getTableName()." SET ".implode(",", $to_set)." WHERE id = '$id'");
@@ -448,6 +452,16 @@ class TIVElement {
     $input .= "</select></p>";
     return $input;
   }
+
+  function isLog(){
+      if($_SESSION["inLog"]){
+          return "<a href='/logout.php'><i class='fa fa-2x fa-sign-out text-danger'> </i></a>";
+      }
+      else{
+          return "<a href='/login.php'><i class='fa fa-2x fa-sign-in text-success'> </i></a>";
+      }
+  }
+
   function getNavigationUrl() {
     $input_form = $this->getQuickNavigationFormInput();
     return "<div class='row mt-3'>".
@@ -459,6 +473,7 @@ class TIVElement {
                   "</div>".
                 "</form>".
               "</div>".
+              "<div class='col-md-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center'>".$this->isLog()."</div>".
             "</div>";
   }
   function getBackUrl() {
@@ -487,7 +502,7 @@ class TIVElement {
     } elseif($forms_definition[$label][1] === "radio") {
       $form_input = $this->constructRadioInput($label, $forms_definition[$label][3], $value);
     } elseif($forms_definition[$label][1] === "boolean") {
-      $form_input = $this->constructBoolInput($label, $value);
+      $form_input = $this->constructBoolInput($label, $forms_definition[$label][3] = 0, $value);
     } elseif($forms_definition[$label][1] === "date") {
       $form_input = $this->constructDateInput($label, $value);
     } elseif($forms_definition[$label][1] === "tags") {
@@ -499,7 +514,10 @@ class TIVElement {
          });
      </script>".
      "<input id=\"$label\" class=\"form-control\" type=\"text\" name='$label' value='$value' />";
-    } else {
+    } elseif($forms_definition[$label][1] === "password") {
+      $value = substr($value,0,10);
+      $form_input = $this->constructTextInput($label, 10, $value, false, 'password');
+    }  else {
       $form_input = $this->constructTextInput($label, 30, $value);
     }
     return $form_input;
@@ -540,7 +558,6 @@ class TIVElement {
     $columns = array();
     foreach($this->getFormsKey() as $elt) {
       $value = $this->_values[$elt];
-
       // recherche si champ est required
       $is_required = $this->checkIsRequired($elt,$json_rules);
 
@@ -587,7 +604,7 @@ class TIVElement {
 
     if($this->_show_delete_form) {
       $form .= "<input type='hidden' name='embedded' value='1' />"; // Utilisé pour détecter une suppression depuis le formulaire
-      $form .= "<button type='submit' style='background: red;' name='delete' class='btn btn-danger' ".
+      $form .= "<button type='submit' style='background: red;' name='delete' class='btn btn-danger mr-5' ".
                "value='".$this->_delete_label."'>".$this->_delete_label."</button>";
     }
     $form .= "<button type='submit' name='lancer' class='btn btn-lg btn-outline-primary' value='".$this->getUpdateLabel()."'>".$this->getUpdateLabel()."</button>";
