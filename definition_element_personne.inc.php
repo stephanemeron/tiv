@@ -17,7 +17,7 @@ class personneElement extends TIVElement {
                                      CONCAT(IF(telephone_domicile,' domicile : ', ''), telephone_domicile,
                                             IF(telephone_portable,' portable : ', ''), telephone_portable),
                                      IF(telephone_bureau, ' bureau : ', ''), telephone_bureau)" =>
-                             "Téléphone domicile/portable/bureau", "is_admin" => "Est admin");
+                             "Téléphone domicile/portable/bureau", "is_admin" => "Est admin", "is_super_admin" => "Est SUPER admin");
 
     $this->_forms = array(
       "groupe"                => array("required", "text", "Groupe"),
@@ -31,6 +31,7 @@ class personneElement extends TIVElement {
       "telephone_portable"    => array("required", "text", "Téléphone portable"),
       "telephone_bureau"      => array("required", "text", "Téléphone bureau"),
       "email"                 => array("required", "text", "Adresse mail"),
+      "password"              => array(false, "password", "Mot de passe"),
       "date_naissance"        => array("required", "date", "Date de naissance"),
       "lieu_naissance"        => array("required", "text", "Lieu de naissance"),
       "niveau"                => array("required", "select", "Niveau plongeur", $niveau),
@@ -39,7 +40,9 @@ class personneElement extends TIVElement {
       "date_derniere_plongee" => array("required", "date", "Date dernière plongée"),
       "type_assurance"        => array("required", "select", "Type d'assurance", $assurance),
       "qualifications"        => array("required", "select", "Qualifications supplémentaires", $qualifications_label),
-      "is_admin"              => array("required",  "boolean", "Est admin")
+      "is_admin"              => array("required",  "boolean", "Est admin", 0),
+      "is_super_admin"        => array("required",  "boolean", "Est SUPER admin", 0)
+
     );
     $this->_form_split_count = 6;
     $this->_forms_rules = '
@@ -73,6 +76,34 @@ class personneElement extends TIVElement {
     $input .= "</select></p>".
               "</form>";
     return $input;
+  }
+
+  function updateDBRecord($id, &$values) {
+    $db_query = "SELECT ".implode(",", $this->getFormsKey())." FROM ".$this->getTableName()." WHERE id=$id";
+    $db_result = $this->_db_con->query($db_query);
+    if(!$result = $db_result->fetch_array()) {
+      return false;
+    }
+
+    $to_set = array();
+    foreach($this->getFormsKey() as $field) {
+        if($field == 'password'){
+            if(strcmp($values[$field], substr($result[$field],0,10)) != 0) {
+                $to_set[]= "$field = '".$this->_db_con->escape_string(hash('sha512', $values[$field]))."'";
+            }
+        }
+        else{
+          if(strcmp($values[$field], $result[$field]) != 0) {
+            $to_set[]= "$field = '".$this->_db_con->escape_string($values[$field])."'";
+          }
+      }
+    }
+    if(count($to_set) > 0) {
+      add_journal_entry($this->_db_con, $id, $this->_name, "Lancement d'une mise à jour (".implode(",", $to_set).")");
+      $result = $this->_db_con->query("UPDATE ".$this->getTableName()." SET ".implode(",", $to_set)." WHERE id = '$id'");
+      return 1;
+    }
+    return 2;
   }
 }
 ?>
