@@ -9,12 +9,24 @@ $bloc_condition = "1";
 if(array_key_exists("id_bloc", $_POST)) {
   $bloc_condition = "id = ".$_POST["id_bloc"];
 }
+
+$no_tech = false;
+if(array_key_exists("no_tech", $_POST)) {
+  $no_tech = true;
+}
 $current_tiv = 0;
 $db_result = $db_con->query("SELECT id, date_derniere_epreuve FROM bloc WHERE $bloc_condition AND etat = 'OK' ORDER BY capacite,constructeur");
 while($bloc = $db_result->fetch_array()) {
-  $tiv = ($_POST["tivs"][0] != '') ? $tivs[$current_tiv++%count($tivs)] : 'NULL';
-  $request = "INSERT INTO inspection_tiv (id, id_bloc, id_inspecteur_tiv, date) VALUES ".
+
+  if(!$no_tech){
+      $tiv = ($_POST["tivs"][0] != '') ? $tivs[$current_tiv++%count($tivs)] : 'NULL';
+      $request = "INSERT INTO inspection_tiv (id, id_bloc, id_inspecteur_tiv, date) VALUES ".
              "(0, ".$bloc["id"].", $tiv, '$date_tiv')";
+  }
+  else{
+      $request = "INSERT INTO inspection_tiv (id, id_bloc, id_inspecteur_tiv, date) VALUES ".
+             "(0, ".$bloc["id"].", 'NULL', '$date_tiv')";
+  }
   if(!$db_con->query($request)) {
     print "Erreur lors de la preparation des TIVs.";
     print "<pre>$request</pre>";
