@@ -146,35 +146,43 @@ class PdfTIV extends FPDF {
 
 
   function addInspecteurResume() {
-    //$this->AddPage();
-    $this->SetFont('Helvetica','B',16);
 
-    $this->Cell(0, 10, utf8_decode("Informations relatives aux inspecteurs TIV du ".$this->_date.""),0,1);
-    $this->Ln(6);
     $db_query = "SELECT inspection_tiv.id_inspecteur_tiv, inspecteur_tiv.nom, inspecteur_tiv.numero_tiv, COUNT(inspection_tiv.id_inspecteur_tiv) ".
                 "FROM inspection_tiv,inspecteur_tiv ".
                 "WHERE date = '".$this->_date."' AND inspecteur_tiv.id = inspection_tiv.id_inspecteur_tiv ".
                 "GROUP BY inspection_tiv.id_inspecteur_tiv ".
                 "ORDER BY inspecteur_tiv.nom";
     $db_result = $this->_db_con->query($db_query);
-    $header = array("id", "Nom inspecteur", "numéro TIV", "Nombre de bouteille à inspecter");
-    $w = array(10, 55, 40, 0);
-    $this->SetFillColor(127,127,127);
-    for($i = 0; $i < count($header); $i++) {
-      $this->Cell($w[$i], 10, utf8_decode($header[$i]), 1, 0, 'C', 1);
+    $noInspecteur = false;
+    if($db_result->num_rows > 0){
+        $noInspecteur = true;
+        $this->AddPage();
+        $this->SetFont('Helvetica','B',16);
+
+        $this->Cell(0, 10, utf8_decode("Informations relatives aux inspecteurs TIV du ".$this->_date.""),0,1);
+        $this->Ln(6);
+        $header = array("id", "Nom inspecteur", "numéro TIV", "Nombre de bouteille à inspecter");
+        $w = array(10, 55, 40, 0);
+        $this->SetFillColor(127,127,127);
+        for($i = 0; $i < count($header); $i++) {
+          $this->Cell($w[$i], 10, utf8_decode($header[$i]), 1, 0, 'C', 1);
+        }
+        $this->Ln();
+        $this->SetFont('Helvetica','',13);
+        while($result = $db_result->fetch_array()) {
+          for($i = 0; $i < count($header); $i++)
+            $this->Cell($w[$i],10,utf8_decode($result[$i]), 1, 0);
+          $this->Ln();
+        }
+        $this->Ln(5);
+        $this->Cell(0, 5,utf8_decode("Vous trouverez les fiches récapitulatives de chaque inspecteur TIV dans les pages suivantes."), 0, 1);
     }
-    $this->Ln();
-    $this->SetFont('Helvetica','',13);
-    while($result = $db_result->fetch_array()) {
-      for($i = 0; $i < count($header); $i++)
-        $this->Cell($w[$i],10,utf8_decode($result[$i]), 1, 0);
-      $this->Ln();
-    }
-    $this->Ln(5);
-    $this->Cell(0, 5,utf8_decode("Vous trouverez les fiches récapitulatives de chaque inspecteur TIV dans les pages suivantes."), 0, 1);
   }
 
   function addInspectionResume() {
+    if(!$noInspecteur){
+        $this->AddPage();
+    }
     $this->SetFont('Helvetica','B',16);
     $this->Cell(0, 10, utf8_decode("Informations relatives à l'inspection TIV du ".$this->_date.""),0,1);
 
