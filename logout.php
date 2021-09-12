@@ -10,5 +10,5 @@ unset($_SESSION["isSuperAdmin"]);
 unset($_SESSION["inLog"]);
 unset($_SESSION["isNotUser"]);
 
-echo "Vous venez d'être déconnecté";
+echo "<h1 class='text-center'>Vous venez d'être déconnecté</h1>";
 header('Refresh: 2; URL = index.php');
