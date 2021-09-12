@@ -12,6 +12,7 @@ class robinetElement extends TIVElement {
     $this->_update_label = "Mettre à jour le robinet";
     $this->_parent_url       = "/?pills=materiel";
     $this->_parent_url_label = "<i class='fa fa-wrench'></i> Matériel";
+    //$this->_element_to_link = "id";
     $this->_elements =  array("id" => "Réf.", "marque" => "Marque", "serial_number"=>" Numéro de série",  "filetage" => "Filetage",
                               "nb_sortie" => "Nombre de sortie(s)", "filetage_sortie" => "Filetage de sortie", "spec_robinet"=>"Spec SS, DSA, DSS", "net_ultrason" => "Nettoyage ultrason", "observation" => "Observations/Remarques");
     //$spec_robinet = array("SS", "DSA", "DSS");

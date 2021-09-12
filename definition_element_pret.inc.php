@@ -12,6 +12,7 @@ class pretElement extends TIVElement {
     $this->_parent_url_label = "<i class='fa fa-user-circle-o'></i> Prêt";
     $this->_creation_label = "Création d'un nouveau prêt";
     $this->_update_label = "Mettre à jour le prêt";
+    $this->_element_to_link = "id_personne";
     $this->_field_to_retrieve = array(
       "personne"  => "nom",
       "stab"      => "CONCAT('Réf: ', id, ' - ', modele, ' - taille : ', taille)",

@@ -19,6 +19,8 @@ class TIVElement {
   // Tableau contenant la liste des classes a utiliser pour l'affichage des lignes d'un tableau
   var $_tr_class;
   // Tableau associatif contenant un label pour les champs de la table associée au type
+  var $_element_to_link;
+  // Valeur de la clé à mettre en lien dans les tableaux d'affichage (id par defaut)
   var $_elements;
   // Tableau associatif contenant des informations sur les champs de la table du type
   var $_forms;
@@ -69,6 +71,7 @@ class TIVElement {
     $this->_record_count = 0;
     $this->_tr_class = array("odd", "even");
     $this->_db_con = $db_con;
+    $this->_element_to_link = "id";
     $this->_elements = array();
     $this->_forms = array();
     $this->_forms_rules = "";
@@ -412,15 +415,35 @@ class TIVElement {
     if(!$this->_read_only) {
       $to_display [] = $this->getEditUrl($id);
     }
-    //echo'<pre>'; print_r($to_display);echo'</pre>';
-
+    //echo "<pre>"; print_r($to_display); echo "</pre>";
+    $positionKeyToLink = array_search($this->_element_to_link, array_keys($this->_elements));
     foreach ($to_display as $key => $value) {
 
       if (is_array($value)){
-        $line .= '<td class="'.$value[0].'">'.$value[1].'</td>';
+        if($key == $positionKeyToLink){
+            $line .= '<td class="'.$value[0].'">';
+                $line .= "<a href='edit.php?".$this->getURLReference($id)."' title=\"Éditer cet élément\">";
+                    $line .= $value[1];
+                $line .= "</a>";
+            $line .= '</td>';
+        }
+        else{
+            $line .= '<td class="'.$value[0].'">';
+                $line .= $value[1];
+            $line .= '</td>';
+        }
       }
       else{
-        $line .= '<td>'.$value.'</td>';
+        if($key == $positionKeyToLink){
+            $line .= "<td>";
+                $line .= "<a href='edit.php?".$this->getURLReference($id)."' title=\"Éditer cet élément\">";
+                    $line .= $value;
+                $line .= "</a>";
+            $line .= "</td>";
+        }
+        else{
+            $line .= '<td>'.$value.'</td>';
+        }
       }
     }
     //$line .= implode("</td><td>", $to_display);
@@ -461,7 +484,7 @@ class TIVElement {
 
   function isLog(){
       if($_SESSION["inLog"]){
-          return "<a href='/logout.php'><i class='fa fa-2x fa-sign-out text-danger'> </i></a>";
+          return "<a href='/logout.php' title='Déconnexion'><i class='fa fa-2x fa-sign-out text-danger'> </i></a>";
       }
       else{
           return "<a href='/login.php'><i class='fa fa-2x fa-sign-in text-success'> </i></a>";
@@ -479,7 +502,7 @@ class TIVElement {
                   "</div>".
                 "</form>".
               "</div>".
-              "<div class='col-md-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center'>".$this->isLog()."</div>".
+              "<div class='col-md-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end'>".$this->isLog()."</div>".
             "</div>";
   }
   function getBackUrl() {
