@@ -15,12 +15,31 @@ include_once('head.inc.php');
 if($element === "inspection_tiv") {
   $element_class->setDate($date_tiv);
 }
-
-print "<div class=\"my-3\">".$element_class->getParentUrl()."</div>";
+print "<div class='row mt-3'>".
+          "<div class='col'>".
+            "<form action='edit.php' method='GET'>".
+              "<div class=\"my-3\">".$element_class->getParentUrl()." >".
+                "<span> ".$element_class->getUrlTitle()."</span>$input_form".
+              "</div>".
+            "</form>".
+          "</div>".
+          "<div class='col-md-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end'>".$element_class->isLog()."</div>".
+        "</div>";
+//print "<div class=\"my-3\">".$element_class->getParentUrl()."</div>";
 
 print $element_class->getHTMLTable("liste_$element", $element);
 
-print "<div class=\"my-3\">".$element_class->getParentUrl()."</div>";
+print "<div class='row mt-3 pb-5'>".
+          "<div class='col'>".
+            "<form action='edit.php' method='GET'>".
+              "<div class=\"my-3\">".$element_class->getParentUrl()." >".
+                "<span> ".$element_class->getUrlTitle()."</span>$input_form".
+              "</div>".
+            "</form>".
+          "</div>".
+          "<div class='col-md-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end'>".$element_class->isLog()."</div>".
+        "</div>".
+        "<div class=\"pb-5\"></div>";
 
 include_once("foot.inc.php");
 ?>
