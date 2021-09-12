@@ -12,7 +12,7 @@ include_once('head.inc.php');
 <?php
     if($_SESSION['isAdmin']){
 ?>
-        <nav class="navbar navbar-expand-md navbar-light w-100 align-items-center">
+        <nav class="navbar navbar-expand-md navbar-light w-100 align-items-center d-flex">
             <a class="navbar-brand d-block d-md-none d-flex" href="#">
                 <img src="<?php print $logo_club; ?>" class="img-fluid d-inline-block align-top" alt="" loading="lazy">
                 <p class="text-bold ml-3 mb-0">Gestion Matériel</p>
@@ -40,6 +40,11 @@ include_once('head.inc.php');
                     </li>
                 </ul>
             </div>
+            <?php
+            if($_SESSION['inLog']){ ?>
+                <div class='col-md-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end'><a href='/logout.php' title='Déconnexion'><i class='fa fa-2x fa-sign-out text-danger'> </i></a></div>
+            <?php
+            } ?>
         </nav>
         <div class="tab-content py-3">
             <div class="tab-pane active" role="tabpanel" aria-labelledby="accueil-tab" id="accueil">
