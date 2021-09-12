@@ -175,6 +175,7 @@ CREATE TABLE `personne` (
   `telephone_bureau` varchar(32) NULL,
   `telephone_portable` varchar(32) NULL,
   `email` varchar(255) NULL,
+  `password` varchar(128) NULL,
   `date_naissance` date NULL,
   `lieu_naissance` varchar(255) NULL,
   `niveau` varchar(32) NULL,
@@ -185,6 +186,7 @@ CREATE TABLE `personne` (
   `date_derniere_maj` date NULL,
   `qualifications` varchar(255) NULL,
   `is_admin` int(1) NULL,
+  `is_super_admin` int(1) NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Personne du club';
 /*!40101 SET character_set_client = @saved_cs_client */;
