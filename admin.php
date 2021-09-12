@@ -121,7 +121,7 @@
                     </script>
                     <div class="row align-items-center">
                         <div class="col-12">
-                            <p class="mb-0"><i class="fa fa-file-text-o" aria-hidden="true"></i> Préparation d'un TIV sans affectation de technicien.</p>
+                            <p class="mb-0"><i class="fa fa-file-text-o" aria-hidden="true"></i> Préparation d'un TIV <strong>sans affectation de technicien</strong>.</p>
                         </div>
                         <div class="col-12 col-md-5">
                             <p class="mb-0"><i class="fa fa-calendar" aria-hidden="true"></i> Date de préparation du TIV :</p>
