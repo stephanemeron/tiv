@@ -20,10 +20,6 @@
           @import "font-awesome-4.7.0/css/font-awesome.css";
           @import "bootstrap-datepicker-master/dist/css/bootstrap-datepicker3.css";
           @import "css/signin.css";
-        </style>
-
-          <!--<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />-->
-        <style type="text/css" title="currentStyle">
           @import "css/select2.min.css";
           @import "select2-bootstrap4-theme-master/dist/select2-bootstrap4.css";
           @import "css/style.css";
