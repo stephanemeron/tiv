@@ -102,7 +102,7 @@ class TIVElement {
   function getFormsRules() { return $this->_forms_rules; }
   function getForms() { return $this->_forms; }
   function getFormsKey() { return array_keys($this->_forms); }
-  function constructTextInput($label, $size, $value, $class = false, $type = 'text') {
+  function constructTextInput($label, $size, $value, $class = false, $type = 'text', $help = false) {
     if(in_array($label, $this->_readonly_column) && $value && $value!=""){
       $input_readonly = " readonly";
     }
@@ -110,7 +110,13 @@ class TIVElement {
       $input_readonly="";
     }
 
-    $form_input = "<input type=\"$type\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\"$input_readonly/>";
+    if($help){
+        $form_input = "<input type=\"$type\" name=\"$label\" id=\"$label\"  value=\"$value\" aria-describedby=\"$label\" class=\"form-control ".$class."\"$input_readonly/>";
+        $form_input .= "<small id=\"passwordHelpBlock\" class=\"form-text text-muted\">$help</small>";
+    }
+    else{
+        $form_input = "<input type=\"$type\" name=\"$label\" id=\"$label\"  value=\"$value\" class=\"form-control ".$class."\"$input_readonly/>";
+    }
     return $form_input;
   }
   function constructSelectInputLabels($label, $labels, $value) {
@@ -516,7 +522,7 @@ class TIVElement {
      "<input id=\"$label\" class=\"form-control\" type=\"text\" name='$label' value='$value' />";
     } elseif($forms_definition[$label][1] === "password") {
       $value = substr($value,0,10);
-      $form_input = $this->constructTextInput($label, 10, $value, false, 'password');
+      $form_input = $this->constructTextInput($label, 10, $value, false, 'password', "Par défaut, il sera les derniers chiffres de la licence de la personne (Après le A-XX-)");
     }  else {
       $form_input = $this->constructTextInput($label, 30, $value);
     }

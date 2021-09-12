@@ -48,6 +48,9 @@ class personneElement extends TIVElement {
     $this->_forms_rules = '
       "debug": false,
       "rules": {
+        "licence": {
+          "required": true
+        },
         "nom": {
             "required": true
         },
@@ -88,8 +91,8 @@ class personneElement extends TIVElement {
     $to_set = array();
     foreach($this->getFormsKey() as $field) {
         if($field == 'password'){
-            if(strcmp($values[$field], substr($result[$field],0,10)) != 0) {
-                $to_set[]= "$field = '".$this->_db_con->escape_string(hash('sha512', $values[$field]))."'";
+            if(strcmp(hash('sha512',substr($values['licence'],5)), $result[$field]) != 0) {
+                $to_set[]= "$field = '".$this->_db_con->escape_string(hash('sha512',substr($values['licence'],5)))."'";
             }
         }
         else{
