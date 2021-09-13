@@ -42,7 +42,7 @@ include_once('head.inc.php');
             </div>
             <?php
             if($_SESSION['inLog']){ ?>
-                <div class='col-md-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end'><a href='/logout.php' title='Déconnexion'><i class='fa fa-2x fa-sign-out text-danger'> </i></a></div>
+                <div class='col-2 col-lg-1 ml-md-auto align-self-stretch d-flex align-items-center justify-content-end'><a href='/logout.php' title='Déconnexion'><i class='fa fa-2x fa-sign-out text-danger'> </i></a></div>
             <?php
             } ?>
         </nav>
