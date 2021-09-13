@@ -4,6 +4,7 @@
         <title><?php print $title?></title>
         <meta http-equiv="content-type" content="text/html;charset=utf-8" />
         <meta name="robots" content="noindex,nofollow" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
         <style type="text/css" title="currentStyle">
           /*@import "css/page.css";
           @import "css/table.css";
