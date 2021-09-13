@@ -502,7 +502,7 @@ class TIVElement {
                   "</div>".
                 "</form>".
               "</div>".
-              "<div class='col-md-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end'>".$this->isLog()."</div>".
+              "<div class='col-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end'>".$this->isLog()."</div>".
             "</div>";
   }
   function getBackUrl() {
