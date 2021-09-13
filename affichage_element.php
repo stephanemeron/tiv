@@ -37,7 +37,7 @@ print "<div class='row mt-3 pb-5'>".
               "</div>".
             "</form>".
           "</div>".
-          "<div class='col-md-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end'>".$element_class->isLog()."</div>".
+          "<div class='col-md-2 col-lg-1 ml-md-auto align-self-stretch d-flex align-items-center justify-content-end'>".$element_class->isLog()."</div>".
         "</div>".
         "<div class=\"pb-5\"></div>";
 
