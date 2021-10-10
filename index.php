@@ -36,7 +36,7 @@ include_once('head.inc.php');
                         <a class="nav-link" id="personne-tab" data-toggle="tab" href="#personne" role="tab" aria-controls="personne" aria-selected="true" title="Liste des personnes/TIV du club"><i class='fa fa-graduation-cap'></i> Personnes/inspecteurs TIV</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="bloc-rev-tab" data-toggle="tab" href="#bloc-rev" role="tab" aria-controls="bloc-rev" aria-selected="true" title="Prochaine révisions des blocs"><i class='fa fa-fire-extinguisher'></i> Status des blocs (TIV/ré-épreuve)</a>
+                        <a class="nav-link" id="bloc-rev-tab" data-toggle="tab" href="#bloc-rev" role="tab" aria-controls="bloc-rev" aria-selected="true" title="Prochaine révisions des blocs"><i class='fa fa-battery-full'></i> Status des blocs (TIV/ré-épreuve)</a>
                     </li>
                 </ul>
             </div>
@@ -47,20 +47,20 @@ include_once('head.inc.php');
             } ?>
         </nav>
         <div class="tab-content py-3">
-            <div class="tab-pane active" role="tabpanel" aria-labelledby="accueil-tab" id="accueil">
+            <div class="tab-pane container active" role="tabpanel" aria-labelledby="accueil-tab" id="accueil">
                 <?php include("accueil.php");?>
             </div>
-            <div class="tab-pane" role="tabpanel" aria-labelledby="admin-tab" id="admin">
+            <div class="tab-pane container" role="tabpanel" aria-labelledby="admin-tab" id="admin">
                 <?php include("admin.php");?>
             </div>
-            <div class="tab-pane" role="tabpanel" aria-labelledby="materiel-tab" id="materiel">
+            <div class="tab-pane container" role="tabpanel" aria-labelledby="materiel-tab" id="materiel">
                 <?php include("materiel.php");?>
             </div>
-            <div class="tab-pane" role="tabpanel" aria-labelledby="personne-tab" id="personne">
+            <div class="tab-pane container" role="tabpanel" aria-labelledby="personne-tab" id="personne">
                 <?php include("personne.php");?>
             </div>
             <div class="tab-pane" role="tabpanel" aria-labelledby="bloc-rev-tab" id="bloc-rev">
-                <h1 class="main title mb-5"><i class='fa fa-fire-extinguisher fa-2x'></i>  Status des blocs (TIV/ré-épreuve)</h1>
+                <h1 class="main title mb-5"><i class='fa fa-battery-full fa-2x'></i>  Status des blocs (TIV/ré-épreuve)</h1>
                 <?php include("affichage_bloc_tiv.php"); ?>
             </div>
         </div>
