@@ -4,7 +4,7 @@
         <title><?php print $title?></title>
         <meta http-equiv="content-type" content="text/html;charset=utf-8" />
         <meta name="robots" content="noindex,nofollow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style type="text/css" title="currentStyle">
           /*@import "css/page.css";
           @import "css/table.css";
@@ -25,6 +25,7 @@
           @import "select2-bootstrap4-theme-master/dist/select2-bootstrap4.css";
           @import "css/style.css";
         </style>
+
         <!--<script type="text/javascript" charset="utf-8" src="DataTables-1.9.4/media/js/jquery.js"></script>-->
         <!--<script type="text/javascript" charset="utf-8" src="DataTables-1.9.4/media/js/jquery.dataTables.js"></script>-->
         <!--<script type="text/javascript" charset="utf-8" src="js/jquery-ui-1.10.3.js"></script>-->
@@ -44,6 +45,52 @@
         <script type="text/javascript" charset="utf-8" src="js/popper.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/bootstrap-datepicker.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/launch.js"></script>
+        <script>
+        $(function() {
+          $('#choix-tiv').hide();
+          $('#choix-tiv-toggle').click(function() {
+            $('#choix-tiv').toggle(400);
+            return false;
+          });
+          $.validator.messages.required = "Champ obligatoire";
+          $("#preparation_tiv").validate({
+            debug: true,
+            rules: {
+              date_tiv: {
+                  required: true,
+                  date: true,
+              },
+            },
+            submitHandler: function(form) {
+              if(confirm("Lancer la procédure ?")) form.submit();
+            }
+          });
+          $("#preparation_tiv_no_tech").validate({
+            debug: true,
+            rules: {
+              date_tiv: {
+                  required: true,
+                  date: true,
+              },
+            },
+            submitHandler: function(form) {
+              if(confirm("Lancer la procédure ?")) form.submit();
+            }
+          });
+        });
+
+        $(function() {
+          $( "#admin-date-tiv-no-tech-selector, #admin-date-tiv-selector" ).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'yyyy-mm-dd',
+            appendText: '(dd-mm-yyyy)',
+            language: 'fr',
+            altFormat: 'dd-mm-yyyy'
+          });
+        });
+        </script>
+
 
 
     </head>
