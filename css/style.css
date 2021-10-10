@@ -55,3 +55,12 @@ label.error{
     background-color: var(--blue);
     color: var(--light);
 }
+
+.critical-epreuve .link,
+.critical-date .link{
+    color: var(--danger);
+}
+
+.fa-battery-full{
+    transform: rotate(-0.25turn);
+}
