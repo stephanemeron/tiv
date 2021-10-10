@@ -25,7 +25,7 @@ class blocElement extends TIVElement {
     $this->_parent_url_label = "<i class='fa fa-wrench'></i> Matériel";
     $this->_force_display = array_key_exists("force_bloc_display", $_GET) || array_key_exists("force_bloc_display", $_POST);
     $this->_current_time = time();
-    $this->_element_to_link = "id_club";
+    $this->_element_to_link = "nom_proprietaire";
     $this->_elements = array(
       "id" => "ID", "id_club" => "Réf.", "nom_proprietaire" => "Nom propriétaire", "is_club" => "Est au Club", "constructeur" => "Constructeur",
       "marque" => "Marque", "numero" => "N° Série", "capacite" => "Capacité", "filetage" => "Filetage du Bloc", "id_robinet" => "Robinet",
@@ -33,7 +33,7 @@ class blocElement extends TIVElement {
       "pression_service" => "Pression de service", "gaz" => "Gaz", "etat" => "État", "etat_int" => "État intérieur"
     );
     $this->_hidden_column = array("id","constructeur","adresse", "pression_service", "gaz","filetage","is_club","etat", "etat_int");
-    $this->_hidden_column_sm = array("id","constructeur", "nom_proprietaire","constructeur", "numero", "marque","capacite","id_robinet", "etat", "etat_int");
+    $this->_hidden_column_sm = array("id","constructeur", "constructeur", "numero", "marque","capacite","id_robinet", "etat", "etat_int","date_derniere_epreuve","date_dernier_tiv");
     $this->_readonly_column = array("id_club", "constructeur", "marque", "numero","filetage", "capacite", "gaz","pression_service","pression_epreuve");
     $this->_field_to_retrieve = array(
       "robinet" => "CONCAT('Réf: ', serial_number, ' - ', marque, ' - ', nb_sortie,' sortie(s)')");
@@ -201,11 +201,10 @@ class blocElement extends TIVElement {
 
     $positionKeyToLink = array_search($this->_element_to_link, array_keys($this->_elements));
     foreach ($to_display as $key => $value) {
-
       if (is_array($value)){
         if($key == $positionKeyToLink){
             $line .= '<td class="'.$value[0].'">';
-                $line .= "<a href='edit.php?".$this->getURLReference($id)."' title=\"Éditer cet élément\">";
+                $line .= '<a class="link" href="edit.php?'.$this->getURLReference($id).'" title="Éditer cet élément">';
                     $line .= $value[1];
                 $line .= "</a>";
             $line .= '</td>';
@@ -219,7 +218,7 @@ class blocElement extends TIVElement {
       else{
         if($key == $positionKeyToLink){
             $line .= "<td>";
-                $line .= "<a href='edit.php?".$this->getURLReference($id)."' title=\"Éditer cet élément\">";
+                $line .= '<a class="link" href="edit.php?'.$this->getURLReference($id).'" title="Éditer cet élément">';
                     $line .= $value;
                 $line .= "</a>";
             $line .= "</td>";
