@@ -1,6 +1,6 @@
 <h1 class="main title mb-5"><i class='fa fa-sliders fa-2x'></i> Administration</h1>
 <div class="row justify-content-center my-5">
-	<div class="col-12 col-md-6 jumbotron">
+	<div class="col-12 jumbotron bg-transparent border border-secondary">
       <h2 class="title">Déclaration d'un nouvel élément dans la base</h2>
 
       <form name="ajout_form" id="ajout_form" action="ajout_element.php" method="POST">
@@ -26,7 +26,7 @@
 </div>
 
 <div class="row justify-content-center my-5">
-	<div class="col-12 col-md-6 jumbotron">
+	<div class="col-12 jumbotron bg-transparent border border-secondary">
       <h2 class="title">Consultation du journal</h2>
       <div class="row align-items-center">
         <div class="col-auto">
@@ -40,7 +40,7 @@
 </div>
 
 <div class="row justify-content-center my-5">
-  	<div class="col-12 col-md-6 jumbotron">
+  	<div class="col-12 jumbotron bg-transparent border border-secondary">
       <h2 class="title">Consultation d'un TIV</h2>
       <form name="consultation_tiv" id="consultation_tiv" action="consultation_tiv.php" method="POST">
         <div class="row align-items-center">
@@ -67,58 +67,14 @@
 </div>
 
 <div class="row justify-content-center my-5">
-  	<div class="col-12 col-md-6 jumbotron">
+  	<div class="col-12 jumbotron bg-transparent border border-secondary">
         <h2 class="title">Préparation d'un TIV</h2>
-        <script>
-        $(function() {
-          $('#choix-tiv').hide();
-          $('#choix-tiv-toggle').click(function() {
-            $('#choix-tiv').toggle(400);
-            return false;
-          });
-          $.validator.messages.required = "Champ obligatoire";
-          $("#preparation_tiv").validate({
-            debug: true,
-            rules: {
-              date_tiv: {
-                  required: true,
-                  date: true,
-              },
-            },
-            submitHandler: function(form) {
-              if(confirm("Lancer la procédure ?")) form.submit();
-            }
-          });
-          $("#preparation_tiv_no_tech").validate({
-            debug: true,
-            rules: {
-              date_tiv: {
-                  required: true,
-                  date: true,
-              },
-            },
-            submitHandler: function(form) {
-              if(confirm("Lancer la procédure ?")) form.submit();
-            }
-          });
-        });
-        </script>
+
 
         <div class="row align-items-center">
             <div class="col-12 mb-5">
                 <form name="preparation_tiv" id="preparation_tiv_no_tech" action="preparation_tiv.php" method="POST">
-                    <script>
-                    $(function() {
-                      $( "#admin-date-tiv-no-tech-selector" ).datepicker({
-                        changeMonth: true,
-                        changeYear: true,
-                        dateFormat: 'yyyy-mm-dd',
-                        appendText: '(dd-mm-yyyy)',
-                        language: 'fr',
-                        altFormat: 'dd-mm-yyyy'
-                      });
-                    });
-                    </script>
+
                     <div class="row align-items-center">
                         <div class="col-12">
                             <p class="mb-0"><i class="fa fa-file-text-o" aria-hidden="true"></i> Préparation d'un TIV <strong>sans affectation de technicien</strong>.</p>
@@ -139,18 +95,7 @@
             <div class="col-12">
                 <hr/>
                 <form name="preparation_tiv" id="preparation_tiv" action="preparation_tiv.php" method="POST" class="mt-5">
-                    <script>
-                    $(function() {
-                      $( "#admin-date-tiv-selector" ).datepicker({
-                        changeMonth: true,
-                        changeYear: true,
-                        dateFormat: 'yyyy-mm-dd',
-                        appendText: '(dd-mm-yyyy)',
-                        language: 'fr',
-                        altFormat: 'dd-mm-yyyy'
-                      });
-                    });
-                    </script>
+
                     <div class="row align-items-center">
                         <div class="col-12">
                             <p class="mb-0"><i class="fa fa-file-text-o" aria-hidden="true"></i> A noter que la préparation d'un TIV consiste à pré-affecter les blocs aux différentes personnes qui feront plus tard le TIV.</p>
