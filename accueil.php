@@ -1,5 +1,5 @@
 <div class="jumbotron bg-transparent border border-secondary my-3">
-	<div class="row">
+	<div class="row align-items-center">
 		<div class="col-12 col-md-3">
 			<img class="img-fluid" src='<?php print $logo_club; ?>' />
 		</div>
