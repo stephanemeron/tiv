@@ -115,6 +115,7 @@ class inspection_tivElement extends TIVElement {
   function setDate($date) {
     $this->_date = $date;
   }
+
   function getDBQuery() {
       // $db_query = "SELECT inspection_tiv.id FROM inspection_tiv WHERE inspection_tiv.date = '".$this->_date."'";
       // $db_result = $this->_db_con->query($db_query);
@@ -135,6 +136,28 @@ class inspection_tivElement extends TIVElement {
            // "FROM inspection_tiv, bloc, inspecteur_tiv, robinet ".
            // "WHERE inspection_tiv.date = '".$this->_date."' AND id_bloc = bloc.id AND id_inspecteur_tiv = inspecteur_tiv.id AND robinet.id = bloc.id_robinet ".
            // "ORDER BY inspection_tiv.date";
+  }
+
+  function updateDBRecord($id, &$values) {
+    $db_query = "SELECT ".implode(",", $this->getFormsKey())." FROM ".$this->getTableName()." WHERE id=$id";
+    $db_result = $this->_db_con->query($db_query);
+    if(!$result = $db_result->fetch_array()) {
+      return false;
+    }
+
+    $to_set = array();
+    foreach($this->getFormsKey() as $field) {
+      if(strcmp($values[$field], $result[$field]) != 0) {
+        $to_set[]= "$field = '".$this->_db_con->escape_string($values[$field])."'";
+      }
+    }
+    if(count($to_set) > 0) {
+      add_journal_entry($this->_db_con, $id, $this->_name, "Lancement d'une mise à jour (".implode(",", $to_set).")");
+      $result = $this->_db_con->query("UPDATE ".$this->getTableName()." SET ".implode(",", $to_set)." WHERE id = '$id'");
+      $resultBloc = $this->_db_con->query("UPDATE bloc SET date_dernier_tiv = '".$_POST['date']."' WHERE id = ".$_POST['id_bloc']);
+      return 1;
+    }
+    return 2;
   }
 
   function getHTMLTable($id, $label, $db_query = false, $show_additional_control = true) {
