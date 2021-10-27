@@ -87,6 +87,10 @@ label.error{
     color: var(--danger);
 }
 
+.success-epreuve .link{
+    color: var(--success);
+}
+
 .fa-battery-full{
     transform: rotate(-0.25turn);
 }
