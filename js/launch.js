@@ -4,6 +4,14 @@ $(document).ready(function() {
     		theme: 'bootstrap4'
     	}
     );
+    $(window).on('resize', function(){
+        setTimeout(
+            $('.my-custom-select').select2(
+            	{
+            		theme: 'bootstrap4'
+            	}
+            ), 200);
+    });
 
     function getParameter(p)
     {
