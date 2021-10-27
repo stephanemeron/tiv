@@ -287,7 +287,7 @@ document.getElementById('$div_label_to_update').className='$error_class';
       $record["etat"] = "<div class='bg-danger critical'>".$record["etat"]."</div>";
       return "critical-etat";
     }
-    foreach(array("date_dernier_tiv","date_derniere_epreuve") as $field) {
+    foreach(array("date_dernier_tiv", "date_derniere_epreuve") as $field) {
 
         if($tmp = $this->getDateDivClass($field, $record[$field], $comment, $next_date, $class_status)) {
           $record[$field] = "<div class='$class_status $tmp'>".$record[$field]."</div>";
@@ -296,6 +296,9 @@ document.getElementById('$div_label_to_update').className='$error_class';
     }
     if($tmp != "ok"){
       return $tmp."-epreuve";
+    }
+    else{
+        return "success-epreuve";
     }
 
   }
@@ -332,15 +335,15 @@ document.getElementById('$div_label_to_update').className='$error_class';
     });
   });
   </script>
-  <p>Date de l'inspection TIV :<input type='text' name='date_tiv' id='admin-date-tiv-selector' size='10' value=''/>
-  - Nom de l'inspecteur TIV : <select id='tivs' name='tivs[]'>
+  <div class='mb-3'>Date de l'inspection TIV :<input type='text' name='date_tiv' id='admin-date-tiv-selector' size='10' value=''/></div>
+  <div class='mb-3'>Nom de l'inspecteur TIV : <select id='tivs' name='tivs[]'>
     <option></option>";
       $db_result = $this->_db_con->query("SELECT id,nom,actif FROM inspecteur_tiv WHERE actif = 'oui' ORDER BY nom");
       while($result = $db_result->fetch_array()) {
         $form .= "  <option value='".$result["id"]."'>".$result["nom"]."</option>";
       }
-      $form .= "</select>
-  <input type='submit' name='lancer' value='Créer la fiche TIV' class='btn btn-outline-primary' /></p>
+      $form .= "</select></div>
+  <div class='mb-3'><input type='submit' name='lancer' value='Créer la fiche TIV' class='btn btn-outline-primary' /></div>
 </form>";
     return $form;
   }
