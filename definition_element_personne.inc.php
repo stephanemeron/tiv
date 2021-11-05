@@ -12,6 +12,8 @@ class personneElement extends TIVElement {
     $this->_creation_label = "Création d'une nouvelle personne";
     $this->_update_label = "Mettre à jour la personne";
     $this->_show_delete_form = true;
+    $this->_hidden_column_sm = array("operations");
+
     $this->_element_to_link = "CONCAT(prenom,' ',nom)";
     $this->_elements = array("id" => "Réf.", "CONCAT(prenom,' ',nom)" => "Prénom Nom", "adresse" => "Adresse de la personne",
                              "CONCAT(

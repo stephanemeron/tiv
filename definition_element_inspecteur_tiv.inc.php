@@ -6,6 +6,7 @@ class inspecteur_tivElement extends TIVElement {
     $this->_parent_url_label = "<i class='fa fa-users'></i> Plongeurs/inspecteurs TIV";
     $this->_creation_label = "Création d'un nouvel inspecteur";
     $this->_update_label = "Mettre à jour l&#145;inspecteur TIV";
+    $this->_hidden_column_sm = array("operations");
 
     $this->_element_to_link = "nom";
     $this->_elements = array("id" => "Réf.", "nom" => "Prénom Nom", "numero_tiv" => "Numéro d'inspecteur TIV",

@@ -7,6 +7,8 @@ class detendeurElement extends TIVElement {
     $this->_creation_label = "Création d'un détendeur";
     $this->_update_label = "Mettre à jour le détendeur";
     $this->_hidden_column = array("id");
+    $this->_hidden_column_sm = array("id","operations");
+
     $this->_element_to_link = "id_club";
     $this->_elements = array("id" => "ID", "id_club" => "Réf.", "marque" => "Marque","etat_1ier_etage"=> "1ier étage", "id_1ier_etage" => "n° 1ier étage",
                              "etat_2e_etage"=> "2ème étage", "id_2e_etage" => "n° 2ieme étage", "etat_octopus"=> "Octopus",

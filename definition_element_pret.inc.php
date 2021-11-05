@@ -12,6 +12,8 @@ class pretElement extends TIVElement {
     $this->_parent_url_label = "<i class='fa fa-user-circle-o'></i> Prêt";
     $this->_creation_label = "Création d'un nouveau prêt";
     $this->_update_label = "Mettre à jour le prêt";
+    $this->_hidden_column_sm = array("operations");
+
     $this->_element_to_link = "id_personne";
     $this->_field_to_retrieve = array(
       "personne"  => "nom",
@@ -40,11 +42,11 @@ class pretElement extends TIVElement {
     },
     "debut_pret": {
         "date": true,
-        "required": true,
+        "required": true
     },
     "fin_prevu": {
         "date": true,
-        "required": true,
+        "required": true
     },
     "etat": {
         "required": true

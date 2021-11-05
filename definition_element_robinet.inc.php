@@ -17,6 +17,8 @@ class robinetElement extends TIVElement {
                               "nb_sortie" => "Nombre de sortie(s)", "filetage_sortie" => "Filetage de sortie", "spec_robinet"=>"Spec SS, DSA, DSS", "net_ultrason" => "Nettoyage ultrason", "observation" => "Observations/Remarques");
     //$spec_robinet = array("SS", "DSA", "DSS");
     //$robinet_filetage_sortie = array("G5/8 ISO 228-1", "M26x2 (Nitrox)");
+    $this->_hidden_column_sm = array("operations");
+
     $this->_readonly_column = array("marque", "serial_number", "filetage", "nb_sortie", "filetage_sortie", "spec_robinet");
     $this->_forms = array(
       "marque"        => array("required", "number", "Marque du robinet"),

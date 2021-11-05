@@ -10,6 +10,8 @@ class stabElement extends TIVElement {
     $this->_show_delete_form = true;
     $this->_creation_label = "Création d'un gilet";
     $this->_update_label = "Mettre à jour la stab";
+    $this->_hidden_column_sm = array("operations");
+
     $this->_elements =  array("id" => "Réf.", "modele" => "Modèle", "taille" => "Taille",
                               "date_achat" => "Date d'achat", "observation" => "Observations/Remarques");
 
