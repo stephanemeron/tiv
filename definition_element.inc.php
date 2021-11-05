@@ -140,8 +140,6 @@ class TIVElement {
         }
         $form_input .= "</select>";
     }
-
-
     // Gestion de la dépendance entre élément du formulaire.
     if(array_key_exists($label, $this->_form_dependency)) {
       $form_input .= "<script>$('#$label').change(function() {";
@@ -158,6 +156,43 @@ class TIVElement {
     }
     return $form_input;
   }
+
+  function constructSelectInputStringLabels($label, $labels, $value) {
+
+      if(in_array($label, $this->_readonly_column) && $value && $value!=""){
+        $form_input = "<select id=\"$label-disabled\" name=\"$label\" class=\"form-control my-custom-select\" disabled=true data-tt=\"labels\" data=\"value\">";
+        foreach(array_values($labels) as $option) {
+          $selected = ($option == $value ? " selected='selected'" : "");
+          $form_input .= "<option value='$option'$selected>".$labels[$option]."</option>";
+        }
+        $form_input .= "</select>";
+        $form_input .= "<input type=\"hidden\" name=\"$label\" id=\"$label\"  value=\"$value\"/>";
+      }
+      else{
+          $form_input = "<select id=\"$label\" name=\"$label\" class=\"form-control my-custom-select\">";
+          foreach(array_values($labels) as $option) {
+            $selected = ($option == $value ? " selected='selected'" : "");
+            $form_input .= "<option value='$option'$selected>".$labels[$option]."</option>";
+          }
+          $form_input .= "</select>";
+      }
+      // Gestion de la dépendance entre élément du formulaire.
+      if(array_key_exists($label, $this->_form_dependency)) {
+        $form_input .= "<script>$('#$label').change(function() {";
+        $tmp = $this->_form_dependency[$label];
+        $dependency = array_keys($tmp);
+        $link = $dependency[0];
+        $linked_values = $tmp[$link];
+        foreach($linked_values as $key=>$value) {
+          $form_input .= "if($('#$label').val() == '$key') {";
+          $form_input .= "  $('#$link').val($value);";
+          $form_input .= "}";
+        }
+        $form_input .= "});</script>";
+      }
+      return $form_input;
+  }
+
   function constructSelectInput($label, $options, $value) {
     $labels = array();
     foreach($options as $opt) { $labels[$opt] = $opt; }
@@ -364,6 +399,10 @@ class TIVElement {
   $(document).ready(function() {
     $('#$id').dataTable();
   } );
+  $(window).on('load, resize', function(){
+      setTimeout(function() {
+          $('#$id').dataTable(), 200);
+  });
 </script>";
   }
   function getHTMLHeaderTable() {
@@ -384,7 +423,14 @@ class TIVElement {
       }
     }
 
-    if(!$this->_read_only) $header .= "<th>Opérations</th>";
+    if(!$this->_read_only) {
+        if (in_array("operations", $this->_hidden_column_sm)){
+          $header .= '<th class="d-none d-md-table-cell">Opérations</th>';
+        }
+        else{
+          $header .= "<th>Opérations</th>";
+        }
+    }
     $header .= "</tr>";
     return $header;
   }
@@ -413,7 +459,9 @@ class TIVElement {
 
     }
     if(!$this->_read_only) {
-      $to_display [] = $this->getEditUrl($id);
+        if (in_array("operations", $this->_hidden_column_sm)){
+            $to_display [] = array("d-none d-md-table-cell",$this->getEditUrl($id));
+        }
     }
     //echo "<pre>"; print_r($to_display); echo "</pre>";
     $positionKeyToLink = array_search($this->_element_to_link, array_keys($this->_elements));
@@ -461,10 +509,10 @@ class TIVElement {
   function getEditUrl($id) {
     $element_to_manage = $this->getURLReference($id);
     $delete_confirmation = "return(confirm(\"Suppression élément ".$this->_name." (id = $id) ?\"));";
-    return "<a href='edit.php?$element_to_manage' title=\"Éditer cet élément\" class='btn btn-info mr-3'>".
+    return "<div class=\"wrapper-link\"><a href='edit.php?$element_to_manage' title=\"Éditer cet élément\" class='btn btn-info mr-3'>".
            "<i class='fa fa-pencil-square-o' aria-hidden='rue'></i></a> / ".
            "<a onclick='$delete_confirmation' title='Supprimer cet élément (confirmation nécessaire)' href='delete.php?$element_to_manage' class='btn btn-danger ml-3'>".
-           "<i class='fa fa-times' aria-hidden='true'></i></a>";
+           "<i class='fa fa-times' aria-hidden='true'></i></a></div>";
   }
   function getParentUrl() {
     return "Navigation : <a href='./'><i class='fa fa-home'></i> Accueil</a> > ".
@@ -561,6 +609,7 @@ class TIVElement {
   }
 
   function checkIsRequired($elt,$json_rules){
+
       $is_required = "";
       if (array_key_exists($elt,$json_rules["rules"])){
           if (array_key_exists("required",$json_rules["rules"][$elt])){
@@ -575,7 +624,8 @@ class TIVElement {
   function constructEditForm($id, $form_name, $action = "") {
     $this->_values = $this->retrieveValues($id);
     // json des champs required
-    $json_rules = json_decode("{" . trim($this->_forms_rules) . "}",true);
+    $json_rules = json_decode("{".trim($this->_forms_rules)."}", true);
+
     if(!$this->_values) return false;
     $form  = "<form name='$form_name' id='$form_name' action='$action' method='POST'>";
     $form .= "<input type='hidden' name='id' value='$id' />";
