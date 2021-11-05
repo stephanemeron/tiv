@@ -11,7 +11,7 @@ $(document).ready(function() {
                 	{
                 		theme: 'bootstrap4'
                 	}
-            ), 200);
+            );}, 200);
         });
     });
 
