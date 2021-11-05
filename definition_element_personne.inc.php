@@ -93,8 +93,12 @@ class personneElement extends TIVElement {
 
     $to_set = array();
     foreach($this->getFormsKey() as $field) {
+
         if($field == 'password'){
-            if(strcmp(hash('sha512',substr($values['licence'],5)), $result[$field]) != 0) {
+            if($values[$field] && $result[$field] != NULL) {
+                $to_set[]= "$field = '".$this->_db_con->escape_string(hash('sha512',$values[$field]))."'";
+            }
+            else {
                 $to_set[]= "$field = '".$this->_db_con->escape_string(hash('sha512',substr($values['licence'],5)))."'";
             }
         }
