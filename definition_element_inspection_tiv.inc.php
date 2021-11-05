@@ -8,6 +8,8 @@ class inspection_tivElement extends TIVElement {
     $this->_parent_url       = "/?pills=admin";
     $this->_parent_url_label = "<i class='fa fa-sliders'></i> Administration";
     $this->_update_label = "Mettre à jour les informations sur l&#145;inspection TIV";
+    $this->_hidden_column_sm = array("operations");
+
     $this->_elements = array(
       "id", "id_bloc", "id_inspecteur_tiv", "date", "etat_exterieur", "remarque_exterieur", "etat_interieur",
       "remarque_interieur", "etat_filetage", "remarque_filetage", "etat_robineterie", "remarque_robineterie",
@@ -30,23 +32,23 @@ class inspection_tivElement extends TIVElement {
       "decision"             => array("required", array("", "OK", "Rebuté"), "Le bloc est-il accepté ?"),
       "remarque"             => array("required", "text", "Commentaire sur l'inspection."),
     );
-    $this->_forms_rules = '
-  "debug": false,
-  "rules": {
-    "id": {
+    $this->_forms_rules ='
+    "debug": false,
+    "rules": {
+        "id": {
         "required": true
-    },
-    "id_bloc": {
+        },
+        "id_bloc": {
         "required": true
-    },
-    "id_inspecteur_tiv": {
+        },
+        "id_inspecteur_tiv": {
         "required": true
-    },
-    "date": {
+        },
+        "date": {
         "required": true,
-        "date": true,
-    }
-  }';
+        "date": true
+        }
+    }';
     if(!$date) {
       if(array_key_exists("date", $_GET)) {
         $date = $_GET['date'];
@@ -217,6 +219,14 @@ class inspection_tivElement extends TIVElement {
         $options[$result["id"]] = $result["nom"];
       }
       return $this->constructSelectInputLabels($label, $options, $value);
+    }
+    else if(is_array($forms_definition[$label][1])) {
+      $forms_definition = $this->getForms();
+      foreach($forms_definition[$label][1] as $field=>$fieldValue) {
+          $options[$fieldValue] = $fieldValue;
+      }
+      return $this->constructSelectInputStringLabels($label, $options, $value);
+
     } else if($label === "id_bloc") {
       $db_query = "SELECT bloc.id,bloc.id_club,bloc.constructeur,bloc.marque,bloc.capacite,bloc.numero,robinet.serial_number FROM bloc, robinet WHERE robinet.id = bloc.id_robinet";
       $db_result = $this->_db_con->query($db_query);
