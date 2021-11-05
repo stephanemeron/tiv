@@ -19,7 +19,7 @@ include_once('head.inc.php');
             </a>
             <?php
             if($_SESSION['inLog']){ ?>
-                <div class='col-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end order-2 order-lg-3'><a href='/logout.php' title='Déconnexion'><i class='fa fa-2x fa-sign-out text-danger'> </i></a></div>
+                <div class='col-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end order-2 order-lg-3'><a href='/logout.php' title='Déconnexion'><i class='fa fa-2x fa-power-off text-danger'> </i></a></div>
             <?php
             } ?>
             <button class="navbar-toggler order-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
