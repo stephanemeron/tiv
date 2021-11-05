@@ -33,7 +33,7 @@ class blocElement extends TIVElement {
       "pression_service" => "Pression de service", "gaz" => "Gaz", "etat" => "État", "etat_int" => "État intérieur"
     );
     $this->_hidden_column = array("id","constructeur","adresse", "pression_service", "gaz","filetage","is_club","etat", "etat_int");
-    $this->_hidden_column_sm = array("id","constructeur", "constructeur", "numero", "marque","capacite","id_robinet", "etat", "etat_int","date_derniere_epreuve","date_dernier_tiv");
+    $this->_hidden_column_sm = array("id","constructeur", "constructeur", "numero", "marque","capacite","id_robinet", "etat", "etat_int","date_derniere_epreuve","date_dernier_tiv","operations");
     $this->_readonly_column = array("id_club", "constructeur", "marque", "numero","filetage", "capacite", "gaz","pression_service","pression_epreuve");
     $this->_field_to_retrieve = array(
       "robinet" => "CONCAT('Réf: ', serial_number, ' - ', marque, ' - ', nb_sortie,' sortie(s)')");
@@ -195,7 +195,9 @@ class blocElement extends TIVElement {
     }
 
     if(!$this->_read_only) {
-      $to_display [] = $this->getEditUrl($id);
+        if (in_array("operations", $this->_hidden_column_sm)){
+            $to_display [] = array("d-none d-md-table-cell",$this->getEditUrl($id));
+        }
     }
     //echo'<pre>'; print_r($to_display);echo'</pre>';
 
