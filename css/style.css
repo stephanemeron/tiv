@@ -94,3 +94,13 @@ label.error{
 .fa-battery-full{
     transform: rotate(-0.25turn);
 }
+
+@media (max-width: 576px) {
+    .table.table-bordered.dataTable{
+        max-width : 100% !important;
+    }
+}
+.wrapper-link{
+    display: flex;
+    flex-wrap: nowrap;
+}
