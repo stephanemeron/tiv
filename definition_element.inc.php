@@ -106,7 +106,7 @@ class TIVElement {
   function getForms() { return $this->_forms; }
   function getFormsKey() { return array_keys($this->_forms); }
   function constructTextInput($label, $size, $value, $class = false, $type = 'text', $help = false) {
-    if(in_array($label, $this->_readonly_column) && $value && $value!=""){
+    if((in_array($label, $this->_readonly_column) && $value && $value!="") || $_SESSION["isSuperAdmin"] == false){
       $input_readonly = " readonly";
     }
     else{
@@ -123,7 +123,7 @@ class TIVElement {
     return $form_input;
   }
   function constructSelectInputLabels($label, $labels, $value) {
-    if(in_array($label, $this->_readonly_column) && $value && $value!=""){
+    if((in_array($label, $this->_readonly_column) && $value && $value!="") || $_SESSION["isSuperAdmin"] == false){
       $form_input = "<select id=\"$label-disabled\" name=\"$label\" class=\"form-control my-custom-select\" disabled=true data-tt=\"labels\" data=\"value\">";
       foreach(array_keys($labels) as $option) {
         $selected = ($option == $value ? " selected='selected'" : "");
@@ -159,7 +159,7 @@ class TIVElement {
 
   function constructSelectInputStringLabels($label, $labels, $value) {
 
-      if(in_array($label, $this->_readonly_column) && $value && $value!=""){
+      if(in_array($label, $this->_readonly_column) && $value && $value!="" && $_SESSION["isSuperAdmin"] == false){
         $form_input = "<select id=\"$label-disabled\" name=\"$label\" class=\"form-control my-custom-select\" disabled=true data-tt=\"labels\" data=\"value\">";
         foreach(array_values($labels) as $option) {
           $selected = ($option == $value ? " selected='selected'" : "");
@@ -212,7 +212,7 @@ class TIVElement {
     $form_input = "";
     $inc=1;
     foreach(array_keys($labels) as $option) {
-      if(in_array($label, $this->_readonly_column) && $value && $value!=""){
+      if(in_array($label, $this->_readonly_column) && $value && $value!="" && $_SESSION["isSuperAdmin"] == false){
           $checked = ($option == $value ? " checked='checked'" : "");
           $form_input .= "<div class=\"form-check form-check-inline\">";
           $form_input .=  "<input class=\"form-check-input\" type=\"radio\" name=\"$label\" id=\"$label.-disabled-.$inc\" value=\"$option\"$checked disabled=true>";
@@ -363,7 +363,7 @@ class TIVElement {
     return true;
   }
   function getAdditionalControl() {
-    if($this->_read_only || !$this->_show_create_form) return "";
+    if($this->_read_only || !$this->_show_create_form || $_SESSION["isSuperAdmin"] == true) return "";
     return '<form name="ajout_form" id="ajout_form" action="ajout_element.php" method="POST" class="my-3">
 <input type="hidden" name="element" value="'.$this->_name.'" />
 <input type="submit" name="submit" onclick=\'return(confirm("Procéder à la création ?"));\' value="'.$this->_creation_label.'" />
@@ -423,7 +423,7 @@ class TIVElement {
       }
     }
 
-    if(!$this->_read_only) {
+    if(!$this->_read_only || $_SESSION["isSuperAdmin"] == true) {
         if (in_array("operations", $this->_hidden_column_sm)){
           $header .= '<th class="d-none d-md-table-cell">Opérations</th>';
         }
@@ -458,7 +458,7 @@ class TIVElement {
       }
 
     }
-    if(!$this->_read_only) {
+    if(!$this->_read_only || $_SESSION["isSuperAdmin"] == true) {
         if (in_array("operations", $this->_hidden_column_sm)){
             $to_display [] = array("d-none d-md-table-cell",$this->getEditUrl($id));
         }
@@ -532,7 +532,7 @@ class TIVElement {
 
   function isLog(){
       if($_SESSION["inLog"]){
-          return "<a href='/logout.php' title='Déconnexion'><i class='fa fa-2x fa-sign-out text-danger'> </i></a>";
+          return "<a href='/logout.php' title='Déconnexion'><i class='fa fa-2x fa-power-off text-danger'> </i></a>";
       }
       else{
           return "<a href='/login.php'><i class='fa fa-2x fa-sign-in text-success'> </i></a>";

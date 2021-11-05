@@ -194,7 +194,7 @@ class blocElement extends TIVElement {
 
     }
 
-    if(!$this->_read_only) {
+    if(!$this->_read_only || $_SESSION["isSuperAdmin"] == true) {
         if (in_array("operations", $this->_hidden_column_sm)){
             $to_display [] = array("d-none d-md-table-cell",$this->getEditUrl($id));
         }

@@ -191,7 +191,7 @@ class inspection_tivElement extends TIVElement {
   function getHTMLHeaderTable() {
     $header = "    <tr>      <th>";
     $header .= join("</th><th>", $this->_columns);
-    if(!$this->_read_only) $header .= "</th><th>Opérations";
+    if(!$this->_read_only || $_SESSION["isSuperAdmin"] == true) $header .= "</th><th>Opérations";
     $header .= "</th>    </tr>";
     return $header;
   }
@@ -203,7 +203,7 @@ class inspection_tivElement extends TIVElement {
     for($i = 0; $i < count($this->_columns); $i++) {
       $to_display []= $record[$i];
     }
-    if(!$this->_read_only) {
+    if(!$this->_read_only || $_SESSION["isSuperAdmin"] == true) {
       $to_display [] = $this->getEditUrl($id);
     }
     $line .= implode("</td><td>", $to_display);
