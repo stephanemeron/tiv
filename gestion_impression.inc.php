@@ -102,7 +102,7 @@ class PdfTIV extends FPDF {
         }
       $bloc_condition = "inspection_tiv.id_bloc = $id_bloc";
       $db_query = "SELECT  inspection_tiv.id_bloc AS id_bloc, inspection_tiv.id AS i_t_id, bloc.id_club AS bloc_id_club ".
-                  "FROM inspection_tiv, bloc ";
+                  "FROM inspection_tiv JOIN bloc ON bloc.id=inspection_tiv.id_bloc ";
       if(array_key_exists("date", $_GET)){
           $db_query .= "WHERE inspection_tiv.date = '".$_GET['date']."' AND ".$bloc_condition;
       }
@@ -303,6 +303,7 @@ class PdfTIV extends FPDF {
     }
     $this->Ln();
   }
+
   function addInspecteurFileBlocsInformations($id_inspecteur) {
     $this->addInspecteurFileBlocsInformationsTableHeader();
     $to_retrieve = array("constructeur" => 27, "marque" => 37, "numero" => 27, "date_premiere_epreuve" => 24,
@@ -362,13 +363,14 @@ class PdfTIV extends FPDF {
 
     $db_result = $this->_db_con->query($db_query);
     while($result = $db_result->fetch_array()) {
+        //echo '<pre>'; print_r($result); echo '</pre>';
       // Affichage de l'entête de la fiche (capacité du bloc, date des réépreuves etc.)
       //$this->AddPage();
-      $this->AddPage('','',0,$result[1]);
+      $this->AddPage('','',0,$result['id_bloc']);
       //$this->Ln(8);
       $this->SetFont('Helvetica', 'B',11);
       $this->Cell(0,8,utf8_decode("FICHE D'ÉVALUATION ET DE SUIVI D'UNE BOUTEILLE DE PLONGÉE"),0, 1, 'R');
-      $this->addBlocInformation($result[1]);
+      $this->addBlocInformation($result['id_bloc']);
 
       // Affichage d'un message d'alerte en cas de dépassement de la date d'épreuve/tiv sur le bloc
       $this->addBlocAlert($result[1]);
