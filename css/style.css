@@ -1,3 +1,12 @@
+.wrapper-global{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.menu-bottom{
+    margin-top: auto;
+}
 .main.title{
     text-align: center;
 }
@@ -26,6 +35,41 @@
 
 .flex-grow-1{
   flex-grow:1;
+}
+
+@media (max-width: 576px) {
+    .navbar{
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .navbar .wrapper-fa .fa{
+        font-size: 1rem;
+    }
+    .navbar .navbar-brand p{
+        font-size: 0.9rem;
+    }
+    .table.table-bordered.dataTable{
+        max-width : 100% !important;
+    }
+    .tab-pane .btn{
+        font-size: 0.9rem;
+    }
+}
+@media (min-width: 767px) {
+    .fixed-md-bottom{
+        position: relative;
+        left: 0;
+        z-index: 1030;
+    }
+}
+@media (min-width: 910px) {
+    .fixed-md-bottom{
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1030;
+    }
 }
 
 .navbar-brand .img-fluid{
@@ -95,11 +139,10 @@ label.error{
     transform: rotate(-0.25turn);
 }
 
-@media (max-width: 576px) {
-    .table.table-bordered.dataTable{
-        max-width : 100% !important;
-    }
+.fa-stethoscope{
+    transform: rotate(-0.5turn);
 }
+
 .wrapper-link{
     display: flex;
     flex-wrap: nowrap;
