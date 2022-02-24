@@ -19,7 +19,7 @@ include_once('head.inc.php');
             </a>
             <?php
             if($_SESSION['inLog']){ ?>
-                <div class='col-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end order-2 order-lg-3'><a href='/logout.php' title='Déconnexion'><i class='fa fa-2x fa-power-off text-danger'> </i></a></div>
+                <div class='col-2 col-lg-1 ml-md-auto align-self-stretch d-flex align-items-center justify-content-end order-2 order-lg-3'><a href='/logout.php' title='Déconnexion' class='wrapper-fa'><i class='fa fa-2x fa-power-off text-danger'> </i></a></div>
             <?php
             } ?>
             <button class="navbar-toggler order-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,19 +48,19 @@ include_once('head.inc.php');
 
         </nav>
         <div class="tab-content py-3">
-            <div class="tab-pane container-fluid active" role="tabpanel" aria-labelledby="accueil-tab" id="accueil">
+            <div class="tab-pane active" role="tabpanel" aria-labelledby="accueil-tab" id="accueil">
                 <?php include("accueil.php");?>
             </div>
-            <div class="tab-pane container-fluid" role="tabpanel" aria-labelledby="admin-tab" id="admin">
+            <div class="tab-pane" role="tabpanel" aria-labelledby="admin-tab" id="admin">
                 <?php include("admin.php");?>
             </div>
-            <div class="tab-pane container-fluid" role="tabpanel" aria-labelledby="materiel-tab" id="materiel">
+            <div class="tab-pane" role="tabpanel" aria-labelledby="materiel-tab" id="materiel">
                 <?php include("materiel.php");?>
             </div>
-            <div class="tab-pane container-fluid" role="tabpanel" aria-labelledby="personne-tab" id="personne">
+            <div class="tab-pane" role="tabpanel" aria-labelledby="personne-tab" id="personne">
                 <?php include("personne.php");?>
             </div>
-            <div class="tab-pane container-fluid" role="tabpanel" aria-labelledby="bloc-rev-tab" id="bloc-rev">
+            <div class="tab-pane" role="tabpanel" aria-labelledby="bloc-rev-tab" id="bloc-rev">
                 <h1 class="main title mb-5"><i class='fa fa-battery-full fa-2x'></i>  Status des blocs (TIV/ré-épreuve)</h1>
                 <?php include("affichage_bloc_tiv.php"); ?>
             </div>

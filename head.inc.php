@@ -95,7 +95,7 @@
 
     </head>
     <body>
-        <div class="container-fluid">
+        <div class="container-fluid wrapper-global">
             <?php
             foreach(array("connect_db.inc.php", "configuration.inc.php", "fpdf/fpdf.php", "logo_club.png") as $file) {
               if(!file_exists($file)) {

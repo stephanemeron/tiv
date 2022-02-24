@@ -15,7 +15,7 @@ include_once('head.inc.php');
 if($element === "inspection_tiv") {
   $element_class->setDate($date_tiv);
 }
-print "<div class='row mt-3'>".
+print "<div class='row mt-3 menu-top'>".
           "<div class='col'>".
             "<form action='edit.php' method='GET'>".
               "<div class=\"my-3\">".$element_class->getParentUrl()." >".
@@ -23,13 +23,13 @@ print "<div class='row mt-3'>".
               "</div>".
             "</form>".
           "</div>".
-          "<div class='col-md-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end'>".$element_class->isLog()."</div>".
+          "<div class='col-2 col-lg-1 ml-auto align-self-stretch d-flex align-items-center justify-content-end'>".$element_class->isLog()."</div>".
         "</div>";
 //print "<div class=\"my-3\">".$element_class->getParentUrl()."</div>";
 
 print $element_class->getHTMLTable("liste_$element", $element);
 
-print "<div class='row mt-3 pb-5'>".
+print "<div class='menu-bottom row pb-0 pb-md-5'>".
           "<div class='col'>".
             "<form action='edit.php' method='GET'>".
               "<div class=\"my-3\">".$element_class->getParentUrl()." >".
@@ -37,9 +37,9 @@ print "<div class='row mt-3 pb-5'>".
               "</div>".
             "</form>".
           "</div>".
-          "<div class='col-md-2 col-lg-1 ml-md-auto align-self-stretch d-flex align-items-center justify-content-end'>".$element_class->isLog()."</div>".
+          "<div class='col-2 col-lg-1 ml-md-auto align-self-stretch d-flex align-items-center justify-content-end'>".$element_class->isLog()."</div>".
         "</div>".
-        "<div class=\"pb-5\"></div>";
+        "<div class=\"pb-0 pb-md-5\"></div>";
 
 include_once("foot.inc.php");
 ?>

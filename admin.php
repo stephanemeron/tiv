@@ -1,6 +1,6 @@
 <h1 class="main title mb-5"><i class='fa fa-sliders fa-2x'></i> Administration</h1>
-<div class="row justify-content-center my-5">
-	<div class="col-12 jumbotron bg-transparent border border-secondary">
+<div class="justify-content-center my-5">
+	<div class="jumbotron bg-transparent border border-secondary">
       <h2 class="title">Déclaration d'un nouvel élément dans la base</h2>
 
       <form name="ajout_form" id="ajout_form" action="ajout_element.php" method="POST">
@@ -25,8 +25,8 @@
     </div>
 </div>
 
-<div class="row justify-content-center my-5">
-	<div class="col-12 jumbotron bg-transparent border border-secondary">
+<div class="justify-content-center my-5">
+	<div class="jumbotron bg-transparent border border-secondary">
       <h2 class="title">Consultation du journal</h2>
       <div class="row align-items-center">
         <div class="col-auto">
@@ -39,8 +39,8 @@
     </div>
 </div>
 
-<div class="row justify-content-center my-5">
-  	<div class="col-12 jumbotron bg-transparent border border-secondary">
+<div class="justify-content-center my-5">
+  	<div class="jumbotron bg-transparent border border-secondary">
       <h2 class="title">Consultation d'un TIV</h2>
       <form name="consultation_tiv" id="consultation_tiv" action="consultation_tiv.php" method="POST">
         <div class="row align-items-center">
@@ -66,8 +66,8 @@
     </div>
 </div>
 
-<div class="row justify-content-center my-5">
-  	<div class="col-12 jumbotron bg-transparent border border-secondary">
+<div class="justify-content-center my-5">
+  	<div class="jumbotron bg-transparent border border-secondary">
         <h2 class="title">Préparation d'un TIV</h2>
 
 
