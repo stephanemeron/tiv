@@ -6,9 +6,10 @@ class detendeurElement extends TIVElement {
     $this->_parent_url_label = "<i class='fa fa-wrench'></i> Matériel";
     $this->_creation_label = "Création d'un détendeur";
     $this->_update_label = "Mettre à jour le détendeur";
-    $this->_hidden_column = array("id");
-    $this->_hidden_column_sm = array("id","operations");
-
+    $this->_hidden_column = array("id","etat_1ier_etage", "etat_2e_etage","etat_octopus","id_octopus","embout_enfant","eaux_froides","date_achat","operations");
+    $this->_hidden_column_sm = array("id","id_1ier_etage", "etat_1ier_etage","id_2e_etage","etat_2e_etage","id_octopus","embout_enfant","eaux_froides","date_achat","observation","operations");
+    $this->_readonly_column = array("id_club","marque");
+    $this->_read_only= false;
     $this->_element_to_link = "id_club";
     $this->_elements = array("id" => "ID", "id_club" => "Réf.", "marque" => "Marque","etat_1ier_etage"=> "1ier étage", "id_1ier_etage" => "n° 1ier étage",
                              "etat_2e_etage"=> "2ème étage", "id_2e_etage" => "n° 2ieme étage", "etat_octopus"=> "Octopus",
