@@ -106,8 +106,8 @@ class TIVElement {
   function getForms() { return $this->_forms; }
   function getFormsKey() { return array_keys($this->_forms); }
   function constructTextInput($label, $size, $value, $class = false, $type = 'text', $help = false) {
-    if((in_array($label, $this->_readonly_column) && $value && $value!="") || $_SESSION["isSuperAdmin"] == false){
-      $input_readonly = " readonly";
+    if((in_array($label, $this->_readonly_column) && $value && $value!="") && $_SESSION["isSuperAdmin"] == false){
+      $input_readonly = " readonly=\"readonly\"";
     }
     else{
       $input_readonly="";
@@ -123,7 +123,7 @@ class TIVElement {
     return $form_input;
   }
   function constructSelectInputLabels($label, $labels, $value) {
-    if((in_array($label, $this->_readonly_column) && $value && $value!="") || $_SESSION["isSuperAdmin"] == false){
+    if((in_array($label, $this->_readonly_column) && $value && $value!="") && $_SESSION["isSuperAdmin"] == false){
       $form_input = "<select id=\"$label-disabled\" name=\"$label\" class=\"form-control my-custom-select\" disabled=true data-tt=\"labels\" data=\"value\">";
       foreach(array_keys($labels) as $option) {
         $selected = ($option == $value ? " selected='selected'" : "");
@@ -401,7 +401,7 @@ class TIVElement {
   } );
   $(window).on('load, resize', function(){
       setTimeout(function() {
-          $('#$id').dataTable(), 200);
+          $('#$id').dataTable()}, 200);
   });
 </script>";
   }
@@ -515,7 +515,7 @@ class TIVElement {
            "<i class='fa fa-times' aria-hidden='true'></i></a></div>";
   }
   function getParentUrl() {
-    return "Navigation : <a href='./'><i class='fa fa-home'></i> Accueil</a> > ".
+    return "<span class='d-none d-md-inline'>Navigation : </span><a href='./'><i class='fa fa-home'></i> Accueil</a> > ".
            "<a href='".$this->_parent_url."'> ".$this->_parent_url_label."</a>";
   }
   function getQuickNavigationFormInput() {
@@ -532,7 +532,7 @@ class TIVElement {
 
   function isLog(){
       if($_SESSION["inLog"]){
-          return "<a href='/logout.php' title='Déconnexion'><i class='fa fa-2x fa-power-off text-danger'> </i></a>";
+          return "<a href='/logout.php' title='Déconnexion' class='wrapper-fa'><i class='fa fa-2x fa-power-off text-danger'> </i></a>";
       }
       else{
           return "<a href='/login.php'><i class='fa fa-2x fa-sign-in text-success'> </i></a>";
