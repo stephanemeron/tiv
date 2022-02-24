@@ -32,9 +32,10 @@ class blocElement extends TIVElement {
       "date_derniere_epreuve" => "Date dernière épreuve", "date_dernier_tiv" => "Date dernier TIV",
       "pression_service" => "Pression de service", "gaz" => "Gaz", "etat" => "État", "etat_int" => "État intérieur"
     );
-    $this->_hidden_column = array("id","constructeur","adresse", "pression_service", "gaz","filetage","is_club","etat", "etat_int");
-    $this->_hidden_column_sm = array("id","constructeur", "constructeur", "numero", "marque","capacite","id_robinet", "etat", "etat_int","date_derniere_epreuve","date_dernier_tiv","operations");
+    $this->_hidden_column = array("id","constructeur","adresse", "pression_service", "gaz","filetage","is_club", "etat_int");
+    $this->_hidden_column_sm = array("id","constructeur", "numero", "marque","capacite","id_robinet", "etat", "etat_int","date_derniere_epreuve","date_dernier_tiv","operations");
     $this->_readonly_column = array("id_club", "constructeur", "marque", "numero","filetage", "capacite", "gaz","pression_service","pression_epreuve");
+    $this->_read_only= false;
     $this->_field_to_retrieve = array(
       "robinet" => "CONCAT('Réf: ', serial_number, ' - ', marque, ' - ', nb_sortie,' sortie(s)')");
     //$bloc_capacite = array("6", "10", "12 long", "12 court", "15");
